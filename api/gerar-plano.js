@@ -40,27 +40,25 @@ Retorne APENAS um JSON válido, sem texto adicional, neste formato exato:
   "jantar": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"]
 }`;
 
-        // Chamada à API da Anthropic
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        // Chamada à API da OpenAI (GPT-4o)
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': process.env.ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01'
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 2500,
+                model: 'gpt-4o-mini',
+                response_format: { type: "json_object" },
                 temperature: 0.7,
-                system: "Você é um nutricionista estrito. O retorno MÁXIMO e ÚNICO que você fará é o JSON estrito. Não adicione saudações ou markdown ```json.",
                 messages: [
+                    { 
+                        role: 'system', 
+                        content: "Você é um nutricionista estrito. O retorno MÁXIMO e ÚNICO que você fará é um JSON válido. Não adicione saudações ou explicações. Siga EXATAMENTE as chaves solicitadas."
+                    },
                     { 
                         role: 'user', 
                         content: promptText 
-                    },
-                    {
-                        role: 'assistant',
-                        content: "{" // Prefill para garantir que o output seja puro corpo JSON.
                     }
                 ]
             })
@@ -68,20 +66,19 @@ Retorne APENAS um JSON válido, sem texto adicional, neste formato exato:
 
         if (!response.ok) {
             const errorDetails = await response.text();
-            console.error('Anthropic API Error:', errorDetails);
-            throw new Error('Falha na comunicação com a API de IA.');
+            console.error('OpenAI API Error:', errorDetails);
+            throw new Error('Falha na comunicação com a API da OpenAI.');
         }
 
         const data = await response.json();
         
-        // Como forçamos o prefill "{", o Anthropic só retorna o resto. Concatenamos para recompor o JSON perfeito.
-        const completionText = data.content && data.content[0] && data.content[0].text ? "{" + data.content[0].text : null;
+        const completionText = data.choices?.[0]?.message?.content;
         
         if (!completionText) {
             throw new Error('Resposta vazia da IA.');
         }
 
-        // Limpeza simples de segurança caso IA cuspa marcações perdidas
+        // Limpeza de segurança caso a IA retorne markdown
         const cleanJson = completionText.replace(/```json/g, '').replace(/```/g, '').trim();
 
         const planoParsed = JSON.parse(cleanJson);
