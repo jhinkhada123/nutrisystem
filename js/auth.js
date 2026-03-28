@@ -75,17 +75,10 @@ if (signupForm) {
 
             if (authError) throw authError;
 
-            // Inserir registro na tabela nutricionistas (Regra do prompt)
+            // O perfil na tabela 'nutricionistas' agora é criado AUTOMATICAMENTE
+            // por um Database Trigger no Supabase no exato momento do signUp.
+            // Redirecionamento direto após sucesso:
             if (authData.user) {
-                const { error: dbError } = await supabaseClient
-                    .from('nutricionistas')
-                    .insert([
-                        { id: authData.user.id, nome: name, email: email }
-                    ]);
-
-                if (dbError) throw dbError;
-                
-                // Redirecionamento após sucesso
                 window.location.href = 'dashboard.html';
             }
 
