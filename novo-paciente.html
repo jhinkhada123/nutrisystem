@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Paciente - NutriSystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon logo-icon-sm">NS</div>
+            <h1 class="sidebar-title">NutriSystem</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                Dashboard
+            </a>
+            <a href="pacientes.html" class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Pacientes
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="btn-logout" class="btn btn-secondary btn-sm">Sair</button>
+        </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="main-content">
+        <header class="main-header" style="margin-bottom: 2rem;">
+            <div>
+                <h2>Cadastro de Paciente</h2>
+                <p class="subtitle" style="margin-bottom: 0;">Insira as informações clínicas e pessoais.</p>
+            </div>
+            <a href="pacientes.html" class="btn btn-secondary" style="width: auto; padding: 0.6rem 1.2rem;">Voltar</a>
+        </header>
+
+        <div id="alert-message" class="alert hidden"></div>
+
+        <form id="form-novo-paciente" style="background: var(--card-bg); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            
+            <!-- Navegação das Abas -->
+            <div class="tabs-nav">
+                <button type="button" class="tab-btn active" data-target="tab-pessoal">Pessoal</button>
+                <button type="button" class="tab-btn" data-target="tab-clinico">Clínico</button>
+                <button type="button" class="tab-btn" data-target="tab-habitos">Hábitos</button>
+            </div>
+
+            <!-- Aba 1: Pessoal -->
+            <div id="tab-pessoal" class="tab-content active">
+                <div class="form-grid">
+                    <div class="input-group form-col-full">
+                        <label for="nome">Nome completo *</label>
+                        <input type="text" id="nome" placeholder="Ex: Letícia Costa" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="data_nascimento">Data de Nascimento</label>
+                        <input type="date" id="data_nascimento">
+                        <p id="idade-display" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">-</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sexo">Sexo</label>
+                        <select id="sexo" style="width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; background-color: #FAFCFB;">
+                            <option value="">Selecione...</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="text" id="telefone" placeholder="(00) 0000-0000" maxlength="15">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="whatsapp">WhatsApp</label>
+                        <input type="text" id="whatsapp" placeholder="(00) 00000-0000" maxlength="15">
+                    </div>
+
+                    <div class="input-group form-col-full">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" placeholder="email@exemplo.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba 2: Clínico -->
+            <div id="tab-clinico" class="tab-content">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="peso">Peso atual</label>
+                        <div class="input-with-suffix">
+                            <input type="number" id="peso" step="0.1" placeholder="70.5">
+                            <span class="suffix">kg</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="altura">Altura</label>
+                        <div class="input-with-suffix">
+                            <input type="number" id="altura" placeholder="175">
+                            <span class="suffix">cm</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group form-col-full" style="background: rgba(46, 125, 50, 0.05); padding: 1rem; border-radius: var(--radius-md); border: 1px dashed var(--primary-color);">
+                        <label style="color: var(--primary-color);">IMC Calculado</label>
+                        <div id="imc-display" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">--</div>
+                    </div>
+
+                    <!-- Objetivo (Múltiplas Opções + Texto Livre) -->
+                    <div class="input-group form-col-full">
+                        <label>Objetivo</label>
+                        <div class="checkbox-grid" id="grid-objetivos">
+                            <label class="checkbox-label"><input type="checkbox" value="Emagrecer"> Emagrecer</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Ganhar massa"> Ganhar massa</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Controlar diabetes"> Controlar diabetes</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Saúde geral"> Saúde geral</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Performance esportiva"> Performance esportiva</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Reeducação alimentar"> Reeducação alimentar</label>
+                        </div>
+                        <input type="text" id="objetivo_texto" class="free-text-input" placeholder="Outro objetivo (livre)...">
+                    </div>
+
+                    <!-- Nível de atividade (Select único) -->
+                    <div class="input-group form-col-full">
+                        <label for="nivel_atividade">Nível de Atividade Física Global</label>
+                        <select id="nivel_atividade" style="width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: #FAFCFB; font-family: inherit;">
+                            <option value="">Selecione...</option>
+                            <option value="Sedentário">Sedentário</option>
+                            <option value="Levemente ativo">Levemente ativo</option>
+                            <option value="Moderadamente ativo">Moderadamente ativo</option>
+                            <option value="Muito ativo">Muito ativo</option>
+                            <option value="Extremamente ativo">Extremamente ativo</option>
+                        </select>
+                    </div>
+
+                    <!-- Patologias -->
+                    <div class="input-group form-col-full">
+                        <label>Patologias</label>
+                        <div class="checkbox-grid" id="grid-patologias">
+                            <label class="checkbox-label"><input type="checkbox" value="Nenhum" class="chk-none"> Nenhum</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Diabetes" class="chk-item"> Diabetes</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Hipertensão" class="chk-item"> Hipertensão</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Hipotireoidismo" class="chk-item"> Hipotireoidismo</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Hipertireoidismo" class="chk-item"> Hipertireoidismo</label>
+                            <label class="checkbox-label"><input type="checkbox" value="SOP" class="chk-item"> SOP</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Doença celíaca" class="chk-item"> Doença celíaca</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Colesterol alto" class="chk-item"> Colesterol alto</label>
+                        </div>
+                        <input type="text" id="patologias_extra" class="free-text-input chk-free" placeholder="Outras condições...">
+                    </div>
+
+                    <!-- Restrições alimentares -->
+                    <div class="input-group form-col-full">
+                        <label>Restrições Alimentares</label>
+                        <div class="checkbox-grid" id="grid-restricoes">
+                            <label class="checkbox-label"><input type="checkbox" value="Nenhum" class="chk-none"> Nenhum</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Lactose" class="chk-item"> Lactose</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Glúten" class="chk-item"> Glúten</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Açúcar" class="chk-item"> Açúcar</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Carne vermelha" class="chk-item"> Carne vermelha</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Frutos do mar" class="chk-item"> Frutos do mar</label>
+                        </div>
+                        <input type="text" id="restricoes_extra" class="free-text-input chk-free" placeholder="Outras restrições...">
+                    </div>
+
+                    <!-- Alergias -->
+                    <div class="input-group form-col-full">
+                        <label>Alergias Alimentares</label>
+                        <div class="checkbox-grid" id="grid-alergias">
+                            <label class="checkbox-label"><input type="checkbox" value="Nenhum" class="chk-none"> Nenhum</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Amendoim" class="chk-item"> Amendoim</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Leite" class="chk-item"> Leite</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Ovo" class="chk-item"> Ovo</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Soja" class="chk-item"> Soja</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Trigo" class="chk-item"> Trigo</label>
+                            <label class="checkbox-label"><input type="checkbox" value="Frutos do mar" class="chk-item"> Frutos do mar</label>
+                        </div>
+                        <input type="text" id="alergias_extra" class="free-text-input chk-free" placeholder="Outras alergias...">
+                    </div>
+
+                    <div class="input-group form-col-full">
+                        <label for="medicamentos">Medicamentos Contínuos</label>
+                        <textarea id="medicamentos" rows="2" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="Liste aqui se houver..."></textarea>
+                    </div>
+
+                    <div class="input-group form-col-full">
+                        <label for="suplementos">Suplementos em uso</label>
+                        <textarea id="suplementos" rows="2" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="Liste aqui se houver..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba 3: Hábitos -->
+            <div id="tab-habitos" class="tab-content">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="refeicoes">Qtd Refeições Correntes</label>
+                        <input type="number" id="refeicoes" placeholder="Ex: 4">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="litros_agua">Ingestão de Água Diária</label>
+                        <div class="input-with-suffix">
+                            <input type="number" id="litros_agua" step="0.1" placeholder="Ex: 2.5">
+                            <span class="suffix">litros</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hora_acorda">Horário que acorda</label>
+                        <input type="text" id="hora_acorda" placeholder="Ex: 6 (virará 06:00)" maxlength="5">
+                        <small style="color:var(--text-muted); font-size:0.8rem">Digite como número (ex: 630)</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hora_dorme">Horário que dorme</label>
+                        <input type="text" id="hora_dorme" placeholder="Ex: 23 (virará 23:00)" maxlength="5">
+                    </div>
+
+                    <div class="input-group form-col-full">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="pratica_fisica" style="width:auto; transform:scale(1.2)">
+                            Paciente pratica Atividade Física?
+                        </label>
+                    </div>
+
+                    <!-- Div invisível por padrão -->
+                    <div id="pratica_fisica_extra" class="input-group form-col-full" style="display:none; padding-left: 1.5rem; border-left: 3px solid var(--primary-color);">
+                        <label for="atividade_descricao">Qual atividade e a frequência semanal?</label>
+                        <input type="text" id="atividade_descricao" placeholder="Ex: Musculação (4x), Corrida (2x)...">
+                    </div>
+
+                    <div class="input-group form-col-full">
+                        <label for="observacoes">Observações Gerais</label>
+                        <textarea id="observacoes" rows="4" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="Anotações gerais do paciente..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" id="btn-save" style="width: 250px;">
+                    <svg style="margin-right: 8px;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    Salvar Paciente
+                </button>
+            </div>
+        </form>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/novo-paciente.js"></script>
+</body>
+</html>
