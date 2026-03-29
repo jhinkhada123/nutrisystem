@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novo Paciente - NutriSystem</title>
+    <title>Novo Paciente - NutriFlow</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <!-- Supabase CDN -->
@@ -13,8 +13,8 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon logo-icon-sm">NS</div>
-            <h1 class="sidebar-title">NutriSystem</h1>
+            <div class="logo-icon logo-icon-sm">NF</div>
+            <h1 class="sidebar-title">NutriFlow</h1>
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item">
@@ -26,6 +26,12 @@
                 Pacientes
             </a>
         </nav>
+        <div style="padding: 0 1rem; margin-bottom: 0.5rem;">
+            <a href="configuracoes.html" class="nav-item" style="margin: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Configurações
+            </a>
+        </div>
         <div class="sidebar-footer">
             <button id="btn-logout" class="btn btn-secondary btn-sm">Sair</button>
         </div>
@@ -112,7 +118,7 @@
                         </div>
                     </div>
 
-                    <div class="input-group form-col-full" style="background: rgba(46, 125, 50, 0.05); padding: 1rem; border-radius: var(--radius-md); border: 1px dashed var(--primary-color);">
+                    <div class="input-group form-col-full" style="background: rgba(106, 62, 99, 0.05); padding: 1rem; border-radius: var(--radius-md); border: 1px dashed var(--primary-color);">
                         <label style="color: var(--primary-color);">IMC Calculado</label>
                         <div id="imc-display" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">--</div>
                     </div>

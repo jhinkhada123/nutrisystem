@@ -14,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Identifica aba via param
+    const tabTarget = urlParams.get('tab');
+
     setTimeout(() => {
-        setupTabs();
+        setupTabs(tabTarget);
         setupCalculations();
         loadPatientProfile();
     }, 100);
@@ -231,8 +234,14 @@ function renderConsultations(consultasArray) {
     const msgEmpty = document.getElementById('chart-empty-message');
     
     if (!consultasArray || consultasArray.length === 0) {
-        listEl.innerHTML = '<div class="empty-state">Nenhuma consulta registrada ainda</div>';
-        msgEmpty.style.display = 'block';
+        listEl.innerHTML = `
+            <div class="empty-state" style="padding: 2.5rem 1rem;">
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhuma anamnese registrada</h4>
+                <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 1.5rem auto;">Registre os dados clínicos, exames e restrições alimentares do paciente para gerar um plano personalizado com IA.</p>
+                <button onclick="document.getElementById('modal-nova-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Iniciar Primeira Consulta</button>
+            </div>
+        `;
+        msgEmpty.style.display = 'none';
         if (chartInstance) chartInstance.destroy();
         return;
     }
@@ -244,7 +253,7 @@ function renderConsultations(consultasArray) {
     
     listEl.innerHTML = '';
     viewList.forEach(c => {
-        let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #F9FAFB; border-radius:4px;">${c.observacoes}</p>` : '';
+        let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #FAF8F9; border-radius:4px;">${c.observacoes}</p>` : '';
         let prox = c.proximo_retorno ? `<br><strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${formatDateDisplay(c.proximo_retorno)}</strong>` : '';
         
         // Formatar % gordura / CM com condicional
@@ -301,11 +310,11 @@ function renderWeightChart(chartData) {
             datasets: [{
                 label: 'Peso Histórico (kg)',
                 data: dataPoints,
-                borderColor: '#2E7D32', // primary-color
-                backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                borderColor: '#6A3E63', // primary-color
+                backgroundColor: 'rgba(106, 62, 99, 0.1)',
                 borderWidth: 2,
                 pointBackgroundColor: '#FFF',
-                pointBorderColor: '#2E7D32',
+                pointBorderColor: '#6A3E63',
                 pointRadius: 4,
                 pointHoverRadius: 6,
                 fill: true,
@@ -412,7 +421,7 @@ function showAlert(message, type = 'error') {
     if (!alertEl) return;
     alertEl.textContent = message;
     if (type === 'success') {
-        alertEl.style.backgroundColor = '#E8F5E9';
+        alertEl.style.backgroundColor = '#F3EAF1';
         alertEl.style.color = 'var(--primary-color)';
         alertEl.style.borderColor = 'var(--secondary-color)';
     } else {
@@ -428,19 +437,32 @@ function showAlert(message, type = 'error') {
 }
 
 // Utilidades base
-function setupTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
+function setupTabs(initialTab) {
+    const tabBtns = document.querySelectorAll('.main-tabs .tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    const formContainer = document.getElementById('form-edicao-paciente');
+    
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            
+            // Toggle visual state mapping
             tabBtns.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
+            
             btn.classList.add('active');
-            document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+            
+            // Toggle parent Form visibility if navigating away
+            if (['tab-pessoal', 'tab-clinico', 'tab-habitos'].includes(targetId)) {
+                formContainer.style.display = 'block';
+            } else {
+                formContainer.style.display = 'none';
+            }
         });
     });
 
-    // Checkboxes behavior mutual "Nenhum"
+    // Interações mutuais em Multi-selects "Nenhum"
     ['grid-patologias', 'grid-restricoes', 'grid-alergias'].forEach(id => {
         const wrap = document.getElementById(id);
         if(!wrap) return;
@@ -451,6 +473,18 @@ function setupTabs() {
             bI.forEach(b => b.addEventListener('change', (e) => { if(e.target.checked) bN.checked = false; }));
         }
     });
+
+    // Set Initial Tab if provided in URL (e.g., ?tab=plano)
+    if (initialTab) {
+        let triggerDataTarget = 'tab-pessoal';
+        if (initialTab === 'plano') triggerDataTarget = 'tab-planos';
+        else if (initialTab === 'consultas') triggerDataTarget = 'tab-consultas';
+
+        const btnQuery = document.querySelector(`.main-tabs .tab-btn[data-target="${triggerDataTarget}"]`);
+        if (btnQuery) {
+            btnQuery.click();
+        }
+    }
 }
 
 function setupCalculations() {
@@ -532,7 +566,7 @@ function setupAIPlanos() {
             // Restaura o formato "Edição" caso venha do modo Histórico visual
             btnSalvar.style.display = 'block';
             const h3 = editorDiv.querySelector('h3');
-            if(h3) h3.innerHTML = `✨ Projeto de Plano Alimentar`;
+            if(h3) h3.innerHTML = `✨ Plano Alimentar da Consulta`;
             const spanTag = editorDiv.querySelector('span');
             if(spanTag) spanTag.style.display = 'inline-block';
             
@@ -560,14 +594,21 @@ function setupAIPlanos() {
             btnSalvar.disabled = true;
             btnSalvar.textContent = "Salvando...";
             
-            // Reconstrói o JSON baseado nos inputs visuais editados
-            const finalPlan = {
-                cafe_da_manha: getEditedOptions('cafe_da_manha'),
-                lanche_da_manha: getEditedOptions('lanche_da_manha'),
-                almoco: getEditedOptions('almoco'),
-                lanche_da_tarde: getEditedOptions('lanche_da_tarde'),
-                jantar: getEditedOptions('jantar')
-            };
+            // Reconstrói o JSON verificando o Schema Version
+            let finalPlan;
+            if (currentGeneratedPlan && currentGeneratedPlan.schema_version === "2.0") {
+                // Para v2.0, o objeto na memória já foi atualizado pelo oninput dos campos
+                finalPlan = currentGeneratedPlan;
+            } else {
+                // Fallback legado v1.0
+                finalPlan = {
+                    cafe_da_manha: getEditedOptions('cafe_da_manha'),
+                    lanche_da_manha: getEditedOptions('lanche_da_manha'),
+                    almoco: getEditedOptions('almoco'),
+                    lanche_da_tarde: getEditedOptions('lanche_da_tarde'),
+                    jantar: getEditedOptions('jantar')
+                };
+            }
 
             try {
                 const { error } = await supabaseClient
@@ -595,6 +636,122 @@ function setupAIPlanos() {
             }
         });
     }
+
+    // Print listener com trava contra duplicação
+    const btnImprimir = document.getElementById('btn-imprimir-plano');
+    if (btnImprimir && !btnImprimir.dataset.bound) {
+        btnImprimir.dataset.bound = 'true';
+        btnImprimir.addEventListener('click', handlePrintPlan);
+    }
+}
+
+/* =======================================================
+   PRINT / EXPORT — Monta o #print-layer e dispara print
+======================================================= */
+function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function handlePrintPlan() {
+    if (!currentGeneratedPlan) return;
+
+    const plan = currentGeneratedPlan;
+    const printLayer = document.getElementById('print-layer');
+    if (!printLayer) return;
+
+    const patientName = escapeHtml(
+        document.getElementById('paciente-nome-header')?.textContent ?? 'Paciente'
+    );
+
+    let html = '';
+
+    // Header
+    html += `<div class="print-header">
+        <h1>${patientName}</h1>
+        <h2>Plano Alimentar Personalizado</h2>
+    </div>`;
+
+    // Orientações (para o paciente — uso_interno_nutricionista EXCLUÍDO por arquitetura)
+    if (plan.orientacoes_paciente) {
+        const msg = escapeHtml(plan.orientacoes_paciente.mensagem_motivacional);
+        const dicas = escapeHtml(plan.orientacoes_paciente.dicas_gerais);
+        if (msg || dicas) {
+            html += `<div class="print-motivational">${msg}${dicas ? '<br><br>' + dicas : ''}</div>`;
+        }
+    }
+
+    // Refeições (nota_clinica_refeicao EXCLUÍDA por arquitetura)
+    if (plan.refeicoes) {
+        plan.refeicoes.forEach(ref => {
+            html += `<div class="print-meal-card">`;
+            html += `<div class="print-meal-header">
+                <span class="print-meal-title">${escapeHtml(ref.nome)}</span>
+                ${ref.horario_sugerido ? `<span class="print-meal-time">${escapeHtml(ref.horario_sugerido)}</span>` : ''}
+            </div>`;
+
+            if (ref.opcoes) {
+                ref.opcoes.forEach((op, opIdx) => {
+                    html += `<div class="print-option">`;
+                    html += `<div class="print-option-title"><span class="print-op-badge">${opIdx + 1}</span> ${escapeHtml(op.titulo_opcao)}</div>`;
+
+                    if (op.itens && op.itens.length > 0) {
+                        html += `<ul class="print-items">`;
+                        op.itens.forEach(item => {
+                            const qty = item.quantidade != null ? `<strong>${escapeHtml(String(item.quantidade))}${escapeHtml(item.unidade)}</strong> ` : '';
+                            const med = item.medida_caseira ? `<span class="print-medida">(${escapeHtml(item.medida_caseira)})</span>` : '';
+                            const obs = item.observacao ? `<span class="print-obs">${escapeHtml(item.observacao)}</span>` : '';
+                            html += `<li><span class="print-bullet"></span>${qty}<strong>${escapeHtml(item.alimento)}</strong> ${med} ${obs}</li>`;
+                        });
+                        html += `</ul>`;
+                    }
+
+                    if (op.substituicoes && op.substituicoes.length > 0) {
+                        html += `<div class="print-subs">`;
+                        html += `<div class="print-subs-title">🔄 Substituições Equivalentes</div>`;
+                        html += `<ul class="print-subs-list">`;
+                        op.substituicoes.forEach(sub => {
+                            const qty = sub.quantidade != null ? `${escapeHtml(String(sub.quantidade))}${escapeHtml(sub.unidade)} de ` : '';
+                            const med = sub.medida_caseira ? ` (${escapeHtml(sub.medida_caseira)})` : '';
+                            const obs = sub.observacao ? ` — ${escapeHtml(sub.observacao)}` : '';
+                            html += `<li>Trocar por: <strong>${qty}${escapeHtml(sub.alimento_substituto)}</strong>${med}${obs}</li>`;
+                        });
+                        html += `</ul></div>`;
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            html += `</div>`;
+        });
+    }
+
+    // Footer
+    const now = new Date();
+    html += `<div class="print-footer">
+        Documento gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} — NutriFlow
+    </div>`;
+
+    printLayer.innerHTML = html;
+
+    // Cleanup após impressão
+    const cleanup = () => {
+        printLayer.innerHTML = '';
+        window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+
+    // Aguarda render do DOM antes de disparar print
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            window.print();
+        });
+    });
 }
 
 function extractPatientDataForAI() {
@@ -636,6 +793,17 @@ function extractPatientDataForAI() {
 }
 
 function renderEditablePlan(planJson) {
+    const btnImprimir = document.getElementById('btn-imprimir-plano');
+    if (planJson.schema_version === "2.0") {
+        if(btnImprimir) btnImprimir.style.display = 'inline-block';
+        renderPlanV2(planJson);
+    } else {
+        if(btnImprimir) btnImprimir.style.display = 'none';
+        renderPlanLegacyV1(planJson);
+    }
+}
+
+function renderPlanLegacyV1(planJson) {
     const container = document.getElementById('plan-cards-container');
     container.innerHTML = '';
     
@@ -680,10 +848,139 @@ function getEditedOptions(mealKey) {
     return arr;
 }
 
+function renderPlanV2(plan) {
+    const container = document.getElementById('plan-cards-container');
+    container.innerHTML = '';
+
+    // Uso Interno
+    if (plan.uso_interno_nutricionista) {
+        const notes = document.createElement('div');
+        notes.className = 'v2-internal-panel';
+        notes.innerHTML = `
+            <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: -3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Notas da Prescrição Clínica (Apenas Nutricionista)</h4>
+            <div class="v2-field-group">
+                <label>Racional Clínico & Metas</label>
+                <textarea class="v2-edit-input internal-txt" oninput="if(currentGeneratedPlan) currentGeneratedPlan.uso_interno_nutricionista.racional_clinico = this.value">${plan.uso_interno_nutricionista.racional_clinico || ''}</textarea>
+            </div>
+            ${plan.uso_interno_nutricionista.alertas_prescricao ? `
+            <div class="v2-field-group">
+                <label style="color: #D32F2F;">Restrições Mapeadas & Alertas (Risco Clínico)</label>
+                <div class="v2-alert-text">⚠️ ${plan.uso_interno_nutricionista.alertas_prescricao}</div>
+            </div>` : ''}
+        `;
+        container.appendChild(notes);
+    }
+
+    if (plan.orientacoes_paciente) {
+        const orient = document.createElement('div');
+        orient.className = 'v2-orientations-panel';
+        orient.innerHTML = `
+            <h4>🗣️ Orientações ao Paciente</h4>
+            <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.mensagem_motivacional = this.value">${plan.orientacoes_paciente.mensagem_motivacional || ''}</textarea>
+            <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.dicas_gerais = this.value" placeholder="Dicas de água, etc.">${plan.orientacoes_paciente.dicas_gerais || ''}</textarea>
+        `;
+        container.appendChild(orient);
+    }
+
+    if (!plan.refeicoes) return;
+
+    plan.refeicoes.forEach((ref, refIndex) => {
+        const card = document.createElement('div');
+        card.className = 'meal-card v2-meal-card';
+        
+        // Header
+        let html = `
+            <div class="v2-meal-header">
+                <input type="text" class="v2-edit-input v2-title-input" value="${ref.nome || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].nome = this.value">
+                <div class="v2-time-box">
+                    <span>⏰</span>
+                    <input type="text" class="v2-edit-input v2-time-input" value="${ref.horario_sugerido || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].horario_sugerido = this.value">
+                </div>
+            </div>
+        `;
+
+        if (ref.nota_clinica_refeicao) {
+            html += `<div class="v2-clinic-note">🔒 <strong>Foco:</strong> ${ref.nota_clinica_refeicao}</div>`;
+        }
+
+        if (ref.opcoes) {
+            html += `<div class="v2-options-container">`;
+            ref.opcoes.forEach((op, opIndex) => {
+                html += `
+                    <div class="v2-option">
+                        <div class="v2-option-title"><span>Opção ${op.ordem || (opIndex + 1)}:</span> <input type="text" class="v2-edit-input" style="flex:1" value="${op.titulo_opcao || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].opcoes[${opIndex}].titulo_opcao = this.value"></div>
+                `;
+
+                const makeEd = (val, field, isNum, rIdx, oIdx, iIdx, sIdx, placeholder = '') => {
+                    const v = escapeHtml(String(val ?? ''));
+                    const fArgs = `${rIdx}, ${oIdx}, ${iIdx !== null ? iIdx : 'null'}, ${sIdx !== null ? sIdx : 'null'}, '${field}', ${isNum}`;
+                    return `<span class="v2-edit-inline" contenteditable="true" spellcheck="false" data-placeholder="${placeholder}"
+                            oninput="handleV2InlineEdit(${fArgs}, event)"
+                            onblur="handleV2InlineEdit(${fArgs}, event)"
+                            onpaste="handleV2InlineEdit(${fArgs}, event)"
+                            onkeydown="handleV2InlineEdit(${fArgs}, event)">${v}</span>`;
+                };
+
+                if (op.itens && op.itens.length > 0) {
+                    html += `<div class="v2-items">`;
+                    op.itens.forEach((item, itemIndex) => {
+                        const qty = makeEd(item.quantidade, 'quantidade', true, refIndex, opIndex, itemIndex, null, '0');
+                        const un = makeEd(item.unidade, 'unidade', false, refIndex, opIndex, itemIndex, null, 'un');
+                        const al = makeEd(item.alimento, 'alimento', false, refIndex, opIndex, itemIndex, null, 'Alimento');
+                        const med = makeEd(item.medida_caseira, 'medida_caseira', false, refIndex, opIndex, itemIndex, null, 'medida');
+                        const obs = makeEd(item.observacao, 'observacao', false, refIndex, opIndex, itemIndex, null, 'obs');
+
+                        html += `
+                            <div class="v2-item-row">
+                                <span class="v2-bullet"></span>
+                                <div class="v2-item-content">
+                                    <div class="v2-item-main">
+                                        <strong>${qty} ${un}</strong> 
+                                        <strong>${al}</strong> 
+                                        <span class="v2-medida">( ${med} )</span>
+                                    </div>
+                                    <div class="v2-item-obs">${obs}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+
+                if (op.substituicoes && op.substituicoes.length > 0) {
+                    html += `<div class="v2-subs">
+                        <div class="v2-subs-title">🔄 Menu de Substituições Equivalentes:</div>
+                        <ul>`;
+                    op.substituicoes.forEach((sub, subIndex) => {
+                        const qty = makeEd(sub.quantidade, 'quantidade', true, refIndex, opIndex, null, subIndex, '0');
+                        const un = makeEd(sub.unidade, 'unidade', false, refIndex, opIndex, null, subIndex, 'un');
+                        const al = makeEd(sub.alimento_substituto, 'alimento_substituto', false, refIndex, opIndex, null, subIndex, 'Alimento');
+                        const med = makeEd(sub.medida_caseira, 'medida_caseira', false, refIndex, opIndex, null, subIndex, 'medida');
+                        const obs = makeEd(sub.observacao, 'observacao', false, refIndex, opIndex, null, subIndex, 'obs');
+
+                        html += `<li>Trocar por: <strong>${qty} ${un} de ${al}</strong> <span class="v2-medida">( ${med} )</span> <br><small class="v2-sub-obs">${obs}</small></li>`;
+                    });
+                    html += `</ul></div>`;
+                }
+
+                html += `</div>`; 
+            });
+            html += `</div>`; 
+        }
+        card.innerHTML = html;
+        container.appendChild(card);
+    });
+}
+
 function renderPlanHistory(planosArray) {
     const listContainer = document.getElementById('planos-list-container');
     if (!planosArray || planosArray.length === 0) {
-        listContainer.innerHTML = '<div class="empty-state">Nenhum plano alimentar gerado ainda</div>';
+        listContainer.innerHTML = `
+            <div class="empty-state" style="padding: 3rem 1rem;">
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhum plano alimentar gerado</h4>
+                <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 0 auto;">Gere o primeiro cardápio utilizando Inteligência Artificial com base na consulta recém-registrada.</p>
+            </div>
+        `;
         return;
     }
     
@@ -709,6 +1006,9 @@ function renderPlanHistory(planosArray) {
              const editorDiv = document.getElementById('plan-editor');
              const btnSalvar = document.getElementById('btn-salvar-plano');
              
+             // Atualiza a memória global para o Print Dialog enxergar o plano atual
+             currentGeneratedPlan = plano.conteudo;
+             
              editorDiv.classList.remove('hidden');
              
              // Oculta botão de salvar pq é apenas visualização do histórico
@@ -724,11 +1024,13 @@ function renderPlanHistory(planosArray) {
 
              renderEditablePlan(plano.conteudo);
              
-             // Desabilitar edição
-             document.querySelectorAll('.meal-option-input').forEach(i => {
+             // Desabilitar edição — cobre V1 (.meal-option-input), V2 (inputs, textareas) e contenteditable
+             editorDiv.querySelectorAll('input, textarea, [contenteditable]').forEach(i => {
                  i.readOnly = true;
+                 i.disabled = true;
                  i.style.border = 'none';
                  i.style.pointerEvents = 'none';
+                 i.removeAttribute('contenteditable');
              });
              
              editorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -738,3 +1040,53 @@ function renderPlanHistory(planosArray) {
     });
 }
 
+/* =======================================================
+   V2 INLINE EDIT HELPER — Edição Granular
+======================================================= */
+window.handleV2InlineEdit = function(refIdx, opIdx, itemIdx, subIdx, field, isNum, event) {
+    if (!currentGeneratedPlan) return;
+    const el = event.target;
+    let val = el.textContent;
+    
+    // Tratamento defensivo de paste (strip HTML)
+    if (event.type === 'paste') {
+        event.preventDefault();
+        const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text.replace(/[\r\n]+/g, ' '));
+        return;
+    }
+    
+    // Tratamento defensivo de quebra de linha
+    if (event.type === 'keydown' && event.key === 'Enter') {
+        event.preventDefault();
+        el.blur();
+        return;
+    }
+
+    // Localiza target na árvore JSON
+    let targetObj;
+    if (subIdx !== null) {
+        targetObj = currentGeneratedPlan.refeicoes[refIdx].opcoes[opIdx].substituicoes[subIdx];
+    } else {
+        targetObj = currentGeneratedPlan.refeicoes[refIdx].opcoes[opIdx].itens[itemIdx];
+    }
+
+    if (event.type === 'blur') {
+        if (isNum) {
+            val = val.replace(/,/g, '.').replace(/[^\d.]/g, '');
+            const num = parseFloat(val);
+            targetObj[field] = isNaN(num) ? null : num;
+            el.textContent = isNaN(num) ? '' : num;
+        } else {
+            targetObj[field] = val.trim() || null;
+            el.textContent = targetObj[field] || '';
+        }
+    } else if (event.type === 'input') {
+        if (isNum) {
+            const num = parseFloat(val.replace(/,/g, '.'));
+            targetObj[field] = isNaN(num) ? null : num;
+        } else {
+            targetObj[field] = val;
+        }
+    }
+};

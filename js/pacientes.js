@@ -31,6 +31,7 @@ async function loadPatientsList() {
                 objetivos,
                 consultas ( data_consulta )
             `)
+            .neq('is_demo', true)
             .order('nome', { ascending: true });
 
         if (error) throw error;
@@ -53,7 +54,13 @@ function renderPatients(patientsArray) {
     container.innerHTML = '';
 
     if (patientsArray.length === 0) {
-        container.innerHTML = '<div class="empty-state">Nenhum paciente cadastrado ainda.</div>';
+        container.innerHTML = `
+            <div class="empty-state" style="padding: 3rem 1rem;">
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhum paciente cadastrado</h4>
+                <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 1.5rem auto;">Seu consultório começa aqui. Comece registrando seu primeiro paciente para gerenciar anamneses e dietas.</p>
+                <a href="novo-paciente.html" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">✚ Cadastrar Paciente</a>
+            </div>
+        `;
         return;
     }
 

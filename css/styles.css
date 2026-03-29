@@ -1,18 +1,19 @@
-/* Variáveis globais baseadas em estética verde e branca minimalista */
+/* Variáveis globais — identidade ameixa profunda / off-white clínico */
 :root {
-    --primary-color: #2E7D32;
-    --primary-hover: #1B5E20;
-    --secondary-color: #81C784;
-    --bg-color: #F4F7F6;
+    --primary-color: #6A3E63;
+    --primary-hover: #55314F;
+    --secondary-color: #9B7094;
+    --bg-color: #FAF7F2;
     --card-bg: #FFFFFF;
-    --text-main: #1C2B20;
-    --text-muted: #6C7A71;
-    --border-color: #E2E8E4;
+    --text-main: #1F1720;
+    --text-muted: #5A5260;
+    --border-color: #E8E0E6;
+    --primary-light: #F3EAF1;
     --error-color: #D32F2F;
     --error-bg: #FDE8E8;
     
     --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 10px 25px rgba(28, 43, 32, 0.08);
+    --shadow-md: 0 10px 25px rgba(31, 23, 32, 0.08);
     --radius-lg: 16px;
     --radius-md: 8px;
     --transition: all 0.25s ease;
@@ -31,6 +32,9 @@ body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
 }
+
+/* Utilitários e Helpers */
+.hidden { display: none !important; }
 
 /* Utilitários - Auth */
 .auth-body {
@@ -77,7 +81,7 @@ body {
     font-weight: 700;
     font-size: 1.2rem;
     letter-spacing: -0.5px;
-    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+    box-shadow: 0 4px 10px rgba(106, 62, 99, 0.2);
 }
 
 h1 {
@@ -122,18 +126,18 @@ input, select, textarea {
     font-size: 1rem;
     color: var(--text-main);
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    background-color: #FAFCFB;
+    background-color: #FAF8F9;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+    box-shadow: 0 0 0 4px rgba(106, 62, 99, 0.1);
     background-color: var(--card-bg);
 }
 
 input::placeholder {
-    color: #A1AFA6;
+    color: #9A909A;
 }
 
 /* Botões */
@@ -157,13 +161,13 @@ input::placeholder {
     background-color: var(--primary-color);
     color: white;
     margin-top: 1rem;
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+    box-shadow: 0 4px 12px rgba(106, 62, 99, 0.2);
 }
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
+    box-shadow: 0 6px 15px rgba(106, 62, 99, 0.25);
 }
 
 .btn-primary:active {
@@ -171,7 +175,7 @@ input::placeholder {
 }
 
 .btn-primary:disabled {
-    background-color: #A5D6A7;
+    background-color: #C4A8BF;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
@@ -293,7 +297,7 @@ input::placeholder {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--primary-color);
-    background: var(--primary-color-light);
+    background: var(--primary-light);
     color: var(--primary-color);
     display: flex;
     align-items: center;
@@ -332,7 +336,7 @@ input::placeholder {
 }
 
 .nav-item:hover {
-    background-color: #F9FAFB;
+    background-color: #FAF8F9;
     color: var(--primary-color);
 }
 
@@ -342,7 +346,7 @@ input::placeholder {
 }
 
 .nav-item.active {
-    background-color: rgba(46, 125, 50, 0.08);
+    background-color: var(--primary-light);
     color: var(--primary-color);
     border-left: 3px solid var(--primary-color);
     border-radius: 0 var(--radius-md) var(--radius-md) 0;
@@ -391,7 +395,7 @@ input::placeholder {
     flex: 1;
     margin-left: 260px;
     padding: 2.5rem 3rem;
-    max-width: 1200px;
+    max-width: 1440px;
 }
 
 .main-header {
@@ -427,7 +431,34 @@ input::placeholder {
 .stat-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-4px);
-    border-color: rgba(46, 125, 50, 0.15);
+    border-color: rgba(106, 62, 99, 0.15);
+}
+
+.stat-card.stat-compact {
+    padding: 1.25rem 1.5rem;
+}
+
+.stat-icon.stat-icon-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+}
+
+.stat-value.stat-value-sm {
+    font-size: 2rem;
+    margin-bottom: 0.2rem;
+}
+
+.metrics-compact {
+    gap: 1.2rem;
+}
+
+.metrics-parallel {
+    margin-top: 1rem !important; /* Aproxima do banner no dashboard operacional / onboarding */
+}
+
+.metrics-parallel .stat-card {
+    padding: 1.25rem 1.5rem; /* Achata o padding das métricas para sobrar ar para o onboarding */
 }
 
 .card-full-col {
@@ -442,7 +473,7 @@ input::placeholder {
 }
 
 .stat-header h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-main);
 }
@@ -457,7 +488,7 @@ input::placeholder {
 }
 
 .bg-green-light {
-    background: #E8F5E9;
+    background: var(--primary-light);
     color: var(--primary-color);
 }
 .bg-blue-light {
@@ -497,14 +528,14 @@ input::placeholder {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     text-decoration: none;
-    background: #FAFCFB;
+    background: #FAF8F9;
     transition: var(--transition);
 }
 
 .patient-listItem:hover {
     border-color: var(--secondary-color);
     background: #FFFFFF;
-    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.05);
+    box-shadow: 0 4px 10px rgba(106, 62, 99, 0.05);
 }
 
 .patient-avatar {
@@ -528,7 +559,7 @@ input::placeholder {
 
 .empty-state {
     padding: 2rem;
-    background: #F9FAFB;
+    background: #FAF8F9;
     border: 1px dashed #D1D5DB;
     border-radius: var(--radius-md);
     text-align: center;
@@ -552,7 +583,7 @@ input::placeholder {
     .sidebar-title, .nav-item span, .btn-secondary {
         display: none;
     }
-    .btn-secondary { /* Transforma logo logout em icon? - Simplificando p/ ícone via css bg seria ideal, por enqt esconde o texto  */ }
+
     
     .main-content {
         margin-left: 80px;
@@ -662,6 +693,16 @@ input::placeholder {
     cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: var(--transition);
+    white-space: nowrap;
+}
+
+.main-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+}
+.main-tabs::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 
 .tab-btn:hover {
@@ -673,12 +714,12 @@ input::placeholder {
     border-bottom-color: var(--primary-color);
 }
 
-.tab-content {
+.tab-content, .main-tab-block, .sub-tab-block {
     display: none;
     animation: fadeIn 0.4s ease;
 }
 
-.tab-content.active {
+.tab-content.active, .main-tab-block.active, .sub-tab-block.active {
     display: block;
 }
 
@@ -723,7 +764,7 @@ input::placeholder {
     font-size: 0.9rem;
     color: var(--text-main);
     cursor: pointer;
-    background: #FAFCFB;
+    background: #FAF8F9;
     border: 1px solid var(--border-color);
     padding: 0.5rem 0.8rem;
     border-radius: var(--radius-md);
@@ -760,7 +801,7 @@ input::placeholder {
 .spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid rgba(46, 125, 50, 0.1);
+    border: 5px solid rgba(106, 62, 99, 0.1);
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -771,13 +812,13 @@ input::placeholder {
 }
 
 .meal-card {
-    background: #FAFCFB;
+    background: #FAF8F9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     overflow: hidden;
 }
 .meal-header {
-    background: rgba(46, 125, 50, 0.05);
+    background: rgba(106, 62, 99, 0.05);
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     font-weight: 600;
@@ -823,7 +864,7 @@ input::placeholder {
     background: #fff;
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    box-shadow: 0 0 0 3px rgba(106, 62, 99, 0.1);
 }
 .plan-history-item {
     cursor: pointer;
@@ -881,7 +922,7 @@ input::placeholder {
     height: 100px;
     border-radius: 50%;
     margin: 0 auto 1.5rem auto;
-    background: var(--primary-color-light);
+    background: var(--primary-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -902,7 +943,7 @@ input::placeholder {
     padding: 3.5rem 1.5rem;
     color: var(--text-muted);
     font-size: 0.95rem;
-    background: #FAFCFB;
+    background: #FAF8F9;
     border: 1px dashed var(--border-color);
     border-radius: var(--radius-md);
     display: flex;
@@ -913,7 +954,7 @@ input::placeholder {
 }
 
 .empty-state:hover {
-    border-color: rgba(46, 125, 50, 0.4);
+    border-color: rgba(106, 62, 99, 0.4);
     background: white;
 }
 
@@ -927,4 +968,192 @@ input::placeholder {
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0.6;
+}
+
+/* =======================================================
+   FASE 1: RENDER V2 ESTRUTURADO (JSON SCHEMA)
+======================================================= */
+.v2-internal-panel {
+    background: #FFFCE0;
+    border: 1px dashed #EED202;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.v2-internal-panel h4 { margin: 0 0 1rem 0; color: #B39A00; display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+.v2-field-group { margin-bottom: 1rem; }
+.v2-field-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #4A5568; margin-bottom: 0.3rem; }
+.v2-alert-text { background: rgba(211,47,47,0.05); color: #D32F2F; padding: 0.75rem; border-radius: 4px; font-size: 0.9rem; font-weight: 500; }
+.v2-edit-input { width: 100%; padding: 0.5rem; border: 1px solid transparent; border-radius: 4px; font-family: inherit; font-size: 0.95rem; background: transparent; transition: all 0.2s; color: var(--text-main); }
+.v2-edit-input:focus, .v2-edit-input:hover:not([readonly]) { border: 1px solid var(--border-color); background: #FFF; outline: none; }
+textarea.v2-edit-input { resize: vertical; min-height: 50px; line-height: 1.4; padding: 0.5rem; }
+textarea.internal-txt { min-height: 80px; }
+.v2-orientations-panel { background: #FAF8F9; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
+.v2-orientations-panel h4 { margin: 0 0 1rem 0; color: var(--primary-color); font-size: 1.1rem; }
+.v2-meal-card { margin-bottom: 2rem; padding: 1.5rem; }
+.v2-meal-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E2E8E4; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+.v2-title-input { font-size: 1.25rem; font-weight: 700; color: #1C2B20; font-family: 'Outfit', sans-serif; max-width: 50%; padding: 0; }
+.v2-time-box { display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--primary-color); }
+.v2-time-input { width: 60px; font-weight: 600; padding: 0; text-align: center; }
+.v2-clinic-note { background: #F4F7F5; font-size: 0.85rem; padding: 0.5rem 0.75rem; border-radius: 4px; color: #4A5568; margin-bottom: 1.5rem; display: inline-block; }
+.v2-options-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.v2-option { padding: 1rem; background: #FFF; border: 1px solid #E2E8E4; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.v2-option-title { display: flex; align-items: center; font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; gap: 8px; }
+.v2-option-title span { background: var(--primary-light); padding: 2px 8px; border-radius: 20px; font-size: 0.8rem; }
+.v2-items { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+.v2-item-row { display: flex; gap: 12px; }
+.v2-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary-color); margin-top: 6px; flex-shrink: 0; }
+.v2-item-content { flex: 1; }
+.v2-item-main { color: #1C2B20; font-size: 1rem; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+.v2-medida { color: #718096; font-size: 0.9rem; font-weight: normal; }
+.v2-item-obs { font-size: 0.85rem; color: #A0AEC0; margin-top: 2px; }
+.v2-subs { background: #FAF8F9; border-left: 3px solid var(--secondary-color); padding: 0.75rem 1rem; margin-top: 1rem; border-radius: 0 4px 4px 0; font-size: 0.9rem; }
+.v2-subs-title { font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem; }
+.v2-subs ul { margin: 0; padding-left: 1.25rem; color: #4A5568; list-style-type: disc; }
+.v2-subs li { margin-bottom: 0.25rem; }
+.v2-sub-obs { color: #718096; }
+
+/* =======================================================
+   FASE 2: EXPORT POLISH (PRINT PDF COMPATIBILITY)
+======================================================= */
+
+/* =======================================================
+   V2 INLINE EDIT (BUG-03)
+======================================================= */
+.v2-edit-inline {
+    border-bottom: 1px dashed rgba(106, 62, 99, 0.15);
+    border-radius: 2px;
+    padding: 0 2px;
+    margin: 0 1px;
+    transition: background 0.2s, border-color 0.2s;
+    outline: none;
+    cursor: text;
+}
+
+.v2-edit-inline:hover {
+    background: rgba(106, 62, 99, 0.05);
+    border-bottom-color: rgba(106, 62, 99, 0.3);
+}
+
+.v2-edit-inline:focus {
+    background: #fff;
+    border-bottom-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.v2-edit-inline:empty::before {
+    content: attr(data-placeholder);
+    color: #cbd5e1;
+    pointer-events: none;
+    font-style: italic;
+}
+
+@media screen {
+    .print-only { display: none !important; }
+}
+
+@media print {
+    /* Hide the entire standard app UI */
+    body * { visibility: hidden; }
+    
+    /* Make the print layer the absolute sovereign */
+    #print-layer, #print-layer * { visibility: visible; }
+    #print-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: white;
+        display: block !important;
+    }
+    
+    /* Force background colors on print natively */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    
+    @page { 
+        size: A4; 
+        margin: 15mm 20mm; 
+    }
+    
+    /* Elegant Typography & Layout */
+    .print-header { 
+        text-align: center; 
+        margin-bottom: 2.5rem; 
+        border-bottom: 2px solid #6A3E63; 
+        padding-bottom: 1.5rem; 
+    }
+    .print-header h1 { color: #1C2B20; font-size: 22pt; margin: 0 0 6px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
+    .print-header h2 { color: #9B7094; font-size: 14pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+    .print-motivational {
+        background: #F3EAF1 !important;
+        border-left: 4px solid #9B7094 !important;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+        font-size: 11pt;
+        color: #2D3748;
+        border-radius: 4px;
+    }
+
+    .print-meal-card {
+        page-break-inside: avoid;
+        margin-bottom: 2.5rem;
+        border: 1px solid #E8E0E6;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+
+    .print-meal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 2px solid #F3EAF1;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .print-meal-title { font-size: 16pt; font-weight: 700; color: #1C2B20; }
+    .print-meal-time { font-size: 12pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 4px 12px; border-radius: 20px; }
+    
+    .print-option {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px dashed #E8E0E6;
+    }
+    .print-option:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+    .print-option-title { font-size: 12pt; font-weight: 700; color: #6A3E63; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .print-op-badge { background: #6A3E63 !important; color: white !important; font-size: 10pt; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+    
+    ul.print-items { list-style: none; padding: 0; margin: 0; }
+    ul.print-items li { margin-bottom: 0.6rem; font-size: 11pt; line-height: 1.4; color: #1A202C; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+    
+    .print-bullet { display: inline-block; width: 6px; height: 6px; background: #9B7094; border-radius: 50%; margin-right: 6px; flex-shrink: 0; margin-top: 8px; }
+    .print-medida { color: #718096; font-size: 10pt; font-weight: normal; }
+    .print-obs { color: #A0AEC0; font-size: 9.5pt; font-style: italic; width: 100%; padding-left: 20px; }
+    
+    .print-subs {
+        margin-top: 1rem;
+        background: #FAFAFA !important;
+        padding: 1rem;
+        border-left: 3px solid #9B7094 !important;
+        border-radius: 0 4px 4px 0;
+        font-size: 10pt;
+        page-break-inside: avoid;
+    }
+    .print-subs-title { font-weight: 700; color: #6A3E63; margin-bottom: 0.5rem; }
+    ul.print-subs-list { padding-left: 1.5rem; margin: 0; }
+    ul.print-subs-list li { margin-bottom: 0.4rem; color: #4A5568; }
+    
+    .print-footer {
+        margin-top: 3rem;
+        text-align: center;
+        font-size: 9pt;
+        color: #A0AEC0;
+        border-top: 1px solid #E8E0E6;
+        padding-top: 1rem;
+        page-break-inside: avoid;
+    }
 }

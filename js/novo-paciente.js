@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alertEl.textContent = message;
         // Se sucesso usamos cor diferente
         if (type === 'success') {
-            alertEl.style.backgroundColor = '#E8F5E9';
+            alertEl.style.backgroundColor = '#F3EAF1';
             alertEl.style.color = 'var(--primary-color)';
             alertEl.style.borderColor = 'var(--secondary-color)';
         } else {

@@ -6,38 +6,86 @@ export default async function handler(req, res) {
     try {
         const payload = req.body;
         
-        // Formatar o array ou strings para exibição clara no prompt
         const parseArray = (arr) => Array.isArray(arr) ? arr.join(', ') : (arr || 'Nenhum');
 
-        const promptText = `Você é um assistente especializado em nutrição. Com base nos dados do paciente abaixo, gere um plano alimentar semanal completo e personalizado.
+        const promptText = `Você é um Assistente Clínico de Nutrição ultra-rigoroso. Com base no perfil abaixo, crie um plano alimentar.
 
-Dados do paciente:
+PERFIL DO PACIENTE:
 - Nome: ${payload.nome || 'Não informado'}
 - Idade: ${payload.idade || 'Não informada'}
 - Peso: ${payload.peso || 'Não informado'}kg
 - Altura: ${payload.altura || 'Não informada'}cm
 - IMC: ${payload.imc || 'Não informado'}
 - Objetivo: ${parseArray(payload.objetivos)} ${payload.objetivo_texto ? `(${payload.objetivo_texto})` : ''}
-- Nível de atividade física: ${payload.nivel_atividade || 'Não informado'}
-- Patologias: ${parseArray(payload.patologias)}
-- Restrições alimentares: ${parseArray(payload.restricoes_alimentares)}
+- Nível de Atividade Física: ${payload.nivel_atividade || 'Não informado'}
+- Patologias (CUIDADO EXTREMO): ${parseArray(payload.patologias)}
+- Restrições Alimentares: ${parseArray(payload.restricoes_alimentares)}
 - Alergias: ${parseArray(payload.alergias)}
-- Refeições por dia: ${payload.refeicoes_por_dia || 'Não informado'}
-- Horário que acorda: ${payload.horario_acorda || 'Não informado'}
-- Horário que dorme: ${payload.horario_dorme || 'Não informado'}
-- Suplementos em uso: ${payload.suplementos || 'Nenhum'}
+- Refeições Solicitadas: ${payload.refeicoes_por_dia || 'Café da manhã, Lanche, Almoço, Lanche da Tarde, Jantar'}
+- Acorda: ${payload.horario_acorda || 'Não informado'} | Dorme: ${payload.horario_dorme || 'Não informado'}
+- Suplementos Tatuais: ${payload.suplementos || 'Nenhum'}
 
-Para cada uma das 5 refeições abaixo, gere exatamente 5 opções de refeição. As opções devem respeitar todas as restrições, alergias e o objetivo do paciente.
+DIRETRIZES DE OUTPUT (OBRIGATÓRIO):
+1. Retorne EXATAMENTE e APENAS no formato JSON especificado.
+2. Use "schema_version": "2.0".
+3. Os identificadores técnicos (id_refeicao, id_opcao, id_item, referencia_item_id) devem ser gerados como strings curtas e técnicas (ex: "ref_1", "op_1_1", "item_1_1_1").
+4. "uso_interno_nutricionista": Resumo do racional clínico para a profissional ler.
+5. "orientacoes_paciente": Dicas simples, motivacionais ou metas de água.
+6. A propriedade "refeicoes" deve ser um Array com objetos. Tente gerar de 4 a 6 refeições lógicas baseadas na hora que acorda/dorme.
+7. Para cada "refeicao", crie 1 a 3 "opcoes" de pratos/kits.
+8. Para cada "opcao", a chave "itens" é um array onde cada alimento TEM que ter seu próprio objeto.
+9. PRECISÃO: Use "quantidade" (Number) e "unidade" (String: "g", "ml", "unidade") estritamente.
+10. Se algo não for aplicável (ex: observacao de item, ou substituicoes de um item), envie "null" e nunca invente um texto genérico.
+11. "substituicoes": Array Opcional de objetos apontando para o "referencia_item_id". Devem ser equivalentes em calorias/macros.
+12. FOCO BRASIL: Arroz, feijão, tapioca, mandioca, pães simples, carnes acessíveis. Nada de salmão silvestre todo dia, foque na realidade. Respeite as patologias cegamente.
 
-Refeições: Café da manhã, Lanche da manhã, Almoço, Lanche da tarde, Jantar.
-
-Retorne APENAS um JSON válido, sem texto adicional, neste formato exato:
+FORMATO JSON EXIGIDO:
 {
-  "cafe_da_manha": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"],
-  "lanche_da_manha": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"],
-  "almoco": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"],
-  "lanche_da_tarde": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"],
-  "jantar": ["opção 1", "opção 2", "opção 3", "opção 4", "opção 5"]
+  "schema_version": "2.0",
+  "uso_interno_nutricionista": {
+    "racional_clinico": "...",
+    "alertas_prescricao": "..."
+  },
+  "orientacoes_paciente": {
+    "mensagem_motivacional": "...",
+    "dicas_gerais": "..."
+  },
+  "refeicoes": [
+    {
+      "id_refeicao": "r_1",
+      "ordem": 1,
+      "nome": "Café da Manhã",
+      "horario_sugerido": "08:00",
+      "nota_clinica_refeicao": "...",
+      "opcoes": [
+        {
+          "id_opcao": "op_1_1",
+          "ordem": 1,
+          "titulo_opcao": "Ovos com Tapioca",
+          "itens": [
+            {
+              "id_item": "i_1",
+              "alimento": "Ovo",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "2 unidades",
+              "observacao": "mexidos"
+            }
+          ],
+          "substituicoes": [
+            {
+              "referencia_item_id": "i_1",
+              "alimento_substituto": "Frango desfiado",
+              "quantidade": 80,
+              "unidade": "g",
+              "medida_caseira": "3 colheres",
+              "observacao": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }`;
 
         // Chamada à API da OpenAI (GPT-4o)
@@ -54,7 +102,7 @@ Retorne APENAS um JSON válido, sem texto adicional, neste formato exato:
                 messages: [
                     { 
                         role: 'system', 
-                        content: "Você é um nutricionista estrito. O retorno MÁXIMO e ÚNICO que você fará é um JSON válido. Não adicione saudações ou explicações. Siga EXATAMENTE as chaves solicitadas."
+                        content: "Você é um Nutricionista Sênior. Você retorna APENAS um objeto JSON limpo e estruturado. Nunca use markdown array, use chaves rigidamente."
                     },
                     { 
                         role: 'user', 

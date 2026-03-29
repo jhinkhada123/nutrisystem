@@ -1,0 +1,5 @@
+380d125 feat: reorganizacao da ficha de paciente e acoplamento de metricas paralelas no dashboard
+30f846e chore: applied final premium aesthetic and ui polish
+95a8766 style: premium layout upgrades and gpt-4o-mini migration
+76e8212 fix(auth): implementa trigger de banco para criação do perfil
+4451b3f feat: sistema completo NutriSystem v1.0

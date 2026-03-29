@@ -160,7 +160,7 @@ async function initProfileAvatar() {
     
     // Obter URL do avatar salva nos metadados ou criar fallback
     const user = session.user;
-    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata.full_name || 'NS')}&background=E8F5E9&color=2E7D32&bold=true`;
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata.full_name || 'NF')}&background=F3EAF1&color=6A3E63&bold=true`;
     let currentAvatarUrl = user.user_metadata.avatar_url || fallbackUrl;
 
     // 1. Atualizar a Sidebar Header dinamicamente
@@ -168,7 +168,7 @@ async function initProfileAvatar() {
     if (sidebarHeader) {
         sidebarHeader.innerHTML = `
             <img id="sidebar-avatar" class="logo-icon-sm" src="${currentAvatarUrl}" alt="Avatar">
-            <h1 class="sidebar-title" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${user.user_metadata.full_name || 'NutriSystem'}">${user.user_metadata.full_name || 'NutriSystem'}</h1>
+            <h1 class="sidebar-title" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${user.user_metadata.full_name || 'NutriFlow'}">${user.user_metadata.full_name || 'NutriFlow'}</h1>
         `;
         
         // 2. Injetar o Modal de Perfil no DOM de forma elegante
@@ -179,18 +179,16 @@ async function initProfileAvatar() {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     </button>
                     <h3>Minha Conta</h3>
-                    <p style="margin-bottom: 1.5rem;">Crie sua marca! Atualize a foto do seu menu lateral.</p>
+                    <p style="margin-bottom: 1.5rem;">Personalize seu perfil com uma foto do seu dispositivo.</p>
                     
-                    <div class="avatar-preview-container">
-                        <img id="modal-avatar-preview" src="${currentAvatarUrl}" alt="Sua foto">
+                    <div class="avatar-preview-container" id="avatar-upload-trigger" style="cursor: pointer; transition: opacity 0.2s ease;">
+                        <img id="modal-avatar-preview" src="${currentAvatarUrl}" alt="Sua foto" style="transition: opacity 0.2s ease;">
                     </div>
+                    <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0.75rem 0 1.5rem 0;">Clique na foto para alterar</p>
                     
-                    <div class="input-group" style="text-align: left; margin-bottom: 1.5rem;">
-                        <label style="color: var(--text-main); font-weight: 500;">Link (URL) da imagem:</label>
-                        <input type="url" id="avatar-url-input" placeholder="Cole o link da foto de uma rede social..." value="${user.user_metadata.avatar_url || ''}">
-                    </div>
-                    
-                    <button id="btn-save-avatar" class="btn btn-primary" style="margin-top: 0; padding: 0.95rem;">Aplicar Foto</button>
+                    <button id="btn-save-avatar" class="btn btn-primary" style="margin-top: 0; padding: 0.95rem;" disabled>Aplicar Foto</button>
+                    ${user.user_metadata.avatar_url ? '<button id="btn-remove-avatar" style="margin-top: 0.75rem; background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Remover foto</button>' : ''}
                 </div>
             </div>
         `;
@@ -201,52 +199,98 @@ async function initProfileAvatar() {
             document.getElementById('profile-modal-overlay').classList.remove('hidden');
         });
         
-        // Clicar no botão voltar/fechar
         document.getElementById('close-profile-modal').addEventListener('click', () => {
             document.getElementById('profile-modal-overlay').classList.add('hidden');
         });
 
-        // Fechar clicando fora (no overlay escuro)
         document.getElementById('profile-modal-overlay').addEventListener('click', (e) => {
             if(e.target.id === 'profile-modal-overlay') e.target.classList.add('hidden');
         });
 
-        // Evento de Super Update no Supabase Auth
+        // File Upload: trigger input ao clicar no avatar
+        let pendingAvatarData = null;
+        
+        document.getElementById('avatar-upload-trigger').addEventListener('click', () => {
+            document.getElementById('avatar-file-input').click();
+        });
+
+        document.getElementById('avatar-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Redimensionar automaticamente para avatar (256x256, JPEG comprimido)
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const size = 256;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // Crop centralizado (quadrado)
+                const minDim = Math.min(img.width, img.height);
+                const sx = (img.width - minDim) / 2;
+                const sy = (img.height - minDim) / 2;
+                
+                ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+                pendingAvatarData = canvas.toDataURL('image/jpeg', 0.8);
+                document.getElementById('modal-avatar-preview').src = pendingAvatarData;
+                document.getElementById('btn-save-avatar').disabled = false;
+            };
+            img.src = URL.createObjectURL(file);
+        });
+
+        // Evento de salvar avatar
         document.getElementById('btn-save-avatar').addEventListener('click', async () => {
             const btn = document.getElementById('btn-save-avatar');
-            const newUrl = document.getElementById('avatar-url-input').value.trim();
+            if (!pendingAvatarData) return;
             
             btn.disabled = true;
-            btn.textContent = 'Aplicando magia...';
+            btn.textContent = 'Salvando...';
             
             try {
-                // Atualiza exclusivamento os User_MetaData da autenticação atual (sem mexer na row original)
                 const { error } = await supabaseClient.auth.updateUser({
-                    data: { avatar_url: newUrl }
+                    data: { avatar_url: pendingAvatarData }
                 });
                 
                 if (error) throw error;
                 
-                // Muta as props visuais
-                const finalUrl = newUrl || fallbackUrl;
-                document.getElementById('sidebar-avatar').src = finalUrl;
-                document.getElementById('modal-avatar-preview').src = finalUrl;
+                document.getElementById('sidebar-avatar').src = pendingAvatarData;
                 
-                // Feedback visual do botão estilo Cinematic
                 btn.textContent = 'Foto Salva! ✨';
                 btn.style.backgroundColor = 'var(--secondary-color)';
+                pendingAvatarData = null;
+                
                 setTimeout(() => {
                     document.getElementById('profile-modal-overlay').classList.add('hidden');
                     btn.textContent = 'Aplicar Foto';
                     btn.style.backgroundColor = '';
+                    btn.disabled = true;
                 }, 1300);
                 
             } catch (err) {
                 console.error(err);
-                alert("Erro ao validar foto: " + err.message);
+                alert("Erro ao salvar foto: " + err.message);
                 btn.disabled = false;
                 btn.textContent = 'Aplicar Foto';
             }
         });
+
+        // Evento de remover avatar
+        const btnRemoveAvatar = document.getElementById('btn-remove-avatar');
+        if (btnRemoveAvatar) {
+            btnRemoveAvatar.addEventListener('click', async () => {
+                try {
+                    await supabaseClient.auth.updateUser({ data: { avatar_url: null } });
+                    document.getElementById('sidebar-avatar').src = fallbackUrl;
+                    document.getElementById('modal-avatar-preview').src = fallbackUrl;
+                    pendingAvatarData = null;
+                    document.getElementById('btn-save-avatar').disabled = true;
+                    btnRemoveAvatar.remove();
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        }
     }
 }
