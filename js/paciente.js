@@ -785,8 +785,17 @@ function setupModal() {
         btnSave.disabled = true;
         btnSave.textContent = 'Gravando...';
 
-        const cData = document.getElementById('cons_data').value;
-        const cRetorno = document.getElementById('cons_retorno').value;
+        // Helper para converter "dd/mm/aaaa" (Flatpickr) -> "aaaa-mm-dd" (Database)
+        const parseFpDate = (id) => {
+            const val = document.getElementById(id).value;
+            if (!val) return null;
+            const pts = val.split('/');
+            if (pts.length !== 3) return val; 
+            return `${pts[2]}-${pts[1]}-${pts[0]}`;
+        };
+
+        const cData = parseFpDate('cons_data');
+        const cRetorno = parseFpDate('cons_retorno');
         
         // Helper para converter "70,5" -> 70.5
         const parseValue = (id) => {
