@@ -235,7 +235,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const aExtra = document.getElementById('alergias_extra').value.trim();
             if(aExtra) payload.alergias.push(aExtra);
 
-            // POST no Banco
+            // POST no Banco — Verificação de duplicados antes de inserir
+            const checkNome = payload.nome;
+            const checkTel = payload.telefone.replace(/\D/g, '');
+            const checkEmail = payload.email;
+
+            let orFilters = [];
+            if (checkNome) orFilters.push(`nome.ilike.%${checkNome}%`);
+            if (checkTel.length >= 8) orFilters.push(`telefone.ilike.%${checkTel.slice(-8)}%`);
+            if (checkEmail) orFilters.push(`email.eq.${checkEmail}`);
+
+            if (orFilters.length > 0) {
+                const { data: possibleDups } = await supabaseClient
+                    .from('pacientes')
+                    .select('id, nome, telefone, email')
+                    .or(orFilters.join(','))
+                    .limit(3);
+
+                if (possibleDups && possibleDups.length > 0) {
+                    const dupNames = possibleDups.map(d => `• ${d.nome}`).join('\n');
+                    const shouldContinue = confirm(
+                        `Já existe(m) paciente(s) com dados semelhantes:\n\n${dupNames}\n\nDeseja continuar o cadastro mesmo assim?`
+                    );
+                    if (!shouldContinue) {
+                        btnSave.disabled = false;
+                        btnSave.innerHTML = 'Salvar Paciente';
+                        return;
+                    }
+                }
+            }
+
             const { data, error } = await supabaseClient
                 .from('pacientes')
                 .insert([payload])

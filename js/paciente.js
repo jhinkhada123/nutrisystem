@@ -2,6 +2,15 @@
 
 let currentPatientId = null;
 let chartInstance = null;
+let hasUnsavedChanges = false;
+
+// Guarda contra perda de alterações não salvas
+window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     // Pegar ID da URL
@@ -31,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateForm = document.getElementById('form-edicao-paciente');
     if (updateForm) {
         updateForm.addEventListener('submit', handleUpdatePatient);
+        // Detectar alterações no formulário
+        updateForm.addEventListener('input', () => { hasUnsavedChanges = true; });
+        updateForm.addEventListener('change', () => { hasUnsavedChanges = true; });
     }
 
     // Eventos Logomarca In-line (PDF)
@@ -361,6 +373,7 @@ async function handleUpdatePatient(e) {
 
         if (error) throw error;
         
+        hasUnsavedChanges = false;
         showAlert('Alterações salvas com sucesso!', 'success');
         document.getElementById('paciente-nome-header').textContent = payload.nome;
 
@@ -548,11 +561,9 @@ function setupModal() {
             const { error } = await supabaseClient.from('consultas').insert([payload]);
             if (error) throw error;
             
-            // Recarrega paciente pra pegar a nova query sem mt fardo
             closeModal();
             loadPatientProfile();
-            
-            // Sucesso opcional toast
+            showAlert('Consulta registrada com sucesso!', 'success');
         } catch (err) {
             console.error(err);
             alert("Erro ao salvar consulta: " + err.message);
