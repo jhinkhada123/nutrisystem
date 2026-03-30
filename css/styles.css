@@ -1141,9 +1141,9 @@ textarea.internal-txt { min-height: 80px; }
     /* Elegant Typography & Layout */
     .print-header { 
         text-align: center; 
-        margin-bottom: 2.5rem; 
+        margin-bottom: 1.5rem; 
         border-bottom: 2px solid #6A3E63; 
-        padding-bottom: 1.5rem; 
+        padding-bottom: 1rem; 
     }
     .print-header h1 { color: #1C2B20; font-size: 22pt; margin: 0 0 6px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
     .print-header h2 { color: #9B7094; font-size: 14pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
@@ -1152,15 +1152,24 @@ textarea.internal-txt { min-height: 80px; }
         background: #F3EAF1 !important;
         border-left: 4px solid #9B7094 !important;
         padding: 1.5rem;
-        margin-bottom: 3rem;
+        margin-bottom: 1.5rem;
         font-size: 11pt;
         color: #2D3748;
         border-radius: 4px;
     }
 
+    .print-meals-container {
+        column-count: 2;
+        column-gap: 1.5rem;
+    }
+
     .print-meal-card {
         page-break-inside: avoid;
-        margin-bottom: 2.5rem;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 1.5rem;
         border: 1px solid #E8E0E6;
         border-radius: 8px;
         padding: 1.5rem;
@@ -1171,16 +1180,16 @@ textarea.internal-txt { min-height: 80px; }
         justify-content: space-between;
         align-items: baseline;
         border-bottom: 2px solid #F3EAF1;
-        padding-bottom: 0.75rem;
-        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     .print-meal-title { font-size: 16pt; font-weight: 700; color: #1C2B20; }
     .print-meal-time { font-size: 12pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 4px 12px; border-radius: 20px; }
     
     .print-option {
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
         border-bottom: 1px dashed #E8E0E6;
     }
     .print-option:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
@@ -1209,7 +1218,7 @@ textarea.internal-txt { min-height: 80px; }
     ul.print-subs-list li { margin-bottom: 0.4rem; color: #4A5568; }
     
     .print-footer {
-        margin-top: 3rem;
+        margin-top: 1.5rem;
         text-align: center;
         font-size: 9pt;
         color: #A0AEC0;

@@ -701,6 +701,7 @@ function handlePrintPlan() {
 
     // Refeições (nota_clinica_refeicao EXCLUÍDA por arquitetura)
     if (plan.refeicoes) {
+        html += `<div class="print-meals-container">`;
         plan.refeicoes.forEach(ref => {
             html += `<div class="print-meal-card">`;
             html += `<div class="print-meal-header">
@@ -743,6 +744,7 @@ function handlePrintPlan() {
 
             html += `</div>`;
         });
+        html += `</div>`;
     }
 
     // Footer
