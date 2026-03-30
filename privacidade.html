@@ -8,81 +8,213 @@
     <link rel="stylesheet" href="css/styles.css">
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .privacy-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 28, 25, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 2rem;
+            animation: privFadeIn 0.3s ease;
+        }
+
+        @keyframes privFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes privCardIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .privacy-card {
+            background: #fff;
+            width: 100%;
+            max-width: 680px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem 3rem;
+            line-height: 1.65;
+            color: var(--text-main);
+            animation: privCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .privacy-card::-webkit-scrollbar {
+            width: 5px;
+        }
+        .privacy-card::-webkit-scrollbar-thumb {
+            background: #E0D5DD;
+            border-radius: 10px;
+        }
+
+        .privacy-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F0F4;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            z-index: 2;
+        }
+        .privacy-close:hover {
+            background: #EBE3E9;
+            color: var(--primary-color);
+        }
+
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .privacy-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 0.35rem 0;
+        }
+        .privacy-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .privacy-section h3 {
+            color: var(--primary-color);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.75rem 0 0.6rem 0;
+        }
+        .privacy-section h3:first-child {
+            margin-top: 0;
+        }
+        .privacy-section p {
+            font-size: 0.92rem;
+            margin: 0 0 0.5rem 0;
+            color: #444;
+        }
+
+        .privacy-shield {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #F5EFF4;
+            margin: 0 auto 1rem auto;
+        }
+
+        /* Responsivo */
+        @media (max-width: 640px) {
+            .privacy-overlay { padding: 1rem; }
+            .privacy-card { padding: 1.75rem 1.5rem; border-radius: 16px; max-height: 90vh; }
+        }
+
+        /* Esconde sidebar e main original */
+        .sidebar, .main-content { display: none !important; }
+    </style>
 </head>
 <body class="dashboard-body">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-icon logo-icon-sm">NF</div>
-            <h1 class="sidebar-title">NutriFlow</h1>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                Dashboard
-            </a>
-            <a href="pacientes.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Pacientes
-            </a>
-        </nav>
-        <div style="padding: 0 1rem; margin-bottom: 0.5rem;">
-            <a href="configuracoes.html" class="nav-item" style="margin: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Configurações
-            </a>
-        </div>
-        <div class="sidebar-footer" style="margin-top: auto; padding: 1.5rem 1rem 1rem 1rem; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 1rem;">
-            <button id="btn-logout" class="btn btn-secondary btn-sm" style="width: 100%;">Sair da conta</button>
-            <div style="text-align: center;">
-                <a href="privacidade.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-muted)'">Privacidade e uso de dados</a>
-            </div>
-        </div>
-    </aside>
 
-    <!-- Área Principal -->
-    <main class="main-content">
-        <header class="main-header" style="margin-bottom: 2.5rem;">
-            <div>
+    <!-- Overlay Modal de Privacidade -->
+    <div class="privacy-overlay" id="privacy-overlay">
+        <div class="privacy-card">
+            <button class="privacy-close" id="btn-privacy-close" title="Fechar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="privacy-header">
+                <div class="privacy-shield">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
                 <h2>Privacidade e Uso de Dados</h2>
-                <p class="subtitle" style="margin-bottom: 0;">Como tratamos as informações no NutriFlow Beta</p>
+                <p>Como tratamos as informações no NutriFlow Beta</p>
             </div>
-        </header>
 
-        <div style="background: var(--card-bg); padding: 3rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); max-width: 800px; line-height: 1.6; color: var(--text-main);">
-            
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">O Sistema NutriFlow</h3>
-            <p style="margin-bottom: 2rem;">
-                O NutriFlow é uma ferramenta de apoio gerencial e clínico para nutricionistas. Atualmente, a plataforma encontra-se em fase beta. Nosso objetivo é oferecer um ambiente estável e profissional, onde os dados inseridos são tratados com absoluta seriedade e respeito à confidencialidade requerida pela prática clínica.
-            </p>
+            <div class="privacy-section">
+                <h3>O Sistema NutriFlow</h3>
+                <p>
+                    O NutriFlow é uma ferramenta de apoio gerencial e clínico para nutricionistas. Atualmente, a plataforma encontra-se em fase beta. Nosso objetivo é oferecer um ambiente estável e profissional, onde os dados inseridos são tratados com absoluta seriedade e respeito à confidencialidade requerida pela prática clínica.
+                </p>
 
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Separação de Dados (Demo vs. Uso Real)</h3>
-            <p style="margin-bottom: 2rem;">
-                Compreendemos a importância de dominar uma ferramenta antes de empregá-la em consultório. Para isso, o sistema oferece um <strong>ambiente de demonstração</strong> com dados estritamente fictícios para sua exploração.<br><br>
-                Quando você inicia o trabalho com pacientes reais as informações submetidas são isoladas de forma segura, mantendo vínculo intransferível com a sua conta de acesso profissional.
-            </p>
+                <h3>Separação de Dados (Demo vs. Uso Real)</h3>
+                <p>
+                    Compreendemos a importância de dominar uma ferramenta antes de empregá-la em consultório. Para isso, o sistema oferece um <strong>paciente de demonstração</strong> com dados estritamente fictícios para sua exploração.
+                </p>
+                <p>
+                    Quando você inicia o trabalho com pacientes reais, as informações submetidas são isoladas de forma segura, mantendo vínculo intransferível com a sua conta de acesso profissional.
+                </p>
 
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Sua Responsabilidade como Profissional</h3>
-            <p style="margin-bottom: 2rem;">
-                O NutriFlow atua exclusivamente como software de suporte. Ele não estabelece contato direto com os pacientes. Todas as informações clínicas e pessoais geridas na plataforma derivam da sua relação profissional e confiança com seu paciente.<br><br>
-                Ao registrar informações no sistema, confirmamos que esse procedimento ocorre sob o escopo e contexto do seu atendimento nutricional presencial ou remoto.
-            </p>
+                <h3>Sua Responsabilidade como Profissional</h3>
+                <p>
+                    O NutriFlow atua exclusivamente como software de suporte. Ele não estabelece contato direto com os pacientes. Todas as informações clínicas e pessoais geridas na plataforma derivam da sua relação profissional e confiança com seu paciente.
+                </p>
+                <p>
+                    Ao registrar informações no sistema, confirmamos que esse procedimento ocorre sob o escopo e contexto do seu atendimento nutricional presencial ou remoto.
+                </p>
 
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Guarda dos Dados</h3>
-            <p style="margin-bottom: 2rem;">
-                Cada prontuário é acessível unicamente pelos seus credenciais. Nenhum dado sensível é vendido, alugado, tornado público ou compartilhado com terceiros em hipótese alguma. Todo tráfego entre a sua tela e a base de dados é protegido por canais criptografados padrão da indústria. Orientamos que você mantenha sua conta protegida não compartilhando suas senhas.
-            </p>
+                <h3>Guarda dos Dados</h3>
+                <p>
+                    Cada prontuário é acessível unicamente pelas suas credenciais. Nenhum dado sensível é vendido, alugado, tornado público ou compartilhado com terceiros em hipótese alguma. Todo tráfego entre a sua tela e a base de dados é protegido por canais criptografados padrão da indústria. Orientamos que você mantenha sua conta protegida não compartilhando suas senhas.
+                </p>
 
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Contato e Evolução</h3>
-            <p style="margin-bottom: 0;">
-                O desenvolvimento contínuo da nossa fase beta prioriza tanto a inovação com IA quanto a segurança do usuário. Se tiver questionamentos específicos sobre tratamento de informações ou suporte geral para sua conta, a nossa equipe está disponível nos nossos canais de contato direto ao profissional.
-            </p>
-
+                <h3>Contato e Evolução</h3>
+                <p>
+                    O desenvolvimento contínuo da nossa fase beta prioriza tanto a inovação com IA quanto a segurança do usuário. Se tiver questionamentos específicos sobre tratamento de informações ou suporte geral para sua conta, a nossa equipe está disponível nos nossos canais de contato direto ao profissional.
+                </p>
+            </div>
         </div>
-    </main>
+    </div>
 
     <!-- Scripts -->
     <script src="js/supabase-client.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Fechar = voltar para a página anterior
+        document.getElementById('btn-privacy-close').addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // ESC para fechar
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('btn-privacy-close').click();
+            }
+        });
+
+        // Clicar fora do card para fechar
+        document.getElementById('privacy-overlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('btn-privacy-close').click();
+            }
+        });
+    </script>
 </body>
 </html>
