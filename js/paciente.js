@@ -924,7 +924,7 @@ async function handlePrintPlan() {
         font-size: 10pt;
     }
 
-    @page { size: A4; margin: 14mm 20mm; }
+    @page { size: A4; margin: 8mm 20mm 14mm 20mm; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
     /* ─── Header ─── */
