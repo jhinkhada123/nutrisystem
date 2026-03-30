@@ -12,6 +12,56 @@ const escapeHTML = (str) => {
     return div.innerHTML;
 };
 
+/**
+ * Exibe um Card de Confirmação customizado (Premium)
+ * substitui o confirm() nativo do navegador.
+ * @returns {Promise<boolean>}
+ */
+window.showCustomConfirm = (title, message) => {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const titleEl = document.getElementById('confirm-title');
+        const msgEl = document.getElementById('confirm-message');
+        const btnOk = document.getElementById('btn-confirm-ok');
+        const btnCancel = document.getElementById('btn-confirm-cancel');
+
+        if (!modal || !btnOk || !btnCancel) {
+            resolve(confirm(message)); // Fallback seguro
+            return;
+        }
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        
+        // Trigger de animação
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('.confirm-card').style.transform = 'translateY(0)';
+        }, 10);
+
+        const close = (result) => {
+            modal.style.opacity = '0';
+            modal.querySelector('.confirm-card').style.transform = 'translateY(15px)';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+                resolve(result);
+            }, 250);
+        };
+
+        btnOk.onclick = () => close(true);
+        btnCancel.onclick = () => close(false);
+        
+        // Clique fora para cancelar
+        modal.onclick = (e) => {
+            if (e.target === modal) close(false);
+        };
+    });
+};
+
 window.handleV2FieldUpdate = function(obj, field, newVal) {
     if (!obj) return;
     if (obj[field] !== newVal) {
@@ -34,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPatientId = urlParams.get('id');
 
     if (!currentPatientId) {
-        alert("Paciente não encontrado!");
-        window.location.href = "pacientes.html";
+        showAlert("Paciente não encontrado!", "error");
+        setTimeout(() => { window.location.href = "pacientes.html"; }, 2000);
         return;
     }
 
@@ -778,107 +828,121 @@ function setupModal() {
 
     // Gravar nova consulta (INSERT)
     const formConsulta = document.getElementById('form-nova-consulta');
-    formConsulta.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const btnSave = document.getElementById('btn-save-consulta');
-        btnSave.disabled = true;
-        btnSave.textContent = 'Gravando...';
+    if (formConsulta) {
+        formConsulta.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btnSave = document.getElementById('btn-save-consulta');
+            if (btnSave) {
+                btnSave.disabled = true;
+                btnSave.textContent = 'Gravando...';
+            }
 
-        // Helper para converter "dd/mm/aaaa" (Flatpickr) -> "aaaa-mm-dd" (Database)
-        const parseFpDate = (id) => {
-            const val = document.getElementById(id).value;
-            if (!val) return null;
-            const pts = val.split('/');
-            if (pts.length !== 3) return val; 
-            return `${pts[2]}-${pts[1]}-${pts[0]}`;
-        };
+            // Helper para converter "dd/mm/aaaa" (Flatpickr) -> "aaaa-mm-dd" (Database)
+            const parseFpDate = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return null;
+                const val = el.value;
+                if (!val) return null;
+                const pts = val.split('/');
+                if (pts.length !== 3) return val; 
+                return `${pts[2]}-${pts[1]}-${pts[0]}`;
+            };
 
-        const cData = parseFpDate('cons_data');
-        const cRetorno = parseFpDate('cons_retorno');
-        
-        // Helper para converter "70,5" -> 70.5
-        const parseValue = (id) => {
-            const val = document.getElementById(id).value.replace(',', '.');
-            return val ? parseFloat(val) : null;
-        };
+            const cData = parseFpDate('cons_data');
+            const cRetorno = parseFpDate('cons_retorno');
+            
+            // Helper para converter "70,5" -> 70.5
+            const parseValue = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return null;
+                const val = el.value.replace(',', '.');
+                return val ? parseFloat(val) : null;
+            };
 
-        const cPeso = parseValue('cons_peso');
+            const cPeso = parseValue('cons_peso');
 
-        if (!cData || !cPeso) return; 
+            const resetSaveBtn = () => {
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.textContent = 'Gravar atendimento';
+                }
+            };
 
-        // Validação Temporal
-        if (cRetorno && cRetorno < cData) {
-            alert('A data de retorno não pode ser anterior à data da consulta.');
-            const btnSaveRe = document.getElementById('btn-save-consulta');
-            btnSaveRe.disabled = false;
-            btnSaveRe.textContent = 'Gravar atendimento';
-            return;
-        }
-
-        // Validação de Duplicidade / Retrospectividade
-        const existingDates = (window.currentConsultations || []).map(c => c.data_consulta);
-        if (existingDates.includes(cData)) {
-            if (!confirm('Já existe um registro para esta data. Deseja registrar outra consulta neste mesmo dia?')) {
-                const btnSaveRe = document.getElementById('btn-save-consulta');
-                btnSaveRe.disabled = false;
-                btnSaveRe.textContent = 'Gravar atendimento';
+            if (!cData || !cPeso) {
+                showAlert('Por favor, informe a data e o peso do paciente.', 'error');
+                resetSaveBtn();
                 return;
             }
-        } else if (existingDates.length > 0) {
-            const mostRecentDate = existingDates.reduce((a, b) => a > b ? a : b);
-            if (cData < mostRecentDate) {
-                if (!confirm(`Anotação retroativa: Esta data é anterior à última avaliação registrada (${formatDateDisplay(mostRecentDate)}). Confirma inclusão no histórico?`)) {
-                    const btnSaveRe = document.getElementById('btn-save-consulta');
-                    btnSaveRe.disabled = false;
-                    btnSaveRe.textContent = 'Gravar atendimento';
+
+            // Validação Temporal
+            if (cRetorno && cRetorno < cData) {
+                showAlert('A data de retorno não pode ser anterior à data da consulta.', 'error');
+                resetSaveBtn();
+                return;
+            }
+
+            // Validação de Duplicidade / Retrospectividade
+            const existingDates = (window.currentConsultations || []).map(c => c.data_consulta);
+            if (existingDates.includes(cData)) {
+                const confirmDuplicity = await window.showCustomConfirm(
+                    'Data Duplicada', 
+                    'Já existe um registro para esta data. Deseja registrar outra consulta neste mesmo dia?'
+                );
+                if (!confirmDuplicity) {
+                    resetSaveBtn();
                     return;
                 }
+            } else if (existingDates.length > 0) {
+                const mostRecentDate = existingDates.reduce((a, b) => a > b ? a : b);
+                if (cData < mostRecentDate) {
+                    const confirmRetro = await window.showCustomConfirm(
+                        'Inclusão Retroativa',
+                        `Esta data é anterior à última avaliação registrada (${formatDateDisplay(mostRecentDate)}). Confirma inclusão no histórico?`
+                    );
+                    if (!confirmRetro) {
+                        resetSaveBtn();
+                        return;
+                    }
+                }
             }
-        }
 
-        const payload = {
-            paciente_id: currentPatientId,
-            data_consulta: cData,
-            peso: cPeso,
-            cintura: parseValue('cons_cintura'),
-            quadril: parseValue('cons_quadril'),
-            percentual_gordura: parseValue('cons_gordura'),
-            observacoes: document.getElementById('cons_obs').value.trim(),
-            proximo_retorno: document.getElementById('cons_retorno').value || null
-        };
+            const payload = {
+                paciente_id: currentPatientId,
+                data_consulta: cData,
+                peso: cPeso,
+                cintura: parseValue('cons_cintura'),
+                quadril: parseValue('cons_quadril'),
+                percentual_gordura: parseValue('cons_gordura'),
+                observacoes: document.getElementById('cons_obs').value.trim(),
+                proximo_retorno: document.getElementById('cons_retorno').value || null
+            };
 
-        try {
-            const { error } = await supabaseClient.from('consultas').insert([payload]);
-            if (error) throw error;
-            
-            closeModal();
-            loadPatientProfile();
-            showAlert('Atendimento registrado.', 'success');
-        } catch (err) {
-            console.error(err);
-            alert("Erro ao salvar consulta: " + err.message);
-        } finally {
-            btnSave.disabled = false;
-            btnSave.textContent = 'Gravar atendimento';
-        }
-    });
+            try {
+                const { error } = await supabaseClient.from('consultas').insert([payload]);
+                if (error) throw error;
+                
+                closeModal();
+                loadPatientProfile();
+                showAlert('Atendimento registrado.', 'success');
+            } catch (err) {
+                console.error(err);
+                showAlert("Erro ao salvar consulta: " + err.message, 'error');
+            } finally {
+                resetSaveBtn();
+            }
+        });
+    }
 }
 
 function showAlert(message, type = 'error') {
     const alertEl = document.getElementById('alert-message');
     if (!alertEl) return;
     alertEl.textContent = message;
-    if (type === 'success') {
-        alertEl.style.backgroundColor = '#F3EAF1';
-        alertEl.style.color = 'var(--primary-color)';
-        alertEl.style.borderColor = 'var(--secondary-color)';
-    } else {
-        alertEl.style.backgroundColor = 'var(--error-bg)';
-        alertEl.style.color = 'var(--error-color)';
-        alertEl.style.borderColor = 'rgba(211, 47, 47, 0.2)';
-    }
-    alertEl.className = `alert alert-${type}`;
+    
+    // Reset classes and add specific type
+    alertEl.className = 'alert';
+    alertEl.classList.add(`alert-${type}`);
     alertEl.classList.remove('hidden');
     
     // Auto hide
