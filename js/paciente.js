@@ -252,7 +252,7 @@ function renderConsultations(consultasArray) {
             <div class="empty-state" style="padding: 2.5rem 1rem;">
                 <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhuma anamnese registrada</h4>
                 <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 1.5rem auto;">Registre os dados clínicos, exames e restrições alimentares do paciente para gerar um plano personalizado com IA.</p>
-                <button onclick="document.getElementById('modal-nova-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Iniciar Primeira Consulta</button>
+                <button onclick="document.getElementById('modal-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Iniciar Primeira Consulta</button>
             </div>
         `;
         msgEmpty.style.display = 'none';
