@@ -19,10 +19,9 @@
     --transition: all 0.25s ease;
 }
 
-/* Efeito Diamante Premium (Shimmer) */
+/* Efeito Diamante Premium (Shimmer) — Versão Suave v11 */
 @keyframes diamond-shine {
-    0% { background-position: -200% center; }
-    30% { background-position: -200% center; } /* Pausa inicial para não cansar */
+    0%, 80% { background-position: -200% center; }
     100% { background-position: 200% center; }
 }
 
@@ -30,15 +29,15 @@
     display: inline-block;
     background: linear-gradient(
         110deg, 
-        var(--primary-color) 40%, 
-        #ffffff 50%, 
-        var(--primary-color) 60%
+        var(--primary-color) 45%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        var(--primary-color) 55%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: diamond-shine 5s linear infinite;
+    animation: diamond-shine 10s linear infinite;
     font-weight: 800;
 }
 
