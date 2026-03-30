@@ -101,6 +101,88 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // ─── Logomarca Upload (PDF) ──────────────────────
+    const logoImg = document.getElementById('settings-logo-img');
+    const logoPlaceholder = document.getElementById('settings-logo-placeholder');
+    const removeLogoBtn = document.getElementById('btn-remove-logo');
+    const logoInput = document.getElementById('settings-logo-input');
+
+    if (meta.logomarca_url) {
+        logoImg.src = meta.logomarca_url;
+        logoImg.style.display = 'block';
+        logoPlaceholder.style.display = 'none';
+        removeLogoBtn.style.display = 'inline-block';
+    }
+
+    document.getElementById('btn-change-logo').addEventListener('click', () => logoInput.click());
+    document.getElementById('settings-logo-container').addEventListener('click', () => logoInput.click());
+
+    logoInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Resize via canvas keeping aspect ratio (max 600x200)
+        const img = new Image();
+        img.onload = async () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 600;
+            const MAX_HEIGHT = 200;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/png', 0.9); // PNG to preserve transparency if any
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    data: { logomarca_url: dataUrl }
+                });
+                if (error) throw error;
+                logoImg.src = dataUrl;
+                logoImg.style.display = 'block';
+                logoPlaceholder.style.display = 'none';
+                removeLogoBtn.style.display = 'inline-block';
+                showToast('Logomarca atualizada com sucesso.');
+            } catch (err) {
+                showToast(err.message || 'Erro ao atualizar logomarca.', 'error');
+            }
+        };
+        img.src = URL.createObjectURL(file);
+    });
+
+    // Remover logomarca
+    removeLogoBtn.addEventListener('click', async () => {
+        try {
+            const { error } = await supabaseClient.auth.updateUser({
+                data: { logomarca_url: null }
+            });
+            if (error) throw error;
+            logoImg.src = '';
+            logoImg.style.display = 'none';
+            logoPlaceholder.style.display = 'block';
+            removeLogoBtn.style.display = 'none';
+            showToast('Logomarca removida.');
+        } catch (err) {
+            showToast(err.message || 'Erro ao remover logomarca.', 'error');
+        }
+    });
+
+
+
     // ─── Salvar Perfil (nome) ────────────────────────
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
         const btn = document.getElementById('btn-save-profile');

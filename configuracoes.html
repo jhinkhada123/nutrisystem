@@ -75,6 +75,24 @@
             <button id="btn-save-profile" class="btn btn-primary" style="width: auto; padding: 0.75rem 2rem;">Salvar Perfil</button>
         </section>
 
+        <!-- Seção: Personalização de Documentos -->
+        <section style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary-color); margin: 0 0 0.25rem 0; font-size: 1.15rem;">Personalização de Arquivos (PDF)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1.5rem 0;">Adicione a logomarca da sua clínica. Ela aparecerá no topo dos planos alimentares gerados em PDF para os seus pacientes.</p>
+
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div id="settings-logo-container" style="width: 200px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px dashed var(--border-color); background: var(--bg-main); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.2s ease;" title="Clique para adicionar a logomarca">
+                    <img id="settings-logo-img" src="" alt="Sua Logo" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;">
+                    <span id="settings-logo-placeholder" style="font-size: 0.8rem; color: var(--text-muted); padding: 0 10px; text-align: center;">Clique para enviar<br>uma imagem (fundo transparente)</span>
+                </div>
+                <div>
+                    <button id="btn-change-logo" type="button" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.5rem 1rem; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: inherit; transition: all 0.2s; display: block; margin-bottom: 0.5rem;">Enviar logomarca</button>
+                    <button id="btn-remove-logo" type="button" style="background: none; border: none; padding: 0; font-size: 0.85rem; color: #D32F2F; cursor: pointer; font-family: inherit; text-decoration: underline; display: none;">Remover logo do PDF</button>
+                    <input type="file" id="settings-logo-input" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+                </div>
+            </div>
+        </section>
+
         <!-- Seção: Conta -->
         <section style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem;">
             <h3 style="color: var(--primary-color); margin: 0 0 0.25rem 0; font-size: 1.15rem;">Conta</h3>

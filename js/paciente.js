@@ -671,7 +671,7 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-function handlePrintPlan() {
+async function handlePrintPlan() {
     if (!currentGeneratedPlan) return;
 
     const plan = currentGeneratedPlan;
@@ -682,10 +682,21 @@ function handlePrintPlan() {
         document.getElementById('paciente-nome-header')?.textContent ?? 'Paciente'
     );
 
+    // Buscar logomarca no perfil do usuário
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const logoUrl = user?.user_metadata?.logomarca_url;
+
     let html = '';
 
     // Header
-    html += `<div class="print-header">
+    html += `<div class="print-header">`;
+    if (logoUrl) {
+        html += `
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img src="${logoUrl}" alt="Logo da Clínica" style="max-height: 70px; max-width: 280px; object-fit: contain;">
+        </div>`;
+    }
+    html += `
         <h1>${patientName}</h1>
         <h2>Plano Alimentar Personalizado</h2>
     </div>`;
