@@ -92,6 +92,13 @@ async function loadPatientProfile() {
         document.getElementById('atividade_descricao').value = paciente.atividade_fisica_descricao || '';
         document.getElementById('observacoes').value = paciente.observacoes || '';
 
+        // Novo: Realidade e Contexto
+        if (document.getElementById('orcamento_alimentar')) document.getElementById('orcamento_alimentar').value = paciente.orcamento_alimentar || '';
+        if (document.getElementById('tempo_cozinhar')) document.getElementById('tempo_cozinhar').value = paciente.tempo_cozinhar || '';
+        if (document.getElementById('alimentos_preferidos')) document.getElementById('alimentos_preferidos').value = paciente.alimentos_preferidos || '';
+        if (document.getElementById('alimentos_evitados')) document.getElementById('alimentos_evitados').value = paciente.alimentos_evitados || '';
+        if (document.getElementById('contexto_social')) document.getElementById('contexto_social').value = paciente.contexto_social || '';
+
         /* PROCESSAR CONSULTAS E PLANOS */
         renderConsultations(paciente.consultas || []);
         renderPlanHistory(paciente.planos_alimentares || []);
@@ -193,7 +200,14 @@ async function handleUpdatePatient(e) {
         
         atividade_fisica: document.getElementById('pratica_fisica').checked,
         atividade_fisica_descricao: document.getElementById('atividade_descricao').value.trim(),
-        observacoes: document.getElementById('observacoes').value.trim()
+        observacoes: document.getElementById('observacoes').value.trim(),
+        
+        // Novo: Realidade e Contexto
+        orcamento_alimentar: document.getElementById('orcamento_alimentar') ? document.getElementById('orcamento_alimentar').value : null,
+        tempo_cozinhar: document.getElementById('tempo_cozinhar') ? document.getElementById('tempo_cozinhar').value : null,
+        alimentos_preferidos: document.getElementById('alimentos_preferidos') ? document.getElementById('alimentos_preferidos').value.trim() : null,
+        alimentos_evitados: document.getElementById('alimentos_evitados') ? document.getElementById('alimentos_evitados').value.trim() : null,
+        contexto_social: document.getElementById('contexto_social') ? document.getElementById('contexto_social').value.trim() : null
     };
 
     // Concatenar texto extra dos checks
@@ -788,7 +802,13 @@ function extractPatientDataForAI() {
         refeicoes_por_dia: document.getElementById('refeicoes').value,
         horario_acorda: document.getElementById('hora_acorda').value,
         horario_dorme: document.getElementById('hora_dorme').value,
-        suplementos: document.getElementById('suplementos').value
+        suplementos: document.getElementById('suplementos').value,
+        
+        orcamento_alimentar: document.getElementById('orcamento_alimentar') ? document.getElementById('orcamento_alimentar').value : '',
+        tempo_cozinhar: document.getElementById('tempo_cozinhar') ? document.getElementById('tempo_cozinhar').value : '',
+        alimentos_preferidos: document.getElementById('alimentos_preferidos') ? document.getElementById('alimentos_preferidos').value : '',
+        alimentos_evitados: document.getElementById('alimentos_evitados') ? document.getElementById('alimentos_evitados').value : '',
+        contexto_social: document.getElementById('contexto_social') ? document.getElementById('contexto_social').value : ''
     };
 }
 

@@ -24,6 +24,11 @@ PERFIL DO PACIENTE:
 - Refeições Solicitadas: ${payload.refeicoes_por_dia || 'Café da manhã, Lanche, Almoço, Lanche da Tarde, Jantar'}
 - Acorda: ${payload.horario_acorda || 'Não informado'} | Dorme: ${payload.horario_dorme || 'Não informado'}
 - Suplementos Tatuais: ${payload.suplementos || 'Nenhum'}
+- Orçamento para Alimentação: ${payload.orcamento_alimentar || 'Não informado'}
+- Tempo para Cozinhar: ${payload.tempo_cozinhar || 'Não informado'}
+- Alimentos Preferidos (INCLUIR): ${payload.alimentos_preferidos || 'Nenhum reportado'}
+- Alimentos Evitados (NUNCA INCLUIR): ${payload.alimentos_evitados || 'Nenhum reportado'}
+- Contexto Social e Rotina: ${payload.contexto_social || 'Nenhum reportado'}
 
 DIRETRIZES DE OUTPUT (OBRIGATÓRIO):
 1. Retorne EXATAMENTE e APENAS no formato JSON especificado.
@@ -38,6 +43,7 @@ DIRETRIZES DE OUTPUT (OBRIGATÓRIO):
 10. Se algo não for aplicável (ex: observacao de item, ou substituicoes de um item), envie "null" e nunca invente um texto genérico.
 11. "substituicoes": Array Opcional de objetos apontando para o "referencia_item_id". Devem ser equivalentes em calorias/macros.
 12. FOCO BRASIL: Arroz, feijão, tapioca, mandioca, pães simples, carnes acessíveis. Nada de salmão silvestre todo dia, foque na realidade. Respeite as patologias cegamente.
+13. ADERÊNCIA AO CONTEXTO: Respeite estritamente o orçamento e o tempo para cozinhar reportados. Tente estruturar opções com um ou mais "Alimentos Preferidos". NUNCA, SOB HIPÓTESE ALGUMA, adicione "Alimentos Evitados". O plano deve parecer extremamente plausível para o "Contexto Social" do paciente.
 
 FORMATO JSON EXIGIDO:
 {

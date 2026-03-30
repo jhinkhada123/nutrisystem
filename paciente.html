@@ -238,6 +238,41 @@
                             <textarea id="observacoes" rows="4" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAF8F9;" placeholder="Anotações gerais do paciente..."></textarea>
                         </div>
                     </div>
+
+                    <!-- NOVA SEÇÃO: Realidade e Contexto Alimentar -->
+                    <h3 class="section-title" style="margin-top: 2rem;">Realidade e Contexto Alimentar</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="orcamento_alimentar">Orçamento para Alimentação</label>
+                            <select id="orcamento_alimentar" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: var(--card-bg); color: var(--text-color);">
+                                <option value="">Não informado</option>
+                                <option value="Baixo">Baixo (priorizar itens acessíveis)</option>
+                                <option value="Moderado">Moderado</option>
+                                <option value="Flexível">Flexível</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="tempo_cozinhar">Tempo/Disposição para Cozinhar</label>
+                            <select id="tempo_cozinhar" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: var(--card-bg); color: var(--text-color);">
+                                <option value="">Não informado</option>
+                                <option value="Baixo">Baixo (preparos muito rápidos)</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Alto">Alto (gosta e tem tempo)</option>
+                            </select>
+                        </div>
+                        <div class="input-group form-col-full">
+                            <label for="alimentos_preferidos">Alimentos Preferidos e Essenciais</label>
+                            <textarea id="alimentos_preferidos" rows="2" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="O que o paciente mais gosta, não abre mão ou já consome no dia a dia..."></textarea>
+                        </div>
+                        <div class="input-group form-col-full">
+                            <label for="alimentos_evitados">Alimentos Evitados ou Aversões</label>
+                            <textarea id="alimentos_evitados" rows="2" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="O que o paciente odeia, evita ou tem forte aversão..."></textarea>
+                        </div>
+                        <div class="input-group form-col-full">
+                            <label for="contexto_social">Contexto Social e de Rotina</label>
+                            <textarea id="contexto_social" rows="2" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="Ex: Mora sozinho, pede iFood no final de semana, almoça em restaurante..."></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-top: 3rem; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
