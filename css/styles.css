@@ -1101,7 +1101,7 @@ textarea.internal-txt { min-height: 80px; }
 
 @media print {
     /* Reset body logic specifically for print context to avoid massive multipage bleeding */
-    body {
+    html, body {
         background: white !important;
         display: block !important;
         height: auto !important;
@@ -1159,8 +1159,8 @@ textarea.internal-txt { min-height: 80px; }
     }
 
     .print-meals-container {
-        column-count: 2;
-        column-gap: 1.5rem;
+        display: block;
+        width: 100%;
     }
 
     .print-meal-card {
