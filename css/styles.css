@@ -19,29 +19,6 @@
     --transition: all 0.25s ease;
 }
 
-/* Efeito Diamante Signature v13 (Passa 2x e se esconde) */
-@keyframes diamond-shine {
-    0% { background-position: 200% center; }
-    20% { background-position: -200% center; } /* Atravessa em 2s (20% de 10s) */
-    100% { background-position: -200% center; } /* Fica escondido o resto do tempo */
-}
-
-.diamond-shine {
-    display: inline-block;
-    background: linear-gradient(
-        110deg, 
-        var(--primary-color) 45%, 
-        rgba(255, 255, 255, 0.4) 50%, 
-        var(--primary-color) 55%
-    );
-    background-size: 300% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: diamond-shine 10s ease-in-out 2 forwards;
-    font-weight: 800;
-}
-
 * {
     box-sizing: border-box;
     margin: 0;

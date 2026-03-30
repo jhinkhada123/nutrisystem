@@ -121,7 +121,7 @@ async function loadDashboardData() {
 
         const titleOnboarding = document.getElementById('onboarding-title');
         if (titleOnboarding && loginCount > 1) {
-            titleOnboarding.innerHTML = 'Bem-vindo de volta ao Beta do <span class="diamond-shine">Prescria</span>!';
+            titleOnboarding.innerHTML = 'Bem-vindo de volta ao Beta do <span style="color: var(--primary-color);">Prescria</span>!';
         }
         const { data: demoPacientes, count: countDemo } = await supabaseClient
             .from('pacientes')
