@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriFlow - Redefinir Senha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="brand">
+                <div class="logo-icon">NF</div>
+                <h1>NutriFlow</h1>
+            </div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Nova Senha</h2>
+            <p class="subtitle" id="subtitle-text" style="margin-bottom: 1.5rem;">Validando link de recuperação...</p>
+
+            <div id="alert-message" class="alert hidden"></div>
+
+            <form id="reset-form" style="display: none;">
+                <div class="input-group">
+                    <label for="new-password">Nova senha</label>
+                    <input type="password" id="new-password" placeholder="••••••••" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Confirmar nova senha</label>
+                    <input type="password" id="confirm-password" placeholder="••••••••" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="btn-reset" style="margin-top: 1rem;">Salvar nova senha</button>
+            </form>
+
+            <div id="invalid-link-view" style="display: none; text-align: center;">
+                <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">
+                    O link de redefinição é inválido ou expirou.
+                </p>
+                <a href="esqueci-senha.html" class="btn btn-primary" style="display: inline-block; text-decoration: none;">Solicitar novo link</a>
+            </div>
+
+            <div class="auth-links" style="margin-top: 1.5rem;">
+                <p><a href="index.html">Voltar para o Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        let isRecoveryMode = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const subtitle = document.getElementById('subtitle-text');
+            const alertMsg = document.getElementById('alert-message');
+            const resetForm = document.getElementById('reset-form');
+            const invalidView = document.getElementById('invalid-link-view');
+
+            // Primeiro: escutamos ativamente se o Supabase interceptou um PASSWORD_RECOVERY
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'PASSWORD_RECOVERY') {
+                    isRecoveryMode = true;
+                    subtitle.textContent = "Digite sua nova senha abaixo.";
+                    resetForm.style.display = 'block';
+                    invalidView.style.display = 'none';
+                    alertMsg.className = 'alert hidden';
+                }
+            });
+
+            // Fallback manual (as vezes o onAuthStateChange dispara muito rapido e já passou)
+            const { data } = await supabaseClient.auth.getSession();
+            // Se tiver hash na URL (type=recovery), o client v2 costuma processar sozinho.
+            const urlHash = window.location.hash;
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Damos um tempo curto pro listener engatar, caso não, avaliamos o contexto
+            setTimeout(() => {
+                if (!isRecoveryMode && (!data.session || (!urlHash.includes('type=recovery') && !urlParams.has('code')))) {
+                    subtitle.textContent = "Acesso negado";
+                    resetForm.style.display = 'none';
+                    invalidView.style.display = 'block';
+                } else if (!isRecoveryMode && data.session) {
+                    // Já está num contexto válido
+                    subtitle.textContent = "Digite sua nova senha abaixo.";
+                    resetForm.style.display = 'block';
+                    invalidView.style.display = 'none';
+                }
+            }, 800);
+        });
+
+        document.getElementById('reset-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-reset');
+            const alertMsg = document.getElementById('alert-message');
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                alertMsg.textContent = "As senhas não coincidem.";
+                alertMsg.className = "alert alert-error";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Salvando...";
+            alertMsg.className = "alert hidden";
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                // Sucesso
+                alertMsg.textContent = "Senha alterada com sucesso! Você será redirecionado para o painel.";
+                alertMsg.className = "alert alert-success";
+                
+                // Limpa e desativa formulículo
+                document.getElementById('reset-form').style.display = 'none';
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error(error);
+                alertMsg.textContent = error.message || "Não foi possível redefinir a senha.";
+                alertMsg.className = "alert alert-error";
+                btn.disabled = false;
+                btn.textContent = "Salvar nova senha";
+            }
+        });
+    </script>
+</body>
+</html>

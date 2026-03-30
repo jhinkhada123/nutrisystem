@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriFlow - Esqueci minha senha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="brand">
+                <div class="logo-icon">NF</div>
+                <h1>NutriFlow</h1>
+            </div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Recuperar senha</h2>
+            <p class="subtitle" style="margin-bottom: 1.5rem;">Digite seu e-mail para receber um link de redefinição.</p>
+
+            <div id="alert-message" class="alert hidden"></div>
+
+            <form id="recover-form">
+                <div class="input-group">
+                    <label for="email">E-mail cadastrado</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="btn-recover" style="margin-top: 1rem;">Enviar link de recuperação</button>
+            </form>
+
+            <div class="auth-links" style="margin-top: 1.5rem;">
+                <p><a href="index.html">Voltar para o Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        document.getElementById('recover-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-recover');
+            const alertMsg = document.getElementById('alert-message');
+            const email = document.getElementById('email').value.trim();
+
+            if (!email) return;
+
+            btn.disabled = true;
+            btn.textContent = "Enviando...";
+            alertMsg.className = "alert hidden";
+
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/redefinir-senha.html'
+                });
+
+                if (error) throw error;
+
+                alertMsg.textContent = "E-mail de recuperação enviado! Verifique sua caixa de entrada e SPAM.";
+                alertMsg.className = "alert alert-success";
+                
+                // Clear input
+                document.getElementById('email').value = '';
+            } catch (error) {
+                console.error(error);
+                alertMsg.textContent = error.message.includes('rate limit') 
+                    ? "Muitas tentativas. Aguarde alguns minutos e tente novamente." 
+                    : "Erro ao tentar enviar e-mail. Verifique se o endereço está correto.";
+                alertMsg.className = "alert alert-error";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Enviar link de recuperação";
+            }
+        });
+    </script>
+</body>
+</html>

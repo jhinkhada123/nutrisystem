@@ -67,6 +67,12 @@ function renderPatients(patientsArray) {
         return;
     }
 
+    const escapeHTML = (str) => {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    };
+
     patientsArray.forEach(p => {
         let ultimaConsultaTexto = "Sem consultas";
         if (p.consultas && p.consultas.length > 0) {
@@ -81,7 +87,8 @@ function renderPatients(patientsArray) {
             ultimoPlanoTexto = planoDate.toLocaleDateString('pt-BR');
         }
 
-        const inicial = p.nome.charAt(0).toUpperCase();
+        const safeNome = escapeHTML(p.nome || 'Sem Nome');
+        const inicial = safeNome.charAt(0).toUpperCase();
 
         let objetivo = "Objetivo não definido";
         if (p.objetivos && p.objetivos.length > 0) {
@@ -89,6 +96,7 @@ function renderPatients(patientsArray) {
         } else if (p.objetivo_texto) {
             objetivo = p.objetivo_texto;
         }
+        const safeObjetivo = escapeHTML(objetivo);
 
         const card = document.createElement('div');
         card.className = 'patient-card';
@@ -99,15 +107,15 @@ function renderPatients(patientsArray) {
                 <div class="patient-avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">${inicial}</div>
                 <div class="patient-details">
                     <h4 style="display:flex; align-items:center; gap:8px;">
-                        ${p.nome}
+                        ${safeNome}
                         ${p.is_demo ? '<span style="font-size: 0.65rem; background:#F3EAF1; color:#6A3E63; padding: 2px 6px; border-radius:10px; font-weight:600;">DEMO</span>' : ''}
                     </h4>
-                    <p class="patient-meta">${objetivo}</p>
+                    <p class="patient-meta">${safeObjetivo}</p>
                 </div>
             </div>
             <div class="patient-status">
                 <div>Última consulta</div>
-                <strong style="color: var(--text-main); font-size: 0.95rem;">${ultimaConsultaTexto}</strong>
+                <strong style="color: var(--text-main); font-size: 0.95rem;">${escapeHTML(ultimaConsultaTexto)}</strong>
                 ${ultimoPlanoTexto ? `<div style="margin-top: 0.35rem; font-size: 0.8rem; color: var(--primary-color);">Plano: ${ultimoPlanoTexto}</div>` : ''}
             </div>
             <div class="patient-card-actions">

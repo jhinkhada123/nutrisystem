@@ -217,10 +217,17 @@ async function loadDashboardData() {
                     const link = document.createElement('a');
                     link.href = `paciente.html?id=${p.id}`;
                     link.className = 'patient-listItem';
-                    link.innerHTML = `
-                        <div class="patient-avatar">${inicial}</div>
-                        <span class="patient-name">${p.nome}</span>
-                    `;
+                    const avatar = document.createElement('div');
+                    avatar.className = 'patient-avatar';
+                    avatar.textContent = inicial;
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'patient-name';
+                    nameSpan.textContent = p.nome;
+
+                    link.appendChild(avatar);
+                    link.appendChild(nameSpan);
+
                     listaSemRetornoEl.appendChild(link);
                 });
             }

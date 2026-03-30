@@ -4,6 +4,22 @@ let currentPatientId = null;
 let chartInstance = null;
 let hasUnsavedChanges = false;
 
+// Helpers Globais de Sanitização (Prevenção XSS)
+const escapeHTML = (str) => {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+};
+
+window.handleV2FieldUpdate = function(obj, field, newVal) {
+    if (!obj) return;
+    if (obj[field] !== newVal) {
+        obj[field] = newVal;
+        hasUnsavedChanges = true;
+    }
+};
+
 // Guarda contra perda de alterações não salvas
 window.addEventListener('beforeunload', (e) => {
     if (hasUnsavedChanges) {
@@ -413,23 +429,23 @@ function renderConsultations(consultasArray) {
     
     listEl.innerHTML = '';
     viewList.forEach(c => {
-        let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #FAF8F9; border-radius:4px;">${c.observacoes}</p>` : '';
-        let prox = c.proximo_retorno ? `<br><strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${formatDateDisplay(c.proximo_retorno)}</strong>` : '';
+        let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #FAF8F9; border-radius:4px;">${escapeHTML(c.observacoes)}</p>` : '';
+        let prox = c.proximo_retorno ? `<br><strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${escapeHTML(formatDateDisplay(c.proximo_retorno))}</strong>` : '';
         
         // Formatar % gordura / CM com condicional
-        let cint = c.cintura ? ` &bull; <span>Cintura: ${c.cintura}cm</span>` : '';
-        let quad = c.quadril ? ` &bull; <span>Quadril: ${c.quadril}cm</span>` : '';
-        let gord = c.percentual_gordura ? ` &bull; <span>Gordura: ${c.percentual_gordura}%</span>` : '';
+        let cint = c.cintura ? ` &bull; <span>Cintura: ${escapeHTML(String(c.cintura))}cm</span>` : '';
+        let quad = c.quadril ? ` &bull; <span>Quadril: ${escapeHTML(String(c.quadril))}cm</span>` : '';
+        let gord = c.percentual_gordura ? ` &bull; <span>Gordura: ${escapeHTML(String(c.percentual_gordura))}%</span>` : '';
 
         // Montar DOM 
         const card = document.createElement('div');
         card.className = 'consultation-card';
         card.innerHTML = `
             <div class="consultation-header">
-                <span style="font-weight:600; font-size:1.1rem; color:var(--text-main);">${formatDateDisplay(c.data_consulta)}</span>
+                <span style="font-weight:600; font-size:1.1rem; color:var(--text-main);">${escapeHTML(formatDateDisplay(c.data_consulta))}</span>
             </div>
             <div style="font-size:0.95rem; color: #4A5568;">
-                <strong>Peso: ${c.peso}kg</strong> ${cint} ${quad} ${gord}
+                <strong>Peso: ${escapeHTML(String(c.peso))}kg</strong> ${cint} ${quad} ${gord}
                 ${prox}
             </div>
             ${obs}
@@ -698,6 +714,11 @@ function setupAIPlanos() {
     if (!btnGerar) return;
 
     btnGerar.addEventListener('click', async () => {
+        if (hasUnsavedChanges) {
+            const confirmDiscard = confirm("Atenção! Você possui alterações não salvas neste plano alimentar. Se gerar um novo, perderá todo o progresso não salvo. Deseja mesmo sobrepor o rascunho atual?");
+            if (!confirmDiscard) return;
+        }
+
         // Obter os dados atuais preenchidos da UI
         const payload = extractPatientDataForAI();
 
@@ -708,9 +729,16 @@ function setupAIPlanos() {
         btnGerar.textContent = "Gerando...";
 
         try {
+            const session = await supabaseClient.auth.getSession();
+            const token = session.data.session?.access_token;
+            if(!token) throw new Error("Sessão expirada. Faça login novamente.");
+
             const res = await fetch('/api/gerar-plano', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
                 body: JSON.stringify(payload)
             });
 
@@ -724,7 +752,7 @@ function setupAIPlanos() {
             // Restaura o formato "Edição" caso venha do modo Histórico visual
             btnSalvar.style.display = 'block';
             const h3 = editorDiv.querySelector('h3');
-            if(h3) h3.innerHTML = `✨ Plano Alimentar da Consulta`;
+            if(h3) h3.textContent = `✨ Plano Alimentar da Consulta`;
             const spanTag = editorDiv.querySelector('span');
             if(spanTag) spanTag.style.display = 'inline-block';
             
@@ -778,6 +806,7 @@ function setupAIPlanos() {
 
                 if (error) throw error;
                 
+                hasUnsavedChanges = false;
                 showAlert('Plano salvo com sucesso no histórico!', 'success');
                 editorDiv.classList.add('hidden');
                 btnGerar.textContent = "Gerar Plano Alimentar";
@@ -1253,7 +1282,7 @@ function renderPlanV2(plan) {
             <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: -3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Notas da Prescrição Clínica (Apenas Nutricionista)</h4>
             <div class="v2-field-group">
                 <label>Racional Clínico & Metas <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:4px;" title="Campo editável">&#9998;</span></label>
-                <textarea class="v2-edit-input internal-txt" oninput="if(currentGeneratedPlan) currentGeneratedPlan.uso_interno_nutricionista.racional_clinico = this.value">${plan.uso_interno_nutricionista.racional_clinico || ''}</textarea>
+                <textarea class="v2-edit-input internal-txt" oninput="handleV2FieldUpdate(currentGeneratedPlan?.uso_interno_nutricionista, 'racional_clinico', this.value)">${plan.uso_interno_nutricionista.racional_clinico || ''}</textarea>
             </div>
             ${plan.uso_interno_nutricionista.alertas_prescricao ? `
             <div class="v2-field-group">
@@ -1269,8 +1298,8 @@ function renderPlanV2(plan) {
         orient.className = 'v2-orientations-panel';
         orient.innerHTML = `
             <h4>🗣️ Orientações ao Paciente <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:4px;" title="Seção editável">&#9998;</span></h4>
-            <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.mensagem_motivacional = this.value">${plan.orientacoes_paciente.mensagem_motivacional || ''}</textarea>
-            <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.dicas_gerais = this.value" placeholder="Dicas de água, etc.">${plan.orientacoes_paciente.dicas_gerais || ''}</textarea>
+            <textarea class="v2-edit-input" oninput="handleV2FieldUpdate(currentGeneratedPlan?.orientacoes_paciente, 'mensagem_motivacional', this.value)">${plan.orientacoes_paciente.mensagem_motivacional || ''}</textarea>
+            <textarea class="v2-edit-input" oninput="handleV2FieldUpdate(currentGeneratedPlan?.orientacoes_paciente, 'dicas_gerais', this.value)" placeholder="Dicas de água, etc.">${plan.orientacoes_paciente.dicas_gerais || ''}</textarea>
         `;
         container.appendChild(orient);
     }
@@ -1285,12 +1314,12 @@ function renderPlanV2(plan) {
         let html = `
             <div class="v2-meal-header">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="text" class="v2-edit-input v2-title-input" style="max-width:none;" value="${ref.nome || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].nome = this.value">
+                    <input type="text" class="v2-edit-input v2-title-input" style="max-width:none;" value="${ref.nome || ''}" oninput="handleV2FieldUpdate(currentGeneratedPlan?.refeicoes[${refIndex}], 'nome', this.value)">
                     <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none;" title="Título editável">&#9998;</span>
                 </div>
                 <div class="v2-time-box">
                     <span>⏰</span>
-                    <input type="text" class="v2-edit-input v2-time-input" value="${ref.horario_sugerido || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].horario_sugerido = this.value">
+                    <input type="text" class="v2-edit-input v2-time-input" value="${ref.horario_sugerido || ''}" oninput="handleV2FieldUpdate(currentGeneratedPlan?.refeicoes[${refIndex}], 'horario_sugerido', this.value)">
                 </div>
             </div>
         `;
@@ -1306,13 +1335,13 @@ function renderPlanV2(plan) {
                     <div class="v2-option">
                         <div class="v2-option-title">
                             <span>Opção ${op.ordem || (opIndex + 1)}:</span> 
-                            <input type="text" class="v2-edit-input" style="flex:1" value="${op.titulo_opcao || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].opcoes[${opIndex}].titulo_opcao = this.value">
+                            <input type="text" class="v2-edit-input" style="flex:1" value="${op.titulo_opcao || ''}" oninput="handleV2FieldUpdate(currentGeneratedPlan?.refeicoes[${refIndex}]?.opcoes[${opIndex}], 'titulo_opcao', this.value)">
                             <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:-4px;" title="Título editável">&#9998;</span>
                         </div>
                 `;
 
                 const makeEd = (val, field, isNum, rIdx, oIdx, iIdx, sIdx, placeholder = '') => {
-                    const v = escapeHtml(String(val ?? ''));
+                    const v = escapeHTML(String(val ?? ''));
                     const fArgs = `${rIdx}, ${oIdx}, ${iIdx !== null ? iIdx : 'null'}, ${sIdx !== null ? sIdx : 'null'}, '${field}', ${isNum}`;
                     return `<span class="v2-edit-inline" contenteditable="true" spellcheck="false" data-placeholder="${placeholder}"
                             oninput="handleV2InlineEdit(${fArgs}, event)"
@@ -1472,14 +1501,23 @@ window.handleV2InlineEdit = function(refIdx, opIdx, itemIdx, subIdx, field, isNu
     }
 
     if (event.type === 'blur') {
+        const oldVal = targetObj[field];
         if (isNum) {
             val = val.replace(/,/g, '.').replace(/[^\d.]/g, '');
             const num = parseFloat(val);
-            targetObj[field] = isNaN(num) ? null : num;
-            el.textContent = isNaN(num) ? '' : num;
+            const finalVal = isNaN(num) ? null : num;
+            if (oldVal !== finalVal) {
+                targetObj[field] = finalVal;
+                hasUnsavedChanges = true;
+            }
+            el.textContent = finalVal !== null ? finalVal : '';
         } else {
-            targetObj[field] = val.trim() || null;
-            el.textContent = targetObj[field] || '';
+            const strVal = val.trim() || null;
+            if (oldVal !== strVal) {
+                targetObj[field] = strVal;
+                hasUnsavedChanges = true;
+            }
+            el.textContent = strVal || '';
         }
     } else if (event.type === 'input') {
         if (isNum) {
