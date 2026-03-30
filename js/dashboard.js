@@ -66,6 +66,13 @@ async function createDemoPatient(event) {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         
+        // Verifica se já existe um demo
+        const { data: existing } = await supabaseClient.from('pacientes').select('id').eq('is_demo', true).limit(1);
+        if (existing && existing.length > 0) {
+            window.location.href = `paciente.html?id=${existing[0].id}&tab=plano`;
+            return;
+        }
+
         const { data: novoPac, error: errPac } = await supabaseClient.from('pacientes').insert([{
             nutricionista_id: session.user.id,
             nome: "Letícia Martins",
