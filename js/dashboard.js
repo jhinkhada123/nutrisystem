@@ -7,57 +7,7 @@ function formatData(dateStr) {
     return date.toLocaleDateString('pt-BR');
 }
 
-// Lógica de Renderização do Onboarding (Estados 1 a 3)
-function showOnboardingState(state, targetPatient = null, demoActive = false) {
-    document.getElementById('onboarding-state').classList.remove('hidden');
-    
-    const markDone = (stepNum) => {
-        const circle = document.querySelector(`#step-${stepNum} .step-circle`);
-        if(circle) {
-            circle.style.background = 'var(--primary-color)';
-            circle.style.color = 'white';
-            circle.innerHTML = '✓';
-            circle.style.border = 'none';
-        }
-    };
-    
-    const actionsContainer = document.getElementById('onboarding-actions-container');
-    
-    if (state === 1) {
-        actionsContainer.innerHTML = `
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <a href="novo-paciente.html" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1.05rem; width: auto;">Cadastrar Paciente</a>
-                ${!demoActive ? '<button id="btn-create-demo" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; padding: 0.8rem 1.5rem;">Carregar Paciente de Demonstração</button>' : ''}
-            </div>
-        `;
-        
-        if (!demoActive) {
-            const btnDemo = document.getElementById('btn-create-demo');
-            if (btnDemo) btnDemo.addEventListener('click', createDemoPatient);
-        }
-    } 
-    else if (state === 2) {
-        markDone(1);
-        actionsContainer.innerHTML = `
-            <p style="width: 100%; margin: 0 0 1rem 0; color: var(--primary-color); font-weight: 500;">Paciente cadastrado. Próximo passo: registre as informações da primeira anamnese para habilitar a geração de cardápios.</p>
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <a href="paciente.html?id=${targetPatient.id}&tab=consultas" class="btn btn-primary" style="padding: 0.8rem 1.5rem; width: auto;">Iniciar Consulta de ${targetPatient.nome.split(' ')[0]}</a>
-                ${!demoActive ? '<button onclick="createDemoPatient(event)" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; padding: 0.8rem 1.5rem;">Carregar Paciente de Demonstração</button>' : ''}
-            </div>
-        `;
-    }
-    else if (state === 3) {
-        markDone(1);
-        markDone(2);
-        actionsContainer.innerHTML = `
-            <p style="width: 100%; margin: 0 0 1rem 0; color: var(--primary-color); font-weight: 500;">Ótimo! Agora gere o plano alimentar utilizando Inteligência Artificial com base na anamnese registrada.</p>
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <a href="paciente.html?id=${targetPatient.id}&tab=plano" class="btn btn-primary" style="padding: 0.8rem 1.5rem; width: auto;">Gerar Plano para ${targetPatient.nome.split(' ')[0]}</a>
-                ${!demoActive ? '<button onclick="createDemoPatient(event)" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; padding: 0.8rem 1.5rem;">Carregar Paciente de Demonstração</button>' : ''}
-            </div>
-        `;
-    }
-}
+// Removido showOnboardingState (substituído pela caixa estática de Beta no HTML)
 
 async function createDemoPatient(event) {
     const btn = event?.currentTarget ?? document.getElementById('btn-create-demo');
@@ -148,37 +98,44 @@ async function loadDashboardData() {
         
         const totalRealPacientes = realPatients ? realPatients.length : 0;
 
-        if (totalRealPacientes === 0) {
-            showOnboardingState(1, null, countDemo > 0);
-            return; // Interrompe fluxo operacional completamente
-        }
-        
-        // Se temos pacientes, exibimos as métricas.
-        document.getElementById('dashboard-metrics').classList.remove('hidden');
-        document.getElementById('quick-actions').classList.remove('hidden');
-        
-        let state = 2; 
-        let targetPatient = realPatients[0]; // Paciente mais recente por default
-        
-        const hasConsult = realPatients.some(p => p.consultas && p.consultas.length > 0);
-        const hasPlan = realPatients.some(p => p.planos_alimentares && p.planos_alimentares.length > 0);
-        
-        if (hasPlan) {
-            state = 4; // Totalmente Operacional
-        } else if (hasConsult) {
-            state = 3; 
-            targetPatient = realPatients.find(p => p.consultas?.length > 0 && (!p.planos_alimentares || p.planos_alimentares.length === 0)) || targetPatient;
-        } else {
-            state = 2; // Tem paciente, mas 0 consultas
-        }
-        
         const dashboardMetricsEl = document.getElementById('dashboard-metrics');
-        if (state !== 4) {
-            showOnboardingState(state, targetPatient, countDemo > 0);
-            if (dashboardMetricsEl) dashboardMetricsEl.classList.add('metrics-parallel');
-        } else {
-            document.getElementById('onboarding-state').classList.add('hidden');
-            if (dashboardMetricsEl) dashboardMetricsEl.classList.remove('metrics-parallel');
+        const onboardingStateEl = document.getElementById('onboarding-state');
+        
+        if (onboardingStateEl) {
+            onboardingStateEl.classList.remove('hidden');
+        }
+
+        if (dashboardMetricsEl) {
+            dashboardMetricsEl.classList.remove('hidden');
+            if(totalRealPacientes === 0) {
+                dashboardMetricsEl.classList.add('metrics-parallel');
+            } else {
+                dashboardMetricsEl.classList.remove('metrics-parallel');
+            }
+        }
+        document.getElementById('quick-actions').classList.remove('hidden');
+
+        // Renderiza botões de Demo na área de Onboarding Beta
+        const onboardingDemoActions = document.getElementById('onboarding-demo-actions');
+        if (onboardingDemoActions) {
+            if (countDemo > 0 && demoPacientes && demoPacientes.length > 0) {
+                onboardingDemoActions.innerHTML = `
+                    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
+                        <a href="paciente.html?id=${demoPacientes[0].id}&tab=plano" class="btn btn-secondary" style="background:var(--primary-color); border-color:var(--primary-color); color:white; width:auto; padding: 0.75rem 1.5rem;">Acessar Letícia</a>
+                        <button id="btn-onb-remove-demo" class="btn" style="background:transparent; border:1px solid #E8E0E6; color:#6A3E63; width:auto; padding: 0.7rem 1rem; border-radius:var(--radius-md);">Remover Demonstração</button>
+                    </div>
+                `;
+                document.getElementById('btn-onb-remove-demo').addEventListener('click', async () => {
+                    const btn = document.getElementById('btn-onb-remove-demo');
+                    btn.textContent = "Removendo...";
+                    document.getElementById('btn-remove-demo').click(); // Reutiliza a função já ligada a este botão oculto
+                });
+            } else {
+                onboardingDemoActions.innerHTML = `
+                    <button id="btn-create-demo" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; padding: 0.75rem 1.5rem;">Gerar Paciente Teste</button>
+                `;
+                document.getElementById('btn-create-demo').addEventListener('click', createDemoPatient);
+            }
         }
 
         // ==========================================

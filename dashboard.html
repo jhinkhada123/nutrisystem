@@ -71,42 +71,37 @@
             </p>
         </div>
 
-        <!-- ESTADO ONBOARDING -->
-        <div id="onboarding-state" class="hidden">
-            <div class="auth-card" style="max-width: 100%; border-top: 4px solid var(--primary-color);">
-                <h3 style="margin-bottom: 0.5rem; color: var(--primary-color);">Bem-vindo ao seu novo Consultório Inteligente!</h3>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">Siga os passos abaixo para configurar sua primeira experiência e desbloquear o poder da nossa IA gerando um plano alimentar.</p>
+        <!-- ESTADO ONBOARDING BETA -->
+        <div id="onboarding-state" class="auth-card" style="max-width: 100%; border-left: 4px solid var(--primary-color); padding: 2rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <h3 style="margin: 0 0 0.5rem 0; color: var(--primary-color);">Bem-vindo ao Beta do NutriFlow!</h3>
+                <p style="color: var(--text-muted); margin: 0; line-height: 1.6; max-width: 800px;">
+                    O seu consultório inteligente está pronto. Durante o período de testes, você pode usar a nossa Inteligência Artificial para gerar planos alimentares em segundos. Escolha como quer começar:
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
                 
-                <div class="onboarding-steps" style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
-                    
-                    <div class="step-item" id="step-1" style="display: flex; gap: 1rem; align-items: center;">
-                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; background: var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
-                        <div>
-                            <h4 style="margin: 0; font-size: 1rem;">Cadastrar Paciente</h4>
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Registre os dados básicos para iniciar o acompanhamento.</p>
-                        </div>
-                    </div>
+                <!-- Opção 1: Uso Real -->
+                <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--text-main);">👩‍⚕️ Avaliar com Pacientes Reais</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; flex-grow: 1; margin: 0 0 1.5rem 0; line-height: 1.5;">
+                        Cadastre um paciente real, insira os dados da primeira anamnese e veja a IA gerar um cardápio clínico completo, pronto para imprimir e entregar.
+                    </p>
+                    <a href="novo-paciente.html" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 0.75rem;">Cadastrar Paciente</a>
+                </div>
 
-                    <div class="step-item" id="step-2" style="display: flex; gap: 1rem; align-items: center;">
-                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; background: var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
-                        <div>
-                            <h4 style="margin: 0; font-size: 1rem;">Registrar Anamnese</h4>
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Insira dados clínicos, exames e restrições alimentares.</p>
-                        </div>
-                    </div>
-
-                    <div class="step-item" id="step-3" style="display: flex; gap: 1rem; align-items: center;">
-                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; background: var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
-                        <div>
-                            <h4 style="margin: 0; font-size: 1rem;">Gerar Plano com IA</h4>
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Crie um cardápio diagramado profissionalmente em segundos.</p>
-                        </div>
+                <!-- Opção 2: Sandbox / Demo -->
+                <div style="background: #FAF8F9; border: 1px solid #E8E0E6; border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #55314F;">🧪 Ambiente de Demonstração</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; flex-grow: 1; margin: 0 0 1.5rem 0; line-height: 1.5;">
+                        Ainda não quer usar dados reais? Gere a <em>Letícia Martins</em>, uma paciente fictícia pré-preenchida, para explorar as funcionalidades com total segurança.
+                    </p>
+                    <div id="onboarding-demo-actions" style="margin-top:auto;">
+                        <!-- JS injects the buttons here -->
                     </div>
                 </div>
 
-                <div id="onboarding-actions-container" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                    <!-- Botões dinâmicos do JS -->
-                </div>
             </div>
         </div>
 
