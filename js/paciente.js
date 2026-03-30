@@ -800,10 +800,10 @@ async function handlePrintPlan() {
         });
     }
 
-    // Footer
+    // Footer — discreto, assinatura leve
     const now = new Date();
     body += `<div class="print-footer">
-        Documento gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} — NutriFlow
+        Documento elaborado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · NutriFlow
     </div>`;
 
     // Monta um documento HTML completo e isolado — sem herança do app
@@ -812,41 +812,187 @@ async function handlePrintPlan() {
 <head>
 <meta charset="UTF-8">
 <title>Plano Alimentar — ${patientName}</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: white; color: #1A202C; line-height: 1.45; padding: 0; margin: 0; }
-    @page { size: A4; margin: 12mm 18mm; }
+
+    body {
+        font-family: 'Inter', -apple-system, sans-serif;
+        background: white;
+        color: #2D3036;
+        line-height: 1.45;
+        padding: 0;
+        margin: 0;
+        font-size: 10pt;
+    }
+
+    @page { size: A4; margin: 14mm 20mm; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-    .print-header { text-align: center; margin-bottom: 0.75rem; border-bottom: 2px solid #6A3E63; padding-bottom: 0.5rem; }
-    .print-header h1 { color: #1C2B20; font-size: 18pt; margin: 0 0 3px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
-    .print-header h2 { color: #9B7094; font-size: 10pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; }
+    /* ─── Header ─── */
+    .print-header {
+        text-align: center;
+        margin-bottom: 0.9rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid #E8E0E6;
+    }
+    .print-header h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        color: #1F1720;
+        font-size: 20pt;
+        font-weight: 600;
+        margin: 0 0 2px 0;
+        letter-spacing: -0.3px;
+    }
+    .print-header h2 {
+        font-family: 'Inter', sans-serif;
+        color: #9B7094;
+        font-size: 8.5pt;
+        margin: 0;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+    }
 
-    .print-motivational { background: #F3EAF1; border-left: 3px solid #9B7094; padding: 0.6rem 0.8rem; margin-bottom: 0.75rem; font-size: 9.5pt; color: #2D3748; border-radius: 3px; line-height: 1.4; }
+    /* ─── Motivational ─── */
+    .print-motivational {
+        background: #FAF8F9;
+        border-left: 3px solid #C9A8C2;
+        padding: 0.6rem 0.9rem;
+        margin-bottom: 0.8rem;
+        font-size: 9.5pt;
+        color: #4A4550;
+        border-radius: 0 4px 4px 0;
+        line-height: 1.5;
+        font-style: italic;
+    }
 
-    .print-meal-card { margin-bottom: 0.6rem; border: 1px solid #E8E0E6; border-radius: 6px; padding: 0.6rem 0.8rem; }
-    .print-meal-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5px solid #F3EAF1; padding-bottom: 0.3rem; margin-bottom: 0.5rem; }
-    .print-meal-title { font-size: 13pt; font-weight: 700; color: #1C2B20; }
-    .print-meal-time { font-size: 10pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 2px 10px; border-radius: 20px; }
+    /* ─── Meal Cards ─── */
+    .print-meal-card {
+        margin-bottom: 0.55rem;
+        border: 1px solid #EDE8EB;
+        border-radius: 5px;
+        padding: 0.55rem 0.75rem;
+    }
+    .print-meal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 0.3rem;
+        margin-bottom: 0.4rem;
+        border-bottom: 1px solid #F3EEF2;
+    }
+    .print-meal-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 12pt;
+        font-weight: 600;
+        color: #1F1720;
+        letter-spacing: -0.2px;
+    }
+    .print-meal-time {
+        font-size: 9pt;
+        color: #6A3E63;
+        font-weight: 600;
+        background: #F5EFF4;
+        padding: 2px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+    }
 
-    .print-option { margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px dashed #E8E0E6; }
-    .print-option:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-    .print-option-title { font-size: 10pt; font-weight: 700; color: #6A3E63; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px; }
-    .print-op-badge { background: #6A3E63; color: white; font-size: 8.5pt; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
+    /* ─── Options ─── */
+    .print-option {
+        margin-bottom: 0.35rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid #F3EEF2;
+    }
+    .print-option:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    .print-option-title {
+        font-size: 9.5pt;
+        font-weight: 600;
+        color: #6A3E63;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .print-op-badge {
+        background: #6A3E63;
+        color: white;
+        font-size: 7.5pt;
+        padding: 1px 6px;
+        border-radius: 8px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
 
+    /* ─── Items ─── */
     ul.print-items { list-style: none; padding: 0; margin: 0; }
-    ul.print-items li { margin-bottom: 0.2rem; font-size: 10pt; line-height: 1.35; color: #1A202C; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
-    .print-bullet { display: inline-block; width: 5px; height: 5px; background: #9B7094; border-radius: 50%; margin-right: 5px; flex-shrink: 0; margin-top: 6px; }
-    .print-medida { color: #718096; font-size: 9pt; font-weight: normal; }
-    .print-obs { color: #A0AEC0; font-size: 8.5pt; font-style: italic; }
+    ul.print-items li {
+        margin-bottom: 0.15rem;
+        font-size: 9.5pt;
+        line-height: 1.4;
+        color: #2D3036;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 3px;
+    }
+    .print-bullet {
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        background: #C9A8C2;
+        border-radius: 50%;
+        margin-right: 6px;
+        flex-shrink: 0;
+        margin-top: 7px;
+    }
+    .print-medida {
+        color: #6B7280;
+        font-size: 8.5pt;
+        font-weight: 400;
+    }
+    .print-obs {
+        color: #9CA3AF;
+        font-size: 8pt;
+        font-style: italic;
+    }
 
-    .print-subs { margin-top: 0.4rem; background: #FAFAFA; padding: 0.4rem 0.6rem; border-left: 2.5px solid #9B7094; border-radius: 0 3px 3px 0; font-size: 9pt; }
-    .print-subs-title { font-weight: 700; color: #6A3E63; margin-bottom: 0.25rem; font-size: 9pt; }
-    ul.print-subs-list { padding-left: 1.2rem; margin: 0; }
-    ul.print-subs-list li { margin-bottom: 0.15rem; color: #4A5568; font-size: 9pt; }
+    /* ─── Substitutions ─── */
+    .print-subs {
+        margin-top: 0.35rem;
+        background: #FAFAFA;
+        padding: 0.35rem 0.6rem;
+        border-left: 2px solid #C9A8C2;
+        border-radius: 0 3px 3px 0;
+        font-size: 8.5pt;
+    }
+    .print-subs-title {
+        font-weight: 600;
+        color: #6A3E63;
+        margin-bottom: 0.2rem;
+        font-size: 8.5pt;
+    }
+    ul.print-subs-list { padding-left: 1rem; margin: 0; }
+    ul.print-subs-list li {
+        margin-bottom: 0.1rem;
+        color: #4A5568;
+        font-size: 8.5pt;
+    }
 
-    .print-footer { margin-top: 0.75rem; text-align: center; font-size: 8pt; color: #A0AEC0; border-top: 1px solid #E8E0E6; padding-top: 0.4rem; }
+    /* ─── Footer ─── */
+    .print-footer {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 7.5pt;
+        color: #B8B0B6;
+        padding-top: 0.5rem;
+        letter-spacing: 0.3px;
+    }
 </style>
 </head>
 <body>${body}</body>
@@ -862,13 +1008,26 @@ async function handlePrintPlan() {
     printWin.document.write(fullHtml);
     printWin.document.close();
 
-    // Aguarda fontes e imagens carregarem antes de imprimir
+    // Aguarda fontes carregarem via document.fonts.ready, com timeout como fallback
+    const triggerPrint = () => {
+        printWin.print();
+        printWin.onafterprint = () => printWin.close();
+    };
+
     printWin.onload = () => {
-        setTimeout(() => {
-            printWin.print();
-            // Fecha a janela após impressão (ou cancelamento)
-            printWin.onafterprint = () => printWin.close();
-        }, 300);
+        if (printWin.document.fonts && printWin.document.fonts.ready) {
+            const timeout = setTimeout(triggerPrint, 800); // fallback
+            printWin.document.fonts.ready.then(() => {
+                clearTimeout(timeout);
+                setTimeout(triggerPrint, 50); // micro-delay pós-fonts
+            }).catch(() => {
+                clearTimeout(timeout);
+                triggerPrint();
+            });
+        } else {
+            // Navegador sem suporte a document.fonts — fallback direto
+            setTimeout(triggerPrint, 500);
+        }
     };
 }
 
