@@ -71,21 +71,11 @@ async function loadDashboardData() {
             saudacaoEl.textContent = `Olá, ${session.user.user_metadata.full_name || 'Nutricionista'}!`;
         }
 
-        // 0. Verifica Banners de Demo
+        // 0. Verifica Banners de Demo (Informações extras para Onboarding se necessário)
         const { data: demoPacientes, count: countDemo } = await supabaseClient
             .from('pacientes')
             .select('id, nome', { count: 'exact' })
             .eq('is_demo', true);
-            
-        if(countDemo > 0 && demoPacientes && demoPacientes.length > 0) {
-            const banner = document.getElementById('demo-banner');
-            const nameEl = document.getElementById('demo-patient-name');
-            if (nameEl) {
-                nameEl.innerHTML = `<a href="paciente.html?id=${demoPacientes[0].id}" style="color:var(--primary-color); text-decoration:underline;"><em>${demoPacientes[0].nome}</em></a>`;
-            }
-            banner.classList.remove('hidden');
-            banner.style.display = 'flex';
-        }
 
         // 1. Lógica Multi-State de Onboarding
         const { data: realPatients, error: errReal } = await supabaseClient
@@ -126,9 +116,7 @@ async function loadDashboardData() {
                     </div>
                 `;
                 document.getElementById('btn-onb-remove-demo').addEventListener('click', async () => {
-                    const btn = document.getElementById('btn-onb-remove-demo');
-                    btn.textContent = "Removendo...";
-                    document.getElementById('btn-remove-demo').click(); // Reutiliza a função já ligada a este botão oculto
+                    await handleRemoveDemo();
                 });
             } else {
                 onboardingDemoActions.innerHTML = `
@@ -238,73 +226,78 @@ async function loadDashboardData() {
     }
 }
 
+// Função Centralizada para Remover Dados de Demonstração
+async function handleRemoveDemo() {
+     if(!confirm('Isso apagará o paciente de demonstração, suas consultas e planos gerados. Confirmar?')) return;
+
+     const btn = document.getElementById('btn-onb-remove-demo');
+     if(btn) btn.textContent = "Removendo...";
+
+     try {
+         // 1. Buscar IDs dos pacientes demo
+         const { data: demoPacs, error: errFind } = await supabaseClient
+             .from('pacientes')
+             .select('id')
+             .eq('is_demo', true);
+
+         if (errFind) {
+             alert('Erro ao buscar dados de demonstração: ' + errFind.message);
+             if(btn) btn.textContent = "Remover Demonstração";
+             return;
+         }
+         if (!demoPacs || demoPacs.length === 0) {
+             alert('Nenhum dado de demonstração encontrado.');
+             return;
+         }
+
+         const demoIds = demoPacs.map(p => p.id);
+
+         // 2. Deletar filhos primeiro: planos_alimentares
+         const { error: errPlanos } = await supabaseClient
+             .from('planos_alimentares')
+             .delete()
+             .in('paciente_id', demoIds);
+         
+         if (errPlanos) {
+             alert('Erro ao excluir planos: ' + errPlanos.message);
+             if(btn) btn.textContent = "Remover Demonstração";
+             return;
+         }
+
+         // 3. Deletar filhos: consultas
+         const { error: errConsultas } = await supabaseClient
+             .from('consultas')
+             .delete()
+             .in('paciente_id', demoIds);
+         
+         if (errConsultas) {
+             alert('Erro ao excluir consultas: ' + errConsultas.message);
+             if(btn) btn.textContent = "Remover Demonstração";
+             return;
+         }
+
+         // 4. Deletar pais: pacientes demo (usando exclusivamente os IDs mapeados)
+         const { error: errPacs } = await supabaseClient
+             .from('pacientes')
+             .delete()
+             .in('id', demoIds);
+         
+         if (errPacs) {
+             alert('Erro ao excluir dados de demonstração: ' + errPacs.message);
+             if(btn) btn.textContent = "Remover Demonstração";
+             return;
+         }
+
+         window.location.reload();
+
+     } catch (err) {
+         console.error('Erro inesperado ao remover demo:', err);
+         alert('Ocorreu um erro inesperado ao remover os dados de demonstração. Tente novamente mais tarde.');
+         if(btn) btn.textContent = "Remover Demonstração";
+     }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Remover demo button
-    const btnRemove = document.getElementById('btn-remove-demo');
-    if(btnRemove) {
-        btnRemove.addEventListener('click', async () => {
-             if(!confirm('Isso apagará o paciente de demonstração, suas consultas e planos gerados. Confirmar?')) return;
-
-             try {
-                 // 1. Buscar IDs dos pacientes demo
-                 const { data: demoPacs, error: errFind } = await supabaseClient
-                     .from('pacientes')
-                     .select('id')
-                     .eq('is_demo', true);
-
-                 if (errFind) {
-                     alert('Erro ao buscar dados de demonstração: ' + errFind.message);
-                     return;
-                 }
-                 if (!demoPacs || demoPacs.length === 0) {
-                     alert('Nenhum dado de demonstração encontrado.');
-                     return;
-                 }
-
-                 const demoIds = demoPacs.map(p => p.id);
-
-                 // 2. Deletar filhos primeiro: planos_alimentares
-                 const { error: errPlanos } = await supabaseClient
-                     .from('planos_alimentares')
-                     .delete()
-                     .in('paciente_id', demoIds);
-                 
-                 if (errPlanos) {
-                     alert('Erro ao excluir planos: ' + errPlanos.message);
-                     return;
-                 }
-
-                 // 3. Deletar filhos: consultas
-                 const { error: errConsultas } = await supabaseClient
-                     .from('consultas')
-                     .delete()
-                     .in('paciente_id', demoIds);
-                 
-                 if (errConsultas) {
-                     alert('Erro ao excluir consultas: ' + errConsultas.message);
-                     return;
-                 }
-
-                 // 4. Deletar pais: pacientes demo (usando exclusivamente os IDs mapeados)
-                 const { error: errPacs } = await supabaseClient
-                     .from('pacientes')
-                     .delete()
-                     .in('id', demoIds);
-                 
-                 if (errPacs) {
-                     alert('Erro ao excluir dados de demonstração: ' + errPacs.message);
-                     return;
-                 }
-
-                 window.location.reload();
-
-             } catch (err) {
-                 console.error('Erro inesperado ao remover demo:', err);
-                 alert('Ocorreu um erro inesperado ao remover os dados de demonstração. Tente novamente mais tarde.');
-             }
-        });
-    }
-
     setTimeout(() => {
         loadDashboardData();
     }, 100);

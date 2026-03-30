@@ -407,6 +407,7 @@ async function handleUpdatePatient(e) {
 ======================================================= */
 function renderConsultations(consultasArray) {
     const listEl = document.getElementById('consultation-list-container');
+    const chartContainer = document.querySelector('.chart-container');
     const msgEmpty = document.getElementById('chart-empty-message');
     
     if (!consultasArray || consultasArray.length === 0) {
@@ -417,18 +418,33 @@ function renderConsultations(consultasArray) {
                 <button onclick="document.getElementById('modal-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Iniciar Primeira Consulta</button>
             </div>
         `;
-        msgEmpty.style.display = 'none';
+        if (chartContainer) chartContainer.classList.add('chart-hidden');
         if (chartInstance) chartInstance.destroy();
         return;
     }
 
-    msgEmpty.style.display = 'none';
+    // Gerenciamento de Escalonamento do Gráfico
+    if (chartContainer) {
+        if (consultasArray.length === 1) {
+            chartContainer.classList.add('chart-hidden');
+        } else if (consultasArray.length >= 2 && consultasArray.length <= 3) {
+            chartContainer.classList.remove('chart-hidden');
+            chartContainer.classList.add('mini');
+        } else {
+            chartContainer.classList.remove('chart-hidden', 'mini');
+        }
+    }
 
     // Ordenar Listagem: Mais recentes primeiro (Decrescente)
     const viewList = [...consultasArray].sort((a,b) => new Date(b.data_consulta) - new Date(a.data_consulta));
     
+    // Identificar a consulta mais antiga para marcar como Baseline
+    const oldestTimestamp = Math.min(...consultasArray.map(c => new Date(c.data_consulta).getTime()));
+
     listEl.innerHTML = '';
     viewList.forEach(c => {
+        const isBaseline = new Date(c.data_consulta).getTime() === oldestTimestamp;
+        
         let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #FAF8F9; border-radius:4px;">${escapeHTML(c.observacoes)}</p>` : '';
         let prox = c.proximo_retorno ? `<br><strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${escapeHTML(formatDateDisplay(c.proximo_retorno))}</strong>` : '';
         
@@ -439,7 +455,7 @@ function renderConsultations(consultasArray) {
 
         // Montar DOM 
         const card = document.createElement('div');
-        card.className = 'consultation-card';
+        card.className = `consultation-card ${isBaseline ? 'baseline' : ''}`;
         card.innerHTML = `
             <div class="consultation-header">
                 <span style="font-weight:600; font-size:1.1rem; color:var(--text-main);">${escapeHTML(formatDateDisplay(c.data_consulta))}</span>
@@ -453,9 +469,14 @@ function renderConsultations(consultasArray) {
         listEl.appendChild(card);
     });
 
-    // Ordenar Chart: Mais antigas primeiro (Crescente) na linha do tempo
-    const chartList = [...consultasArray].sort((a,b) => new Date(a.data_consulta) - new Date(b.data_consulta));
-    renderWeightChart(chartList);
+    // Só renderiza gráfico se houver 2 ou mais pontos
+    if (consultasArray.length >= 2) {
+        const chartList = [...consultasArray].sort((a,b) => new Date(a.data_consulta) - new Date(b.data_consulta));
+        // Pequeno delay para garantir que o container mudou de tamanho antes do Chart.js ler o offsetHeight
+        setTimeout(() => renderWeightChart(chartList), 50);
+    } else {
+        if (chartInstance) chartInstance.destroy();
+    }
 }
 
 function formatDateDisplay(dStr) {

@@ -29,6 +29,17 @@
                 <button type="submit" class="btn btn-primary" id="btn-recover" style="margin-top: 1rem;">Enviar link de recuperação</button>
             </form>
 
+            <!-- Orientações extras para o usuário -->
+            <div id="recovery-hints" style="margin-top: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; color: #475569; line-height: 1.5;">
+                <p style="margin-bottom: 0.5rem; font-weight: 500; color: #1e293b;">Dicas para encontrar o e-mail:</p>
+                <ul style="padding-left: 1.2rem; margin: 0;">
+                    <li>Verifique a pasta de <strong>Spam</strong> ou <strong>Promoções</strong>.</li>
+                    <li>O remetente será <code>noreply@auth.supabase.io</code>.</li>
+                    <li>O assunto costuma ser "Reset your password".</li>
+                    <li>Pode levar até 2 minutos para o e-mail chegar.</li>
+                </ul>
+            </div>
+
             <div class="auth-links" style="margin-top: 1.5rem;">
                 <p><a href="index.html">Voltar para o Login</a></p>
             </div>
@@ -37,10 +48,47 @@
 
     <script src="js/supabase-client.js"></script>
     <script>
+        const btn = document.getElementById('btn-recover');
+        const alertMsg = document.getElementById('alert-message');
+        const COOLDOWN_SECONDS = 60;
+        let countdownInterval;
+
+        // Verifica se há um cooldown ativo ao carregar a página
+        function checkCooldown() {
+            const lastSent = localStorage.getItem('last_recovery_sent');
+            if (lastSent) {
+                const now = Date.now();
+                const diff = Math.floor((now - parseInt(lastSent)) / 1000);
+                if (diff < COOLDOWN_SECONDS) {
+                    startCooldown(COOLDOWN_SECONDS - diff);
+                }
+            }
+        }
+
+        function startCooldown(seconds) {
+            btn.disabled = true;
+            let current = seconds;
+            
+            updateButtonText(current);
+            
+            countdownInterval = setInterval(() => {
+                current--;
+                if (current <= 0) {
+                    clearInterval(countdownInterval);
+                    btn.disabled = false;
+                    btn.textContent = "Enviar link de recuperação";
+                } else {
+                    updateButtonText(current);
+                }
+            }, 1000);
+        }
+
+        function updateButtonText(seconds) {
+            btn.textContent = `Aguarde ${seconds}s para reenviar`;
+        }
+
         document.getElementById('recover-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-recover');
-            const alertMsg = document.getElementById('alert-message');
             const email = document.getElementById('email').value.trim();
 
             if (!email) return;
@@ -59,19 +107,28 @@
                 alertMsg.textContent = "E-mail de recuperação enviado! Verifique sua caixa de entrada e SPAM.";
                 alertMsg.className = "alert alert-success";
                 
+                // Salva timestamp e inicia cooldown
+                localStorage.setItem('last_recovery_sent', Date.now().toString());
+                startCooldown(COOLDOWN_SECONDS);
+
                 // Clear input
                 document.getElementById('email').value = '';
             } catch (error) {
                 console.error(error);
-                alertMsg.textContent = error.message.includes('rate limit') 
-                    ? "Muitas tentativas. Aguarde alguns minutos e tente novamente." 
-                    : "Erro ao tentar enviar e-mail. Verifique se o endereço está correto.";
+                let errorMessage = "Erro ao tentar enviar e-mail. Verifique se o endereço está correto.";
+                if (error.message.includes('rate limit')) {
+                    errorMessage = "Muitas tentativas. Aguarde 1 minuto e tente novamente.";
+                }
+                
+                alertMsg.textContent = errorMessage;
                 alertMsg.className = "alert alert-error";
-            } finally {
                 btn.disabled = false;
                 btn.textContent = "Enviar link de recuperação";
             }
         });
+
+        // Inicializa check de cooldown
+        checkCooldown();
     </script>
 </body>
 </html>

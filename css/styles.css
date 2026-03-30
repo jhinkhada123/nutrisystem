@@ -1347,3 +1347,73 @@ textarea.internal-txt { min-height: 80px; }
         page-break-inside: avoid;
     }
 }
+
+/* ============================
+   Aba Consultas - Escalonamento
+============================ */
+.chart-container {
+    position: relative;
+    height: 300px; /* Altura padrão para 4+ consultas */
+    width: 100%;
+    margin-bottom: 2rem;
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.chart-container.mini {
+    height: 180px; /* Altura reduzida para 2-3 consultas */
+}
+
+.chart-container.chart-hidden {
+    height: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.consultation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.consultation-card {
+    background: #FAF8F9;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    position: relative;
+    transition: var(--transition);
+}
+
+.consultation-card:hover {
+    border-color: var(--secondary-color);
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.consultation-card.baseline {
+    border-left: 4px solid var(--primary-color);
+    background: #FFF;
+}
+
+.consultation-card.baseline::after {
+    content: "PONTO DE PARTIDA (CADASTRO)";
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: var(--primary-light);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.consultation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
