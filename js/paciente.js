@@ -973,6 +973,9 @@ async function handlePrintPlan() {
         padding: 0.4rem 0.7rem;
         break-inside: avoid;
         page-break-inside: avoid;
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
     }
     .print-meal-header {
         display: flex;
