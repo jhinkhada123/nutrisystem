@@ -717,24 +717,26 @@ function setupModal() {
     // Máscaras Dinâmicas e Inteligentes
     const applyMetricMask = (input, type) => {
         let digits = input.value.replace(/\D/g, ''); 
-        let formatted = digits;
-
+        
         if (type === 'decimal') {
-            // Limite de 4 dígitos para o formato XXX,X (máximo 999,9)
             if (digits.length > 4) digits = digits.slice(0, 4);
             
+            // Validação de Range para Decimais (XXX,X)
+            const numValue = parseFloat(digits) / 10;
+            if (input.id === 'cons_gordura' && numValue > 100) digits = '1000';
+            if (input.id === 'cons_peso' && numValue > 500) digits = '5000';
+            
             if (digits.length > 1) {
-                formatted = digits.slice(0, -1) + ',' + digits.slice(-1);
+                input.value = digits.slice(0, -1) + ',' + digits.slice(-1);
             } else {
-                formatted = digits;
+                input.value = digits;
             }
         } else {
             // Inteiro (Cintura/Quadril) - max 3 dígitos (ex: 120)
             if (digits.length > 3) digits = digits.slice(0, 3);
-            formatted = digits;
+            if (parseInt(digits) > 300) digits = '300';
+            input.value = digits;
         }
-        
-        input.value = formatted;
     };
 
     ['cons_peso','cons_gordura'].forEach(id => {
@@ -746,6 +748,21 @@ function setupModal() {
         const el = document.getElementById(id);
         if(el) el.addEventListener('input', (e) => applyMetricMask(e.target, 'integer'));
     });
+
+    // Inicialização do Flatpickr (Calendário Moderno)
+    if (typeof flatpickr !== 'undefined') {
+        const fpConfig = {
+            locale: "pt",
+            dateFormat: "d/m/Y",
+            allowInput: true,
+            disableMobile: "true",
+            onOpen: (selectedDates, dateStr, instance) => {
+                instance.calendarContainer.style.zIndex = "9999";
+            }
+        };
+        flatpickr("#cons_data", { ...fpConfig, defaultDate: "today" });
+        flatpickr("#cons_retorno", fpConfig);
+    }
 
     const closeModal = () => {
         modal.classList.add('hidden');

@@ -12,6 +12,12 @@
     
     <!-- Chart.js CDN (Para o Gráfico de Peso) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Flatpickr (Modern Date Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
 </head>
 <body class="dashboard-body">
     <!-- Sidebar -->
@@ -391,7 +397,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
                     <div class="input-group" style="grid-column: span 2;">
                         <label for="cons_data" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Data da Consulta</label>
-                        <input type="date" id="cons_data" required style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit;">
+                        <input type="text" id="cons_data" placeholder="dd/mm/aaaa" required style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit; cursor: pointer;">
                     </div>
 
                     <!-- Métrica: Peso -->
@@ -440,7 +446,7 @@
 
                     <div class="input-group">
                         <label for="cons_retorno" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Próximo retorno</label>
-                        <input type="date" id="cons_retorno" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit;">
+                        <input type="text" id="cons_retorno" placeholder="dd/mm/aaaa" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit; cursor: pointer;">
                     </div>
 
                     <div class="input-group" style="grid-column: span 2;">
