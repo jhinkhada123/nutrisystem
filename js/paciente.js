@@ -736,8 +736,8 @@ async function handlePrintPlan() {
     body += `<div class="print-header">`;
     if (logoUrl) {
         body += `
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-            <img src="${logoUrl}" alt="Logo da Clínica" style="max-height: 70px; max-width: 280px; object-fit: contain;">
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <img src="${logoUrl}" alt="Logo da Clínica" style="max-height: 50px; max-width: 240px; object-fit: contain;">
         </div>`;
     }
     body += `
@@ -815,38 +815,38 @@ async function handlePrintPlan() {
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: white; color: #1A202C; line-height: 1.5; padding: 0; margin: 0; }
-    @page { size: A4; margin: 15mm 20mm; }
+    body { font-family: 'Inter', sans-serif; background: white; color: #1A202C; line-height: 1.45; padding: 0; margin: 0; }
+    @page { size: A4; margin: 12mm 18mm; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-    .print-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #6A3E63; padding-bottom: 1rem; }
-    .print-header h1 { color: #1C2B20; font-size: 22pt; margin: 0 0 6px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
-    .print-header h2 { color: #9B7094; font-size: 14pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+    .print-header { text-align: center; margin-bottom: 0.75rem; border-bottom: 2px solid #6A3E63; padding-bottom: 0.5rem; }
+    .print-header h1 { color: #1C2B20; font-size: 18pt; margin: 0 0 3px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
+    .print-header h2 { color: #9B7094; font-size: 10pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; }
 
-    .print-motivational { background: #F3EAF1; border-left: 4px solid #9B7094; padding: 1.5rem; margin-bottom: 1.5rem; font-size: 11pt; color: #2D3748; border-radius: 4px; }
+    .print-motivational { background: #F3EAF1; border-left: 3px solid #9B7094; padding: 0.6rem 0.8rem; margin-bottom: 0.75rem; font-size: 9.5pt; color: #2D3748; border-radius: 3px; line-height: 1.4; }
 
-    .print-meal-card { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.5rem; border: 1px solid #E8E0E6; border-radius: 8px; padding: 1.5rem; }
-    .print-meal-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #F3EAF1; padding-bottom: 0.5rem; margin-bottom: 1rem; }
-    .print-meal-title { font-size: 16pt; font-weight: 700; color: #1C2B20; }
-    .print-meal-time { font-size: 12pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 4px 12px; border-radius: 20px; }
+    .print-meal-card { margin-bottom: 0.6rem; border: 1px solid #E8E0E6; border-radius: 6px; padding: 0.6rem 0.8rem; }
+    .print-meal-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5px solid #F3EAF1; padding-bottom: 0.3rem; margin-bottom: 0.5rem; }
+    .print-meal-title { font-size: 13pt; font-weight: 700; color: #1C2B20; }
+    .print-meal-time { font-size: 10pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 2px 10px; border-radius: 20px; }
 
-    .print-option { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dashed #E8E0E6; }
+    .print-option { margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px dashed #E8E0E6; }
     .print-option:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-    .print-option-title { font-size: 12pt; font-weight: 700; color: #6A3E63; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-    .print-op-badge { background: #6A3E63; color: white; font-size: 10pt; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+    .print-option-title { font-size: 10pt; font-weight: 700; color: #6A3E63; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px; }
+    .print-op-badge { background: #6A3E63; color: white; font-size: 8.5pt; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
 
     ul.print-items { list-style: none; padding: 0; margin: 0; }
-    ul.print-items li { margin-bottom: 0.6rem; font-size: 11pt; line-height: 1.4; color: #1A202C; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
-    .print-bullet { display: inline-block; width: 6px; height: 6px; background: #9B7094; border-radius: 50%; margin-right: 6px; flex-shrink: 0; margin-top: 8px; }
-    .print-medida { color: #718096; font-size: 10pt; font-weight: normal; }
-    .print-obs { color: #A0AEC0; font-size: 9.5pt; font-style: italic; width: 100%; padding-left: 20px; }
+    ul.print-items li { margin-bottom: 0.2rem; font-size: 10pt; line-height: 1.35; color: #1A202C; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
+    .print-bullet { display: inline-block; width: 5px; height: 5px; background: #9B7094; border-radius: 50%; margin-right: 5px; flex-shrink: 0; margin-top: 6px; }
+    .print-medida { color: #718096; font-size: 9pt; font-weight: normal; }
+    .print-obs { color: #A0AEC0; font-size: 8.5pt; font-style: italic; }
 
-    .print-subs { margin-top: 1rem; background: #FAFAFA; padding: 1rem; border-left: 3px solid #9B7094; border-radius: 0 4px 4px 0; font-size: 10pt; page-break-inside: avoid; }
-    .print-subs-title { font-weight: 700; color: #6A3E63; margin-bottom: 0.5rem; }
-    ul.print-subs-list { padding-left: 1.5rem; margin: 0; }
-    ul.print-subs-list li { margin-bottom: 0.4rem; color: #4A5568; }
+    .print-subs { margin-top: 0.4rem; background: #FAFAFA; padding: 0.4rem 0.6rem; border-left: 2.5px solid #9B7094; border-radius: 0 3px 3px 0; font-size: 9pt; }
+    .print-subs-title { font-weight: 700; color: #6A3E63; margin-bottom: 0.25rem; font-size: 9pt; }
+    ul.print-subs-list { padding-left: 1.2rem; margin: 0; }
+    ul.print-subs-list li { margin-bottom: 0.15rem; color: #4A5568; font-size: 9pt; }
 
-    .print-footer { margin-top: 1.5rem; text-align: center; font-size: 9pt; color: #A0AEC0; border-top: 1px solid #E8E0E6; padding-top: 1rem; }
+    .print-footer { margin-top: 0.75rem; text-align: center; font-size: 8pt; color: #A0AEC0; border-top: 1px solid #E8E0E6; padding-top: 0.4rem; }
 </style>
 </head>
 <body>${body}</body>
