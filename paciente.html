@@ -343,9 +343,12 @@
                     <!-- Preenchido via JS -->
                 </div>
 
-                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button id="btn-imprimir-plano" class="btn btn-secondary" style="width: auto; display: none; background-color: #FAF8F9; border-color: #E8E0E6; color: var(--primary-color);">🖨️ Gerar PDF / Imprimir</button>
-                    <button id="btn-salvar-plano" class="btn btn-primary" style="width: 250px;">Salvar Plano</button>
+                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
+                    <input type="file" id="inline-logo-upload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+                    <button id="btn-upload-logo-inline" class="btn btn-secondary" style="width: auto; display: none; height: 42px; padding: 0 1rem; font-size: 0.85rem; background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color);" title="Anexar ou trocar a logomarca que vai no topo do impresso">🖼️ Adicionar Logo</button>
+
+                    <button id="btn-imprimir-plano" class="btn btn-secondary" style="width: auto; display: none; background-color: #FAF8F9; border-color: #E8E0E6; color: var(--primary-color); height: 42px;">🖨️ Gerar PDF / Imprimir</button>
+                    <button id="btn-salvar-plano" class="btn btn-primary" style="width: 250px; height: 42px;">Salvar Plano</button>
                 </div>
             </div>
 

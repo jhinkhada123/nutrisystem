@@ -32,6 +32,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (updateForm) {
         updateForm.addEventListener('submit', handleUpdatePatient);
     }
+
+    // Eventos Logomarca In-line (PDF)
+    const btnUploadLogo = document.getElementById('btn-upload-logo-inline');
+    const inputLogo = document.getElementById('inline-logo-upload');
+    if (btnUploadLogo && inputLogo) {
+        btnUploadLogo.addEventListener('click', () => inputLogo.click());
+
+        inputLogo.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const originalText = btnUploadLogo.innerHTML;
+            btnUploadLogo.innerHTML = '⏳ Subindo...';
+            btnUploadLogo.disabled = true;
+
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 600;
+                const MAX_HEIGHT = 200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                } else {
+                    if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/png', 0.9);
+
+                try {
+                    await supabaseClient.auth.updateUser({ data: { logomarca_url: dataUrl } });
+                    btnUploadLogo.innerHTML = '✅ OK!';
+                    setTimeout(() => { btnUploadLogo.innerHTML = '🖼️ Trocar Logo'; btnUploadLogo.disabled = false; }, 2000);
+                } catch(err) {
+                    console.error('Erro ao salvar logomarca:', err);
+                    btnUploadLogo.innerHTML = '❌ Erro';
+                    setTimeout(() => { btnUploadLogo.innerHTML = originalText; btnUploadLogo.disabled = false; }, 2000);
+                }
+            };
+            img.src = URL.createObjectURL(file);
+        });
+    }
 });
 
 /* =======================================================
@@ -827,11 +873,14 @@ function extractPatientDataForAI() {
 
 function renderEditablePlan(planJson) {
     const btnImprimir = document.getElementById('btn-imprimir-plano');
+    const btnUpload = document.getElementById('btn-upload-logo-inline');
     if (planJson.schema_version === "2.0") {
         if(btnImprimir) btnImprimir.style.display = 'inline-block';
+        if(btnUpload) btnUpload.style.display = 'inline-block';
         renderPlanV2(planJson);
     } else {
         if(btnImprimir) btnImprimir.style.display = 'none';
+        if(btnUpload) btnUpload.style.display = 'none';
         renderPlanLegacyV1(planJson);
     }
 }
