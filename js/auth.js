@@ -209,16 +209,31 @@ if (logoutBtn) {
 
         // Confirmar logout
         document.getElementById('btn-confirm-logout').addEventListener('click', async () => {
-            const btnConfirm = document.getElementById('btn-confirm-logout');
-            btnConfirm.textContent = 'Saindo...';
-            btnConfirm.disabled = true;
-            const { error } = await supabaseClient.auth.signOut();
-            if (!error) {
-                window.location.href = 'index.html';
-            } else {
-                closeModal();
-                showAlert('Erro ao sair da conta.');
-            }
+            // UI Otimista / Transição Imediata
+            const fadeOverlay = document.createElement('div');
+            fadeOverlay.style.fixed = 'fixed';
+            fadeOverlay.style.position = 'fixed';
+            fadeOverlay.style.inset = '0';
+            fadeOverlay.style.background = 'white';
+            fadeOverlay.style.zIndex = '10000';
+            fadeOverlay.style.opacity = '0';
+            fadeOverlay.style.transition = 'opacity 0.4s ease';
+            fadeOverlay.style.display = 'flex';
+            fadeOverlay.style.alignItems = 'center';
+            fadeOverlay.style.justifyContent = 'center';
+            fadeOverlay.innerHTML = `<div class="logo-icon" style="transform: scale(1.5); animation: pulse 1.5s infinite;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 60%; height: auto;"><path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9 9 9 9 0 0 0-9-9 9 9 0 0 0 9-9Z"></path></svg></div>`;
+            document.body.appendChild(fadeOverlay);
+            
+            requestAnimationFrame(() => {
+                fadeOverlay.style.opacity = '1';
+            });
+
+            // Executa o logout em background
+            supabaseClient.auth.signOut().then(() => {
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 400); // Garante que a animação de fade termine
+            });
         });
     });
 }
@@ -244,7 +259,7 @@ async function initProfileAvatar() {
     if (sidebarHeader) {
         sidebarHeader.innerHTML = `
             <img id="sidebar-avatar" class="logo-icon-sm" src="${currentAvatarUrl}" alt="Avatar">
-            <h1 class="sidebar-title" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${user.user_metadata.full_name || 'NutriFlow'}">${user.user_metadata.full_name || 'NutriFlow'}</h1>
+            <h1 class="sidebar-title" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${user.user_metadata.full_name || 'Prescria'}">${user.user_metadata.full_name || 'Prescria'}</h1>
         `;
         
         // 2. Injetar o Modal de Perfil no DOM de forma elegante

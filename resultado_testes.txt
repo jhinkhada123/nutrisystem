@@ -1,0 +1,92 @@
+
+
+======================================================
+🧪 EXECUTANDO CENÁRIO: 1. SEM PROTOCOLO (Baseline)
+======================================================
+[OK em 26.52s]
+
+-> RACIONAL DA NUTRICIONISTA:
+Plano alimentar estruturado para emagrecimento de João Teste, considerando suas condições atuais e a necessidade de uma alimentação balanceada e acessível.
+-> ALERTA CLÍNICO GERADO PELA IA: Monitorar a adesão do paciente ao plano e fazer ajustes conforme necessário.
+
+-> AMOSTRA DO CARDÁPIO E ESPECIFICIDADE:
+[Café da Manhã]
+  - Ovo inteiro caipira in natura (100g)
+  - Pão integral de forma (60g)
+  - Abacate maduro (50g)
+[Almoço]
+  - Filé de peito de frango in natura grelhado (150g)
+  - Arroz integral cozido (100g)
+  - Brócolis cozidos no vapor (100g)
+[Lanche da Tarde]
+  - Iogurte natural integral sem açúcar (170g)
+  - Granola sem açúcar (30g)
+
+
+======================================================
+🧪 EXECUTANDO CENÁRIO: 2. CONTRADITÓRIO (Prioriza carbos pesados, mas paciente tem Diabetes e restrições a açucar)
+======================================================
+[OK em 33.67s]
+
+-> RACIONAL DA NUTRICIONISTA:
+O plano alimentar foi elaborado visando o emagrecimento do paciente João Teste, com foco em carboidratos de baixo índice glicêmico e priorização de alimentos conforme o protocolo da nutricionista.
+-> ALERTA CLÍNICO GERADO PELA IA: Adoçar as refeições com açúcar mascavo deve ser feito com moderação, considerando a condição de diabetes tipo 2 do paciente. Manter o acompanhamento regular da glicemia.
+
+-> AMOSTRA DO CARDÁPIO E ESPECIFICIDADE:
+[Café da Manhã]
+  - Ovo inteiro caipira in natura (100g)
+  - Pão francês integral (50g)
+  - Açúcar mascavo (10g)
+  - Café preto filtrado (200ml)
+[Almoço]
+  - Peito de frango grelhado (150g)
+  - Batata inglesa cozida (150g)
+  - Brócolis cozidos no vapor (100g)
+[Lanche da Tarde]
+  - Iogurte natural integral sem açúcar (200g)
+  - Banana-prata (100g)
+  - Granola sem açúcar (30g)
+
+
+======================================================
+🧪 EXECUTANDO CENÁRIO: 3. PROTOCOLO MÍNIMO (Apenas um ou dois itens pontuais)
+======================================================
+[OK em 25.12s]
+
+-> RACIONAL DA NUTRICIONISTA:
+Plano alimentar elaborado com foco no emagrecimento, priorizando alimentos ricos em fibras e proteínas, como aveia e ovos, que promovem saciedade.
+-> ALERTA CLÍNICO GERADO PELA IA: Monitorar a evolução do paciente e ajustar o plano conforme necessário.
+
+-> AMOSTRA DO CARDÁPIO E ESPECIFICIDADE:
+[Café da Manhã]
+  - Ovo inteiro caipira in natura (100g)
+  - Aveia em flocos finos (30g)
+[Almoço]
+  - Filé de peito de frango grelhado (150g)
+  - Brócolis cozidos no vapor (100g)
+  - Arroz integral cozido (75g)
+[Lanche da Tarde]
+  - Iogurte natural integral sem açúcar (200g)
+  - Banana-prata (100g)
+
+
+======================================================
+🧪 EXECUTANDO CENÁRIO: 4. ULTRA ESPECÍFICO (Evitar ultraprocessados + detalhado, sem glúten)
+======================================================
+[OK em 19.73s]
+
+-> RACIONAL DA NUTRICIONISTA:
+Plano alimentar elaborado para promover emagrecimento saudável, respeitando a restrição de glúten e priorizando alimentos funcionais e de baixo custo. As refeições são compostas por alimentos reconhecíveis e com preparo simples, conforme solicitado pela profissional.
+-> ALERTA CLÍNICO GERADO PELA IA: Atenção para a restrição de glúten. Evitar qualquer tipo de ultraprocessado e embutidos.
+
+-> AMOSTRA DO CARDÁPIO E ESPECIFICIDADE:
+[Café da Manhã]
+  - Ovo inteiro caipira in natura (100g)
+  - Batata doce cozida (150g)
+[Almoço]
+  - Filé de peito de frango in natura grelhado (150g)
+  - Abóbora cozida (200g)
+  - Salada de folhas verdes (alface, rúcula) (100g)
+[Lanche da Tarde]
+  - Banana-prata (100g)
+  - Castanhas de caju (30g)

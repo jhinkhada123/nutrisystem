@@ -1,0 +1,218 @@
+{
+  "schema_version": "2.0",
+  "uso_interno_nutricionista": {
+    "racional_clinico": "O plano foi elaborado visando a hipertrofia e performance, priorizando alimentos de baixo impacto insulinêmico, com ênfase em fibras e crocância. As opções incluem alimentos favoritos e respeitam as restrições do paciente.",
+    "alertas_prescricao": "Evitar qualquer inclusão de peixes ou fígados. Atenção ao balanceamento de carboidratos com fibras."
+  },
+  "orientacoes_paciente": {
+    "mensagem_motivacional": "Mantenha-se focado nos seus objetivos de hipertrofia e performance! Cada refeição é um passo em direção ao sucesso.",
+    "dicas_gerais": "Procure sempre manter um intervalo adequado entre as refeições e não esqueça de se hidratar."
+  },
+  "refeicoes": [
+    {
+      "id_refeicao": "r_1",
+      "ordem": 1,
+      "nome": "Café da Manhã",
+      "horario_sugerido": "08:00",
+      "nota_clinica_refeicao": "Opção rica em proteínas e fibras para um início de dia estável.",
+      "opcoes": [
+        {
+          "id_opcao": "op_1_1",
+          "ordem": 1,
+          "titulo_opcao": "Ovos com Aveia",
+          "itens": [
+            {
+              "id_item": "i_1",
+              "alimento": "Ovo inteiro caipira",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "2 unidades médias",
+              "observacao": "mexidos em 1 fio de azeite extravirgem"
+            },
+            {
+              "id_item": "i_2",
+              "alimento": "Aveia grossa",
+              "quantidade": 40,
+              "unidade": "g",
+              "medida_caseira": "4 colheres de sopa",
+              "observacao": "misturada aos ovos"
+            }
+          ],
+          "substituicoes": null
+        },
+        {
+          "id_opcao": "op_1_2",
+          "ordem": 2,
+          "titulo_opcao": "Pasta de Amendoim com Banana",
+          "itens": [
+            {
+              "id_item": "i_3",
+              "alimento": "Pasta de amendoim",
+              "quantidade": 30,
+              "unidade": "g",
+              "medida_caseira": "2 colheres de sopa",
+              "observacao": null
+            },
+            {
+              "id_item": "i_4",
+              "alimento": "Banana-prata",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "1 unidade média",
+              "observacao": null
+            }
+          ],
+          "substituicoes": null
+        }
+      ]
+    },
+    {
+      "id_refeicao": "r_2",
+      "ordem": 2,
+      "nome": "Lanche",
+      "horario_sugerido": "10:30",
+      "nota_clinica_refeicao": "Lanche leve e nutritivo para manter a energia até o almoço.",
+      "opcoes": [
+        {
+          "id_opcao": "op_2_1",
+          "ordem": 1,
+          "titulo_opcao": "Smoothie de Abacate",
+          "itens": [
+            {
+              "id_item": "i_5",
+              "alimento": "Abacate",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "1/2 unidade média",
+              "observacao": "batido com água e gelo"
+            },
+            {
+              "id_item": "i_6",
+              "alimento": "Whey Protein 80%",
+              "quantidade": 30,
+              "unidade": "g",
+              "medida_caseira": "1 scoop",
+              "observacao": null
+            }
+          ],
+          "substituicoes": null
+        }
+      ]
+    },
+    {
+      "id_refeicao": "r_3",
+      "ordem": 3,
+      "nome": "Almoço",
+      "horario_sugerido": "12:30",
+      "nota_clinica_refeicao": "Opção balanceada a partir do buffet à quilo, priorizando proteínas e vegetais.",
+      "opcoes": [
+        {
+          "id_opcao": "op_3_1",
+          "ordem": 1,
+          "titulo_opcao": "Salada de Batata Salsa e Peito de Peru",
+          "itens": [
+            {
+              "id_item": "i_7",
+              "alimento": "Batata Salsa cozida",
+              "quantidade": 150,
+              "unidade": "g",
+              "medida_caseira": "1 batata média",
+              "observacao": null
+            },
+            {
+              "id_item": "i_8",
+              "alimento": "Peito de Peru grelhado",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "3 fatias finas",
+              "observacao": null
+            },
+            {
+              "id_item": "i_9",
+              "alimento": "Salada de folhas verdes",
+              "quantidade": 50,
+              "unidade": "g",
+              "medida_caseira": "1 xícara de chá",
+              "observacao": null
+            }
+          ],
+          "substituicoes": null
+        }
+      ]
+    },
+    {
+      "id_refeicao": "r_4",
+      "ordem": 4,
+      "nome": "Café da Tarde",
+      "horario_sugerido": "16:30",
+      "nota_clinica_refeicao": "Refeição para evitar longos períodos de jejum, com ênfase em proteínas e gorduras saudáveis.",
+      "opcoes": [
+        {
+          "id_opcao": "op_4_1",
+          "ordem": 1,
+          "titulo_opcao": "Iogurte com Chia",
+          "itens": [
+            {
+              "id_item": "i_10",
+              "alimento": "Iogurte natural integral sem açúcar",
+              "quantidade": 200,
+              "unidade": "g",
+              "medida_caseira": "1 potinho pequeno",
+              "observacao": null
+            },
+            {
+              "id_item": "i_11",
+              "alimento": "Semente de chia",
+              "quantidade": 15,
+              "unidade": "g",
+              "medida_caseira": "1 colher de sopa cheia",
+              "observacao": null
+            }
+          ],
+          "substituicoes": null
+        }
+      ]
+    },
+    {
+      "id_refeicao": "r_5",
+      "ordem": 5,
+      "nome": "Jantar",
+      "horario_sugerido": "19:30",
+      "nota_clinica_refeicao": "Reflexão da alimentação do dia, com foco em proteínas e fibras.",
+      "opcoes": [
+        {
+          "id_opcao": "op_5_1",
+          "ordem": 1,
+          "titulo_opcao": "Peito de Peru com Legumes",
+          "itens": [
+            {
+              "id_item": "i_12",
+              "alimento": "Peito de Peru grelhado",
+              "quantidade": 120,
+              "unidade": "g",
+              "medida_caseira": "4 fatias finas",
+              "observacao": null
+            },
+            {
+              "id_item": "i_13",
+              "alimento": "Brócolis cozidos",
+              "quantidade": 100,
+              "unidade": "g",
+              "medida_caseira": "1 xícara de chá",
+              "observacao": null
+            },
+            {
+              "id_item": "i_14",
+              "alimento": "Batata doce assada",
+              "quantidade": 150,
+              "unidade": "g",
+              "medida_caseira": "1 batata média",
+              "observacao": null
+            }
+          ],
+          "substituicoes": null
+        }
+      ]
+    }
+  ]
+}

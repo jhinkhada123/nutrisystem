@@ -11,6 +11,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('settings-name').value = meta.full_name || meta.name || '';
     document.getElementById('settings-email').value = user.email || '';
 
+    // Protocolo
+    if (meta.protocolo_clinico) {
+        document.getElementById('proto-priorizados').value = meta.protocolo_clinico.alimentos_priorizados || '';
+        document.getElementById('proto-evitados').value = meta.protocolo_clinico.alimentos_evitados || '';
+        document.getElementById('proto-perfil').value = meta.protocolo_clinico.perfil_plano || 'acessível';
+        document.getElementById('proto-especificidade').value = meta.protocolo_clinico.grau_especificidade || 'detalhado';
+        document.getElementById('proto-obs').value = meta.protocolo_clinico.observacoes_clinicas || '';
+    }
+
     // Avatar
     const avatarImg = document.getElementById('settings-avatar-img');
     const removeBtn = document.getElementById('btn-remove-avatar');
@@ -274,6 +283,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         } finally {
             btn.disabled = false;
             btn.textContent = 'Alterar senha';
+        }
+    });
+
+    // ─── Salvar Protocolo da Nutri ───────────────────
+    document.getElementById('btn-save-protocolo').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-save-protocolo');
+        
+        const protocolo = {
+            alimentos_priorizados: document.getElementById('proto-priorizados').value.trim(),
+            alimentos_evitados: document.getElementById('proto-evitados').value.trim(),
+            perfil_plano: document.getElementById('proto-perfil').value,
+            grau_especificidade: document.getElementById('proto-especificidade').value,
+            observacoes_clinicas: document.getElementById('proto-obs').value.trim()
+        };
+
+        btn.disabled = true;
+        btn.textContent = 'Gravando...';
+
+        try {
+            const { error } = await supabaseClient.auth.updateUser({
+                data: { protocolo_clinico: protocolo }
+            });
+            if (error) throw error;
+            showToast('Protocolo salvo. A IA seguirá suas diretrizes a partir da próxima geração.');
+        } catch (err) {
+            showToast(err.message || 'Erro ao salvar protocolo.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Salvar Protocolo';
         }
     });
 

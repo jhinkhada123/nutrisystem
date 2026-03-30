@@ -26,7 +26,7 @@ async function createDemoPatient(event) {
         const { data: novoPac, error: errPac } = await supabaseClient.from('pacientes').insert([{
             nutricionista_id: session.user.id,
             nome: "Letícia Martins",
-            email: "demo@nutriflow.app",
+            email: "demo@prescria.app",
             telefone: "11999999999",
             data_nascimento: "1990-01-01",
             sexo: "F",
@@ -71,7 +71,58 @@ async function loadDashboardData() {
             saudacaoEl.textContent = `Olá, ${session.user.user_metadata.full_name || 'Nutricionista'}!`;
         }
 
-        // 0. Verifica Banners de Demo (Informações extras para Onboarding se necessário)
+        // 0. Verifica Banners de Demo / Tracker de Retorno
+        let loginCount = parseInt(localStorage.getItem('prescria_login_count') || '0');
+        loginCount += 1;
+        localStorage.setItem('prescria_login_count', loginCount.toString());
+
+        const meta = session.user.user_metadata || {};
+
+        // Injeta Bloco do Protocolo da Nutri
+        const protocolTrackerEl = document.getElementById('protocol-tracker-container');
+        if (protocolTrackerEl) {
+            const proto = meta.protocolo_clinico || {};
+            const hasProtocol = proto.alimentos_priorizados || proto.alimentos_evitados || proto.observacoes_clinicas;
+            
+            if (hasProtocol) {
+                // Estado: Ativo (Configurado)
+                protocolTrackerEl.innerHTML = `
+                <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="color: #2E7D32; display: flex; align-items: center; justify-content: center; background: #E8F5E9; border-radius: 50%; width: 32px; height: 32px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 0.15rem 0; font-size: 0.95rem; color: var(--text-main);">Protocolo da Nutri ativo</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">A IA está gerando planos com base nas suas diretrizes clínicas.</p>
+                        </div>
+                    </div>
+                    <a href="configuracoes.html#protocolo-clinico" class="btn btn-sm" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main); font-weight: 500; text-decoration: none;">Revisar protocolo</a>
+                </div>
+                `;
+            } else {
+                // Estado: Vazio (Não configurado)
+                protocolTrackerEl.innerHTML = `
+                <div style="background: #FAF8F9; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="background: #F4EFF3; padding: 10px; border-radius: var(--radius-sm); color: var(--primary-color); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h3 style="margin: 0 0 0.15rem 0; font-size: 1.05rem; color: var(--text-main);">Aqui, a IA segue a nutricionista</h3>
+                        <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; max-width: 600px;">
+                            Ensine ao Prescria como você prefere prescrever. Quanto mais claro o seu protocolo, mais alinhados ficam os planos gerados.
+                        </p>
+                        <a href="configuracoes.html#protocolo-clinico" class="btn btn-primary btn-sm" style="width: auto; padding: 0.5rem 1rem; display: inline-block; text-decoration: none;">Configurar Protocolo da Nutri</a>
+                    </div>
+                </div>
+                `;
+            }
+        }
+
+        const titleOnboarding = document.getElementById('onboarding-title');
+        if (titleOnboarding && loginCount > 1) {
+            titleOnboarding.innerHTML = 'Bem-vindo de volta ao Beta do <span style="color: var(--primary-color);">Prescria</span>!';
+        }
         const { data: demoPacientes, count: countDemo } = await supabaseClient
             .from('pacientes')
             .select('id, nome', { count: 'exact' })
@@ -96,23 +147,45 @@ async function loadDashboardData() {
         }
 
         if (dashboardMetricsEl) {
-            dashboardMetricsEl.classList.remove('hidden');
+            // As métricas agora estão dentro de uma Aba separada e renderizam normal.
             if(totalRealPacientes === 0) {
                 dashboardMetricsEl.classList.add('metrics-parallel');
             } else {
                 dashboardMetricsEl.classList.remove('metrics-parallel');
             }
         }
-        document.getElementById('quick-actions').classList.remove('hidden');
+        // document.getElementById('quick-actions').classList.remove('hidden');
+
+        // Lógica de Tabs
+        const tabBtnInicio = document.getElementById('tab-btn-inicio');
+        const tabBtnMetricas = document.getElementById('tab-btn-metricas');
+        const tabContentInicio = document.getElementById('tab-content-inicio');
+        const tabContentMetricas = document.getElementById('tab-content-metricas');
+
+        if (tabBtnInicio && tabBtnMetricas) {
+            tabBtnInicio.addEventListener('click', () => {
+                tabBtnInicio.classList.add('active');
+                tabBtnMetricas.classList.remove('active');
+                tabContentInicio.classList.remove('hidden');
+                tabContentMetricas.classList.add('hidden');
+            });
+
+            tabBtnMetricas.addEventListener('click', () => {
+                tabBtnMetricas.classList.add('active');
+                tabBtnInicio.classList.remove('active');
+                tabContentMetricas.classList.remove('hidden');
+                tabContentInicio.classList.add('hidden');
+            });
+        }
 
         // Renderiza botões de Demo na área de Onboarding Beta
         const onboardingDemoActions = document.getElementById('onboarding-demo-actions');
         if (onboardingDemoActions) {
             if (countDemo > 0 && demoPacientes && demoPacientes.length > 0) {
                 onboardingDemoActions.innerHTML = `
-                    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
-                        <a href="paciente.html?id=${demoPacientes[0].id}&tab=plano" class="btn btn-secondary" style="background:var(--primary-color); border-color:var(--primary-color); color:white; width:auto; padding: 0.75rem 1.5rem;">Acessar Letícia</a>
-                        <button id="btn-onb-remove-demo" class="btn" style="background:transparent; border:1px solid #E8E0E6; color:#6A3E63; width:auto; padding: 0.7rem 1rem; border-radius:var(--radius-md);">Remover Demonstração</button>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:stretch; width: 100%;">
+                        <a href="paciente.html?id=${demoPacientes[0].id}&tab=plano" class="btn btn-secondary" style="background:var(--primary-color); border-color:var(--primary-color); color:white; flex: 1; min-width: 140px; text-align: center; padding: 0.8rem; border-radius:var(--radius-md);">Acessar Letícia</a>
+                        <button id="btn-onb-remove-demo" class="btn" style="background:transparent; border:1px solid #E8E0E6; color:#6A3E63; flex: 1; min-width: 140px; text-align: center; padding: 0.8rem; border-radius:var(--radius-md);">Remover Demonstração</button>
                     </div>
                 `;
                 document.getElementById('btn-onb-remove-demo').addEventListener('click', async () => {
@@ -120,7 +193,7 @@ async function loadDashboardData() {
                 });
             } else {
                 onboardingDemoActions.innerHTML = `
-                    <button id="btn-create-demo" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; padding: 0.75rem 1.5rem;">Gerar Paciente Teste</button>
+                    <button id="btn-create-demo" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: 100%; border-radius: var(--radius-md); padding: 0.8rem;">Gerar Paciente Teste</button>
                 `;
                 document.getElementById('btn-create-demo').addEventListener('click', createDemoPatient);
             }

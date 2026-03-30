@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriFlow - Configurações</title>
-    <meta name="description" content="Gerencie seu perfil e configurações da conta NutriFlow.">
+    <title>Prescria - Configurações</title>
+    <meta name="description" content="Gerencie seu perfil e configurações da conta Prescria.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,8 +13,8 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon logo-icon-sm">NF</div>
-            <h1 class="sidebar-title">NutriFlow</h1>
+            <div class="logo-icon logo-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 60%; height: auto;"><path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9 9 9 9 0 0 0-9-9 9 9 0 0 0 9-9Z"></path></svg></div>
+            <h1 class="sidebar-title">Prescria</h1>
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item">
@@ -91,6 +91,48 @@
                     <input type="file" id="settings-logo-input" accept="image/png, image/jpeg, image/jpg" style="display: none;">
                 </div>
             </div>
+        </section>
+
+        <!-- Seção: Protocolo da Nutri -->
+        <section id="protocolo-clinico" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary-color); margin: 0 0 0.25rem 0; font-size: 1.15rem;">✨ Protocolo da Nutri</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1.5rem 0;">A IA do Prescria não tenta pensar por você. Ela segue suas diretrizes clínicas. Ensine a IA como você prescreve.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div>
+                    <label for="proto-priorizados" style="display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem;">Alimentos priorizados</label>
+                    <input type="text" id="proto-priorizados" placeholder="Ex: ovo caipira, aveia em flocos, banana-prata..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--bg-main); transition: border-color 0.2s;" />
+                </div>
+                <div>
+                    <label for="proto-evitados" style="display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem;">Alimentos evitados (nunca incluir)</label>
+                    <input type="text" id="proto-evitados" placeholder="Ex: embutidos, margarina..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--bg-main); transition: border-color 0.2s;" />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div>
+                    <label for="proto-perfil" style="display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem;">Perfil do plano</label>
+                    <select id="proto-perfil" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--bg-main); cursor: pointer;">
+                        <option value="acessível">Acessível (rotina e custos simples)</option>
+                        <option value="variado">Variado (maior leque de opções)</option>
+                        <option value="funcional">Funcional (foco em bioativos)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="proto-especificidade" style="display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem;">Grau de especificidade</label>
+                    <select id="proto-especificidade" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--bg-main); cursor: pointer;">
+                        <option value="detalhado">Detalhado (exato, com tipo e medida clara)</option>
+                        <option value="conciso">Conciso (direto, focado no alimento)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="proto-obs" style="display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-main); margin-bottom: 0.4rem;">Diretrizes clínicas gerais</label>
+                <textarea id="proto-obs" rows="3" placeholder="Ex: Priorizo rotinas simples. Evito suplementação sem necessidade. Foco em comida de verdade." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--bg-main); resize: vertical; transition: border-color 0.2s;"></textarea>
+            </div>
+
+            <button id="btn-save-protocolo" class="btn btn-primary" style="width: auto; padding: 0.75rem 2rem;">Salvar Protocolo</button>
         </section>
 
         <!-- Seção: Conta -->

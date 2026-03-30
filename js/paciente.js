@@ -195,6 +195,111 @@ async function handleDeletePatient() {
 }
 
 /* =======================================================
+   EXCLUSÃO DE CONSULTA
+======================================================= */
+window.handleDeleteConsulta = function(consultaId) {
+    const modal = document.getElementById('delete-modal');
+    if (!modal) return;
+    
+    const btnCancel = document.getElementById('btn-cancel-delete');
+    const btnConfirm = document.getElementById('btn-confirm-delete');
+    const modalBox = modal.children[0];
+
+    modal.style.display = 'flex';
+    void modal.offsetWidth;
+    modal.style.opacity = '1';
+    modalBox.style.transform = 'translateY(0)';
+
+    const closeModal = () => {
+        modal.style.opacity = '0';
+        modalBox.style.transform = 'translateY(10px)';
+        setTimeout(() => { 
+            modal.style.display = 'none'; 
+            let newCancel = btnCancel.cloneNode(true);
+            btnCancel.parentNode.replaceChild(newCancel, btnCancel);
+            let newConfirm = btnConfirm.cloneNode(true);
+            btnConfirm.parentNode.replaceChild(newConfirm, btnConfirm);
+        }, 200);
+    };
+
+    btnCancel.onclick = closeModal;
+    
+    btnConfirm.onclick = async () => {
+        // UI Otimista: Fecha modal e remove card imediatamente
+        closeModal();
+        const cardToRemove = document.getElementById(`card-consulta-${consultaId}`);
+        if (cardToRemove) {
+            cardToRemove.style.transition = 'all 0.4s ease';
+            cardToRemove.style.opacity = '0';
+            cardToRemove.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                if (cardToRemove.parentNode) cardToRemove.remove();
+                // Se a lista ficar vazia após remover, recarregar para mostrar Empty State
+                const listEl = document.getElementById('consultation-list');
+                if (listEl && listEl.children.length === 0) {
+                    loadPatientProfile();
+                }
+            }, 400);
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from('consultas')
+                .delete()
+                .eq('id', consultaId);
+                
+            if (error) throw error;
+            
+            // Recarrega em background para atualizar métricas e gráficos sem travar a UI
+            loadPatientProfile();
+        } catch(err) {
+            console.error(err);
+            showAlert('Erro ao excluir consulta: ' + err.message, 'error');
+            // Opcional: recarregar a lista caso tenha falhado para o item voltar
+            loadPatientProfile();
+        }
+    };
+}
+
+/* =======================================================
+   EDIÇÃO INLINE DE OBSERVAÇÃO
+======================================================= */
+window.toggleEditObs = function(consultaId) {
+    const viewEl = document.getElementById(`view-obs-${consultaId}`);
+    const editEl = document.getElementById(`edit-obs-${consultaId}`);
+    
+    if (viewEl.style.display === 'none') {
+        viewEl.style.display = 'block';
+        editEl.style.display = 'none';
+    } else {
+        viewEl.style.display = 'none';
+        editEl.style.display = 'flex';
+    }
+};
+
+window.saveEditObs = async function(consultaId) {
+    const textarea = document.getElementById(`input-obs-${consultaId}`);
+    const newText = textarea.value.trim();
+    
+    try {
+        const { error } = await supabaseClient
+            .from('consultas')
+            .update({ observacoes: newText })
+            .eq('id', consultaId);
+            
+        if (error) throw error;
+        
+        showAlert('Observação atualizada.', 'success');
+        
+        // Atualiza a memória local rápida pra não re-fetch do banco intero, mas ideal re-load
+        loadPatientProfile();
+    } catch (err) {
+        console.error(err);
+        showAlert('Erro ao atualizar observação: ' + err.message, 'error');
+    }
+};
+
+/* =======================================================
    CARREGAMENTO E BIND DOS DADOS (READ)
 ======================================================= */
 async function loadPatientProfile() {
@@ -389,7 +494,7 @@ async function handleUpdatePatient(e) {
         if (error) throw error;
         
         hasUnsavedChanges = false;
-        showToast('Cadastro atualizado.');
+        showAlert('Cadastro atualizado.', 'success');
         document.getElementById('paciente-nome-header').textContent = payload.nome;
 
     } catch (err) {
@@ -405,6 +510,7 @@ async function handleUpdatePatient(e) {
    SISTEMA DE CONSULTAS (CHART E MODAL)
 ======================================================= */
 function renderConsultations(consultasArray) {
+    window.currentConsultations = consultasArray || [];
     const listEl = document.getElementById('consultation-list-container');
     const chartContainer = document.querySelector('.chart-container');
     const msgEmpty = document.getElementById('chart-empty-message');
@@ -443,27 +549,60 @@ function renderConsultations(consultasArray) {
     listEl.innerHTML = '';
     viewList.forEach(c => {
         const isBaseline = new Date(c.data_consulta).getTime() === oldestTimestamp;
-        
-        let obs = c.observacoes ? `<p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-muted); padding: 0.5rem; background: #FAF8F9; border-radius:4px;">${escapeHTML(c.observacoes)}</p>` : '';
-        let prox = c.proximo_retorno ? `<br><strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${escapeHTML(formatDateDisplay(c.proximo_retorno))}</strong>` : '';
+        const textEscaped = escapeHTML(c.observacoes || '');
+        let obsContainer = `
+            <div style="margin-top:0.85rem; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Anotações</span>
+                    <button onclick="window.toggleEditObs('${c.id}')" title="Editar Observação" style="background:none; border:none; cursor:pointer; color: var(--text-muted); transition: color 0.15s; padding: 0;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-muted)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                </div>
+                <!-- View Mode -->
+                <div id="view-obs-${c.id}" onclick="window.toggleEditObs('${c.id}')" style="font-size:0.9rem; color: #4A5568; padding: 0.75rem; background: #FAF8F9; border-radius:6px; border: 1px solid #E2E8E4; white-space: pre-wrap; cursor: text; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.backgroundColor='#FFF';" onmouseout="this.style.borderColor='#E2E8E4'; this.style.backgroundColor='#FAF8F9';">${textEscaped ? textEscaped : '<i style="color:#A0AEC0;">Clique aqui para adicionar anotações sobre este retorno...</i>'}</div>
+                
+                <!-- Edit Mode -->
+                <div id="edit-obs-${c.id}" style="display: none; flex-direction: column; gap: 0.5rem;">
+                    <textarea id="input-obs-${c.id}" rows="3" maxlength="800" style="width: 100%; border: 1px solid var(--primary-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; font-size: 0.9rem;">${textEscaped}</textarea>
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.toggleEditObs('${c.id}')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #E2E8F0; border-color:#E2E8F0; color:#4A5568;">Cancelar</button>
+                        <button class="btn btn-primary btn-sm" onclick="window.saveEditObs('${c.id}')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        let prox = c.proximo_retorno ? `<strong style="font-size:0.85rem; color:var(--primary-color);">Prox. Retorno: ${escapeHTML(formatDateDisplay(c.proximo_retorno))}</strong>` : '';
         
         // Formatar % gordura / CM com condicional
         let cint = c.cintura ? ` &bull; <span>Cintura: ${escapeHTML(String(c.cintura))}cm</span>` : '';
         let quad = c.quadril ? ` &bull; <span>Quadril: ${escapeHTML(String(c.quadril))}cm</span>` : '';
         let gord = c.percentual_gordura ? ` &bull; <span>Gordura: ${escapeHTML(String(c.percentual_gordura))}%</span>` : '';
 
+        const badgeText = isBaseline ? 'Avaliação Inicial' : 'Retorno';
+        const badgeBg = isBaseline ? '#F3EAF1' : '#F0F4F8';
+        const badgeCol = isBaseline ? 'var(--primary-color)' : '#2C5282';
+
         // Montar DOM 
         const card = document.createElement('div');
+        card.id = `card-consulta-${c.id}`;
         card.className = `consultation-card ${isBaseline ? 'baseline' : ''}`;
+        card.style.position = 'relative';
         card.innerHTML = `
-            <div class="consultation-header">
-                <span style="font-weight:600; font-size:1.1rem; color:var(--text-main);">${escapeHTML(formatDateDisplay(c.data_consulta))}</span>
+            <div class="consultation-header" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 0.5rem;">
+                <div>
+                    <span style="font-weight:600; font-size:1.1rem; color:var(--text-main); margin-right: 0.75rem;">${escapeHTML(formatDateDisplay(c.data_consulta))}</span>
+                    <span style="background: ${badgeBg}; color: ${badgeCol}; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${badgeText}</span>
+                </div>
+                <button title="Excluir Consulta" onclick="window.handleDeleteConsulta('${c.id}')" style="background:none; border:none; cursor:pointer; color: var(--text-muted); transition: color 0.15s; padding: 0 4px; margin-top:-2px;" onmouseover="this.style.color='var(--error-color)'" onmouseout="this.style.color='var(--text-muted)'">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
             </div>
             <div style="font-size:0.95rem; color: #4A5568;">
-                <strong>Peso: ${escapeHTML(String(c.peso))}kg</strong> ${cint} ${quad} ${gord}
-                ${prox}
+                <strong>Peso: ${escapeHTML(String(c.peso))}kg</strong>${cint}${quad}${gord}
             </div>
-            ${obs}
+            ${obsContainer}
+            <div style="margin-top: 0.85rem;">${prox}</div>
         `;
         listEl.appendChild(card);
     });
@@ -499,6 +638,9 @@ function renderWeightChart(chartData) {
     
     const dataPoints = chartData.map(c => parseFloat(c.peso) || 0);
 
+    const minWeight = Math.min(...dataPoints);
+    const maxWeight = Math.max(...dataPoints);
+
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -531,6 +673,8 @@ function renderWeightChart(chartData) {
             scales: {
                 y: {
                     beginAtZero: false,
+                    suggestedMin: minWeight > 5 ? minWeight - 2 : 0,
+                    suggestedMax: maxWeight + 2,
                     grid: { color: '#E2E8E4' } // border-color
                 },
                 x: {
@@ -550,10 +694,57 @@ function setupModal() {
     const btnClose = document.getElementById('btn-close-modal');
     
     btnOpen.addEventListener('click', () => {
-        // Preencher data default hoje
-        document.getElementById('cons_data').value = new Date().toISOString().split('T')[0];
-        // Opcional: puxar o último peso p/ facilitar? (Neste prompt ñ dizia explicitamente, farei o básico vazio)
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('cons_data');
+        dateInput.value = today;
+        dateInput.setAttribute('max', today);
+        
+        // Puxar o peso atual como placeholder/sugestão
+        let lastWeight = (window.currentConsultations && window.currentConsultations.length > 0) ? 
+                           window.currentConsultations.sort((a,b) => new Date(b.data_consulta) - new Date(a.data_consulta))[0].peso : '';
+        
+        if (lastWeight) {
+            lastWeight = String(lastWeight).replace('.', ',');
+        }
+        
+        const pesoInput = document.getElementById('cons_peso');
+        pesoInput.value = lastWeight;
+
         modal.classList.remove('hidden');
+        setTimeout(() => pesoInput.focus(), 100);
+    });
+
+    // Máscaras Dinâmicas e Inteligentes
+    const applyMetricMask = (input, type) => {
+        let digits = input.value.replace(/\D/g, ''); 
+        let formatted = digits;
+
+        if (type === 'decimal') {
+            // Limite de 4 dígitos para o formato XXX,X (máximo 999,9)
+            if (digits.length > 4) digits = digits.slice(0, 4);
+            
+            if (digits.length > 1) {
+                formatted = digits.slice(0, -1) + ',' + digits.slice(-1);
+            } else {
+                formatted = digits;
+            }
+        } else {
+            // Inteiro (Cintura/Quadril) - max 3 dígitos (ex: 120)
+            if (digits.length > 3) digits = digits.slice(0, 3);
+            formatted = digits;
+        }
+        
+        input.value = formatted;
+    };
+
+    ['cons_peso','cons_gordura'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', (e) => applyMetricMask(e.target, 'decimal'));
+    });
+
+    ['cons_cintura','cons_quadril'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', (e) => applyMetricMask(e.target, 'integer'));
     });
 
     const closeModal = () => {
@@ -578,17 +769,55 @@ function setupModal() {
         btnSave.textContent = 'Gravando...';
 
         const cData = document.getElementById('cons_data').value;
-        const cPeso = parseFloat(document.getElementById('cons_peso').value);
+        const cRetorno = document.getElementById('cons_retorno').value;
+        
+        // Helper para converter "70,5" -> 70.5
+        const parseValue = (id) => {
+            const val = document.getElementById(id).value.replace(',', '.');
+            return val ? parseFloat(val) : null;
+        };
 
-        if (!cData || !cPeso) return; // Native required faz isso na vdd
+        const cPeso = parseValue('cons_peso');
+
+        if (!cData || !cPeso) return; 
+
+        // Validação Temporal
+        if (cRetorno && cRetorno < cData) {
+            alert('A data de retorno não pode ser anterior à data da consulta.');
+            const btnSaveRe = document.getElementById('btn-save-consulta');
+            btnSaveRe.disabled = false;
+            btnSaveRe.textContent = 'Gravar atendimento';
+            return;
+        }
+
+        // Validação de Duplicidade / Retrospectividade
+        const existingDates = (window.currentConsultations || []).map(c => c.data_consulta);
+        if (existingDates.includes(cData)) {
+            if (!confirm('Já existe um registro para esta data. Deseja registrar outra consulta neste mesmo dia?')) {
+                const btnSaveRe = document.getElementById('btn-save-consulta');
+                btnSaveRe.disabled = false;
+                btnSaveRe.textContent = 'Gravar atendimento';
+                return;
+            }
+        } else if (existingDates.length > 0) {
+            const mostRecentDate = existingDates.reduce((a, b) => a > b ? a : b);
+            if (cData < mostRecentDate) {
+                if (!confirm(`Anotação retroativa: Esta data é anterior à última avaliação registrada (${formatDateDisplay(mostRecentDate)}). Confirma inclusão no histórico?`)) {
+                    const btnSaveRe = document.getElementById('btn-save-consulta');
+                    btnSaveRe.disabled = false;
+                    btnSaveRe.textContent = 'Gravar atendimento';
+                    return;
+                }
+            }
+        }
 
         const payload = {
             paciente_id: currentPatientId,
             data_consulta: cData,
             peso: cPeso,
-            cintura: parseFloat(document.getElementById('cons_cintura').value) || null,
-            quadril: parseFloat(document.getElementById('cons_quadril').value) || null,
-            percentual_gordura: parseFloat(document.getElementById('cons_gordura').value) || null,
+            cintura: parseValue('cons_cintura'),
+            quadril: parseValue('cons_quadril'),
+            percentual_gordura: parseValue('cons_gordura'),
             observacoes: document.getElementById('cons_obs').value.trim(),
             proximo_retorno: document.getElementById('cons_retorno').value || null
         };
@@ -599,7 +828,7 @@ function setupModal() {
             
             closeModal();
             loadPatientProfile();
-            showToast('Atendimento registrado.');
+            showAlert('Atendimento registrado.', 'success');
         } catch (err) {
             console.error(err);
             alert("Erro ao salvar consulta: " + err.message);
@@ -733,6 +962,19 @@ function setupAIPlanos() {
 
     if (!btnGerar) return;
 
+    // Verificar se a nutricionista possui protocolo configurado
+    supabaseClient.auth.getUser().then(({ data: { user } }) => {
+        if (user && user.user_metadata && user.user_metadata.protocolo_clinico) {
+            window._protocoloNutri = user.user_metadata.protocolo_clinico;
+            const badge = document.createElement('div');
+            badge.style.marginTop = '0.5rem';
+            badge.style.fontSize = '0.85rem';
+            badge.style.color = 'var(--text-muted)';
+            badge.innerHTML = '🟢 Protocolo da Nutri ativo';
+            btnGerar.parentNode.insertBefore(badge, btnGerar.nextSibling);
+        }
+    });
+
     btnGerar.addEventListener('click', async () => {
         if (hasUnsavedChanges) {
             const confirmDiscard = confirm("Atenção! Você possui alterações não salvas neste plano alimentar. Se gerar um novo, perderá todo o progresso não salvo. Deseja mesmo sobrepor o rascunho atual?");
@@ -827,7 +1069,7 @@ function setupAIPlanos() {
                 if (error) throw error;
                 
                 hasUnsavedChanges = false;
-                showToast('Prescrição gravada.');
+                showAlert('Prescrição gravada.', 'success');
                 editorDiv.classList.add('hidden');
                 btnGerar.textContent = "Gerar Plano Alimentar";
                 
@@ -950,7 +1192,7 @@ async function handlePrintPlan() {
     // Footer — discreto, assinatura leve
     const now = new Date();
     body += `<div class="print-footer">
-        Documento elaborado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · NutriFlow
+        Documento elaborado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · Prescria
     </div>`;
 
     // Monta um documento HTML completo e isolado — sem herança do app
@@ -1227,7 +1469,9 @@ function extractPatientDataForAI() {
         tempo_cozinhar: document.getElementById('tempo_cozinhar') ? document.getElementById('tempo_cozinhar').value : '',
         alimentos_preferidos: document.getElementById('alimentos_preferidos') ? document.getElementById('alimentos_preferidos').value : '',
         alimentos_evitados: document.getElementById('alimentos_evitados') ? document.getElementById('alimentos_evitados').value : '',
-        contexto_social: document.getElementById('contexto_social') ? document.getElementById('contexto_social').value : ''
+        contexto_social: document.getElementById('contexto_social') ? document.getElementById('contexto_social').value : '',
+        
+        protocolo_nutri: window._protocoloNutri || null
     };
 }
 
@@ -1333,7 +1577,7 @@ function renderPlanV2(plan) {
         // Header
         let html = `
             <div class="v2-meal-header">
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; flex:1;">
                     <input type="text" class="v2-edit-input v2-title-input" style="max-width:none;" value="${ref.nome || ''}" oninput="handleV2FieldUpdate(currentGeneratedPlan?.refeicoes[${refIndex}], 'nome', this.value)">
                     <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none;" title="Título editável">&#9998;</span>
                 </div>
@@ -1341,6 +1585,14 @@ function renderPlanV2(plan) {
                     <span>⏰</span>
                     <input type="text" class="v2-edit-input v2-time-input" value="${ref.horario_sugerido || ''}" oninput="handleV2FieldUpdate(currentGeneratedPlan?.refeicoes[${refIndex}], 'horario_sugerido', this.value)">
                 </div>
+                <button class="v2-delete-meal" onclick="handleV2DeleteMeal(${refIndex})" title="Excluir esta refeição">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             </div>
         `;
 
@@ -1419,7 +1671,100 @@ function renderPlanV2(plan) {
         card.innerHTML = html;
         container.appendChild(card);
     });
+
+    // Botão "+ Adicionar Refeição"
+    const addWrap = document.createElement('div');
+    addWrap.className = 'v2-add-meal-container';
+    addWrap.innerHTML = `
+        <button class="btn-add-meal" onclick="handleV2AddMeal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Adicionar outra refeição ao plano
+        </button>
+    `;
+    container.appendChild(addWrap);
 }
+
+window.handleV2DeleteMeal = function(index) {
+    if (!currentGeneratedPlan || !currentGeneratedPlan.refeicoes) return;
+    
+    nutriConfirmDelete(() => {
+        currentGeneratedPlan.refeicoes.splice(index, 1);
+        hasUnsavedChanges = true;
+        renderPlanV2(currentGeneratedPlan);
+        showAlert('Refeição removida.', 'info');
+    });
+};
+
+window.nutriConfirmDelete = function(onConfirm) {
+    const modalRoot = document.getElementById('modal-root') || document.body;
+    const modalMarkup = `
+        <div id="nutri-confirm-modal" class="nutri-modal-overlay">
+            <div class="nutri-modal-card">
+                <div class="nutri-modal-icon">⚠️</div>
+                <h3>Excluir Refeição?</h3>
+                <p>Esta ação removerá todos os alimentos e opções cadastrados nesta refeição. Não poderá ser desfeito.</p>
+                <div class="nutri-modal-actions">
+                    <button class="btn-secondary" onclick="closeNutriModal()">Manter</button>
+                    <button class="btn-danger" id="btn-confirm-delete">Sim, Remover</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = modalMarkup;
+    modalRoot.appendChild(div.firstElementChild);
+    
+    document.getElementById('btn-confirm-delete').onclick = () => {
+        onConfirm();
+        closeNutriModal();
+    };
+};
+
+window.closeNutriModal = function() {
+    const modal = document.getElementById('nutri-confirm-modal');
+    if (modal) modal.remove();
+};
+
+window.handleV2AddMeal = function() {
+    if (!currentGeneratedPlan) return;
+    if (!currentGeneratedPlan.refeicoes) currentGeneratedPlan.refeicoes = [];
+
+    const newMeal = {
+        nome: 'Nova Refeição',
+        horario_sugerido: '',
+        nota_clinica_refeicao: '',
+        opcoes: [{
+            ordem: 1,
+            titulo_opcao: 'Opção Principal',
+            itens: [{
+                quantidade: null,
+                unidade: '',
+                alimento: '',
+                medida_caseira: '',
+                observacao: ''
+            }],
+            substituicoes: []
+        }]
+    };
+
+    currentGeneratedPlan.refeicoes.push(newMeal);
+    hasUnsavedChanges = true;
+    renderPlanV2(currentGeneratedPlan);
+
+    // Scroll suave até o novo card
+    setTimeout(() => {
+        const cards = document.querySelectorAll('.v2-meal-card');
+        if (cards.length > 0) {
+            cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 100);
+
+    showAlert('Nova refeição adicionada ao plano.', 'info');
+};
 
 function renderPlanHistory(planosArray) {
     const listContainer = document.getElementById('planos-list-container');
@@ -1547,4 +1892,10 @@ window.handleV2InlineEdit = function(refIdx, opIdx, itemIdx, subIdx, field, isNu
             targetObj[field] = val;
         }
     }
+};
+
+window.handleV2FieldUpdate = function(obj, field, val) {
+    if(!obj) return;
+    obj[field] = val;
+    hasUnsavedChanges = true;
 };

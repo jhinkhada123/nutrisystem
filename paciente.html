@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Paciente - NutriFlow</title>
+    <title>Perfil do Paciente - Prescria</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=2">
     
@@ -17,8 +17,8 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon logo-icon-sm">NF</div>
-            <h1 class="sidebar-title">NutriFlow</h1>
+            <div class="logo-icon logo-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 60%; height: auto;"><path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9 9 9 9 0 0 0-9-9 9 9 0 0 0 9-9Z"></path></svg></div>
+            <h1 class="sidebar-title">Prescria</h1>
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item">
@@ -302,7 +302,8 @@
                 <h3 class="section-title" style="margin: 0; border: none;">Consultas</h3>
                 <button id="btn-open-modal-consulta" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem; margin-top:0;">Nova Consulta</button>
             </div>
-            <div style="width: 100%; height: 2px; background: var(--border-color); margin-bottom: 2rem; margin-top: 0.5rem;"></div>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; margin-bottom: 0;">Registre cada retorno para acompanhar a evolução de peso, medidas e anotações clínicas ao longo do tempo.</p>
+            <div style="width: 100%; height: 2px; background: var(--border-color); margin-bottom: 2rem; margin-top: 1rem;"></div>
 
             <!-- Gráfico Visível -->
             <div class="chart-container">
@@ -372,59 +373,105 @@
 
     <!-- Modal Nova Consulta -->
     <div id="modal-consulta" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="margin: 0; font-size: 1.3rem; color: var(--primary-color);">Nova Consulta</h3>
-                <button type="button" class="btn-close" id="btn-close-modal">&times;</button>
+        <div class="modal-content" style="max-width: 500px; padding: 2rem;">
+            <div class="modal-header" style="border:none; padding: 0 0 1.5rem 0; margin-bottom: 0;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="background:var(--primary-light); color:var(--primary-color); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 700;">Nova Consulta</h3>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Registre a evolução antropométrica</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" id="btn-close-modal" style="font-size: 1.5rem;">&times;</button>
             </div>
             
             <form id="form-nova-consulta">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label for="cons_data">Data da Consulta</label>
-                        <input type="date" id="cons_data" required>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="cons_data" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Data da Consulta</label>
+                        <input type="date" id="cons_data" required style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit;">
                     </div>
+
+                    <!-- Métrica: Peso -->
                     <div class="input-group">
-                        <label for="cons_peso">Peso atual</label>
-                        <div class="input-with-suffix">
-                            <input type="number" id="cons_peso" step="0.1" placeholder="Ex: 70.0" required>
-                            <span class="suffix">kg</span>
+                        <label for="cons_peso" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            Peso atual
+                        </label>
+                        <div class="input-with-suffix" style="position: relative;">
+                            <input type="text" id="cons_peso" placeholder="00,0" inputmode="decimal" required style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; color: var(--primary-color);">
+                            <span class="suffix" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">kg</span>
                         </div>
                     </div>
+
+                    <!-- Métrica: Cintura -->
                     <div class="input-group">
-                        <label for="cons_cintura">Cintura (opcional)</label>
-                        <div class="input-with-suffix">
-                            <input type="number" id="cons_cintura" step="0.1" placeholder="Ex: 85">
-                            <span class="suffix">cm</span>
+                        <label for="cons_cintura" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            Cintura (opcional)
+                        </label>
+                        <div class="input-with-suffix" style="position: relative;">
+                            <input type="text" id="cons_cintura" placeholder="000" inputmode="numeric" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; color: var(--primary-color);">
+                            <span class="suffix" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">cm</span>
                         </div>
                     </div>
+
+                    <!-- Métrica: Quadril -->
                     <div class="input-group">
-                        <label for="cons_quadril">Quadril (opcional)</label>
-                        <div class="input-with-suffix">
-                            <input type="number" id="cons_quadril" step="0.1" placeholder="Ex: 100">
-                            <span class="suffix">cm</span>
+                        <label for="cons_quadril" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            Quadril (opcional)
+                        </label>
+                        <div class="input-with-suffix" style="position: relative;">
+                            <input type="text" id="cons_quadril" placeholder="000" inputmode="numeric" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; color: var(--primary-color);">
+                            <span class="suffix" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">cm</span>
                         </div>
                     </div>
+
+                    <!-- Métrica: Gordura -->
                     <div class="input-group">
-                        <label for="cons_gordura">% de Gordura (opcional)</label>
-                        <div class="input-with-suffix">
-                            <input type="number" id="cons_gordura" step="0.1" placeholder="Ex: 22.5">
-                            <span class="suffix">%</span>
+                        <label for="cons_gordura" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            % de Gordura (opcional)
+                        </label>
+                        <div class="input-with-suffix" style="position: relative;">
+                            <input type="text" id="cons_gordura" placeholder="00,0" inputmode="decimal" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; color: var(--primary-color);">
+                            <span class="suffix" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">%</span>
                         </div>
                     </div>
+
                     <div class="input-group">
-                        <label for="cons_retorno">Próximo retorno</label>
-                        <input type="date" id="cons_retorno">
+                        <label for="cons_retorno" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Próximo retorno</label>
+                        <input type="date" id="cons_retorno" style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #FAF8F9; font-family: inherit;">
                     </div>
-                    <div class="input-group form-col-full">
-                        <label for="cons_obs">Observações Gerais</label>
-                        <textarea id="cons_obs" rows="3" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB;" placeholder="Anotações desta consulta..."></textarea>
+
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="cons_obs" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Observações Gerais</label>
+                        <textarea id="cons_obs" rows="3" maxlength="800" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; background: #FAFCFB; resize: none;" placeholder="Anotações desta consulta..."></textarea>
                     </div>
                 </div>
-                <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn btn-primary" id="btn-save-consulta" style="width: 100%;">Gravar atendimento</button>
+
+                <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn btn-primary" id="btn-save-consulta" style="width: 100%; padding: 1rem; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(106, 62, 99, 0.2);">Gravar (Refez as máscaras)</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Deletion Modal -->
+    <div id="delete-modal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; opacity: 0; transition: opacity 0.2s;">
+        <div style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transform: translateY(10px); transition: transform 0.2s;">
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div style="background: #FEEBC8; color: #DD6B20; padding: 0.6rem; border-radius: 50%; display:flex; align-items:center; justify-content:center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86l-7.4 13A2 2 0 0 0 4.6 20h14.8a2 2 0 0 0 1.71-3.14l-7.4-13a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.15rem; color: #2D3748;">Excluir Consulta</h3>
+                    <p style="margin: 0; font-size: 0.95rem; color: #4A5568; line-height: 1.5;">Tem certeza que deseja excluir permanentemente este registro de consulta? Esta ação não pode ser desfeita.</p>
+                </div>
+            </div>
+            <div style="margin-top: 1.75rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-delete" style="padding: 0.5rem 1rem; font-weight: 500; background: transparent; border-color: transparent; color: #4A5568;" onmouseover="this.style.background='#F7FAFC'" onmouseout="this.style.background='transparent'">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-delete" style="padding: 0.5rem 1.25rem; font-weight: 600; background: #E53E3E; border-color: #E53E3E; box-shadow: 0 2px 4px rgba(229,62,62,0.2);" onmouseover="this.style.background='#C53030'; this.style.borderColor='#C53030'" onmouseout="this.style.background='#E53E3E'; this.style.borderColor='#E53E3E'">Excluir permanentemente</button>
+            </div>
         </div>
     </div>
 
