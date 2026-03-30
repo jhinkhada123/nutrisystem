@@ -721,8 +721,6 @@ async function handlePrintPlan() {
     if (!currentGeneratedPlan) return;
 
     const plan = currentGeneratedPlan;
-    const printLayer = document.getElementById('print-layer');
-    if (!printLayer) return;
 
     const patientName = escapeHtml(
         document.getElementById('paciente-nome-header')?.textContent ?? 'Paciente'
@@ -732,99 +730,146 @@ async function handlePrintPlan() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     const logoUrl = user?.user_metadata?.logomarca_url;
 
-    let html = '';
+    let body = '';
 
     // Header
-    html += `<div class="print-header">`;
+    body += `<div class="print-header">`;
     if (logoUrl) {
-        html += `
+        body += `
         <div style="text-align: center; margin-bottom: 1.5rem;">
             <img src="${logoUrl}" alt="Logo da Clínica" style="max-height: 70px; max-width: 280px; object-fit: contain;">
         </div>`;
     }
-    html += `
+    body += `
         <h1>${patientName}</h1>
         <h2>Plano Alimentar Personalizado</h2>
     </div>`;
 
-    // Orientações (para o paciente — uso_interno_nutricionista EXCLUÍDO por arquitetura)
+    // Orientações
     if (plan.orientacoes_paciente) {
         const msg = escapeHtml(plan.orientacoes_paciente.mensagem_motivacional);
         const dicas = escapeHtml(plan.orientacoes_paciente.dicas_gerais);
         if (msg || dicas) {
-            html += `<div class="print-motivational">${msg}${dicas ? '<br><br>' + dicas : ''}</div>`;
+            body += `<div class="print-motivational">${msg}${dicas ? '<br><br>' + dicas : ''}</div>`;
         }
     }
 
-    // Refeições (nota_clinica_refeicao EXCLUÍDA por arquitetura)
+    // Refeições
     if (plan.refeicoes) {
-        html += `<div class="print-meals-container">`;
         plan.refeicoes.forEach(ref => {
-            html += `<div class="print-meal-card">`;
-            html += `<div class="print-meal-header">
+            body += `<div class="print-meal-card">`;
+            body += `<div class="print-meal-header">
                 <span class="print-meal-title">${escapeHtml(ref.nome)}</span>
                 ${ref.horario_sugerido ? `<span class="print-meal-time">${escapeHtml(ref.horario_sugerido)}</span>` : ''}
             </div>`;
 
             if (ref.opcoes) {
                 ref.opcoes.forEach((op, opIdx) => {
-                    html += `<div class="print-option">`;
-                    html += `<div class="print-option-title"><span class="print-op-badge">${opIdx + 1}</span> ${escapeHtml(op.titulo_opcao)}</div>`;
+                    body += `<div class="print-option">`;
+                    body += `<div class="print-option-title"><span class="print-op-badge">${opIdx + 1}</span> ${escapeHtml(op.titulo_opcao)}</div>`;
 
                     if (op.itens && op.itens.length > 0) {
-                        html += `<ul class="print-items">`;
+                        body += `<ul class="print-items">`;
                         op.itens.forEach(item => {
                             const qty = item.quantidade != null ? `<strong>${escapeHtml(String(item.quantidade))}${escapeHtml(item.unidade)}</strong> ` : '';
                             const med = item.medida_caseira ? `<span class="print-medida">(${escapeHtml(item.medida_caseira)})</span>` : '';
                             const obs = item.observacao ? `<span class="print-obs">${escapeHtml(item.observacao)}</span>` : '';
-                            html += `<li><span class="print-bullet"></span>${qty}<strong>${escapeHtml(item.alimento)}</strong> ${med} ${obs}</li>`;
+                            body += `<li><span class="print-bullet"></span>${qty}<strong>${escapeHtml(item.alimento)}</strong> ${med} ${obs}</li>`;
                         });
-                        html += `</ul>`;
+                        body += `</ul>`;
                     }
 
                     if (op.substituicoes && op.substituicoes.length > 0) {
-                        html += `<div class="print-subs">`;
-                        html += `<div class="print-subs-title">🔄 Substituições Equivalentes</div>`;
-                        html += `<ul class="print-subs-list">`;
+                        body += `<div class="print-subs">`;
+                        body += `<div class="print-subs-title">🔄 Substituições Equivalentes</div>`;
+                        body += `<ul class="print-subs-list">`;
                         op.substituicoes.forEach(sub => {
                             const qty = sub.quantidade != null ? `${escapeHtml(String(sub.quantidade))}${escapeHtml(sub.unidade)} de ` : '';
                             const med = sub.medida_caseira ? ` (${escapeHtml(sub.medida_caseira)})` : '';
                             const obs = sub.observacao ? ` — ${escapeHtml(sub.observacao)}` : '';
-                            html += `<li>Trocar por: <strong>${qty}${escapeHtml(sub.alimento_substituto)}</strong>${med}${obs}</li>`;
+                            body += `<li>Trocar por: <strong>${qty}${escapeHtml(sub.alimento_substituto)}</strong>${med}${obs}</li>`;
                         });
-                        html += `</ul></div>`;
+                        body += `</ul></div>`;
                     }
 
-                    html += `</div>`;
+                    body += `</div>`;
                 });
             }
 
-            html += `</div>`;
+            body += `</div>`;
         });
-        html += `</div>`;
     }
 
     // Footer
     const now = new Date();
-    html += `<div class="print-footer">
+    body += `<div class="print-footer">
         Documento gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} — NutriFlow
     </div>`;
 
-    printLayer.innerHTML = html;
+    // Monta um documento HTML completo e isolado — sem herança do app
+    const fullHtml = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Plano Alimentar — ${patientName}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: white; color: #1A202C; line-height: 1.5; padding: 0; margin: 0; }
+    @page { size: A4; margin: 15mm 20mm; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-    // Cleanup após impressão
-    const cleanup = () => {
-        printLayer.innerHTML = '';
-        window.removeEventListener('afterprint', cleanup);
+    .print-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #6A3E63; padding-bottom: 1rem; }
+    .print-header h1 { color: #1C2B20; font-size: 22pt; margin: 0 0 6px 0; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
+    .print-header h2 { color: #9B7094; font-size: 14pt; margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+    .print-motivational { background: #F3EAF1; border-left: 4px solid #9B7094; padding: 1.5rem; margin-bottom: 1.5rem; font-size: 11pt; color: #2D3748; border-radius: 4px; }
+
+    .print-meal-card { page-break-inside: avoid; break-inside: avoid; margin-bottom: 1.5rem; border: 1px solid #E8E0E6; border-radius: 8px; padding: 1.5rem; }
+    .print-meal-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #F3EAF1; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .print-meal-title { font-size: 16pt; font-weight: 700; color: #1C2B20; }
+    .print-meal-time { font-size: 12pt; color: #6A3E63; font-weight: 600; background: #F3EAF1; padding: 4px 12px; border-radius: 20px; }
+
+    .print-option { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dashed #E8E0E6; }
+    .print-option:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .print-option-title { font-size: 12pt; font-weight: 700; color: #6A3E63; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .print-op-badge { background: #6A3E63; color: white; font-size: 10pt; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+
+    ul.print-items { list-style: none; padding: 0; margin: 0; }
+    ul.print-items li { margin-bottom: 0.6rem; font-size: 11pt; line-height: 1.4; color: #1A202C; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+    .print-bullet { display: inline-block; width: 6px; height: 6px; background: #9B7094; border-radius: 50%; margin-right: 6px; flex-shrink: 0; margin-top: 8px; }
+    .print-medida { color: #718096; font-size: 10pt; font-weight: normal; }
+    .print-obs { color: #A0AEC0; font-size: 9.5pt; font-style: italic; width: 100%; padding-left: 20px; }
+
+    .print-subs { margin-top: 1rem; background: #FAFAFA; padding: 1rem; border-left: 3px solid #9B7094; border-radius: 0 4px 4px 0; font-size: 10pt; page-break-inside: avoid; }
+    .print-subs-title { font-weight: 700; color: #6A3E63; margin-bottom: 0.5rem; }
+    ul.print-subs-list { padding-left: 1.5rem; margin: 0; }
+    ul.print-subs-list li { margin-bottom: 0.4rem; color: #4A5568; }
+
+    .print-footer { margin-top: 1.5rem; text-align: center; font-size: 9pt; color: #A0AEC0; border-top: 1px solid #E8E0E6; padding-top: 1rem; }
+</style>
+</head>
+<body>${body}</body>
+</html>`;
+
+    // Abre janela limpa, escreve o documento, e dispara print
+    const printWin = window.open('', '_blank', 'width=800,height=600');
+    if (!printWin) {
+        alert('Por favor, permita pop-ups para imprimir o plano.');
+        return;
+    }
+    printWin.document.open();
+    printWin.document.write(fullHtml);
+    printWin.document.close();
+
+    // Aguarda fontes e imagens carregarem antes de imprimir
+    printWin.onload = () => {
+        setTimeout(() => {
+            printWin.print();
+            // Fecha a janela após impressão (ou cancelamento)
+            printWin.onafterprint = () => printWin.close();
+        }, 300);
     };
-    window.addEventListener('afterprint', cleanup);
-
-    // Aguarda render do DOM antes de disparar print
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            window.print();
-        });
-    });
 }
 
 function extractPatientDataForAI() {
