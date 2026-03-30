@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (error) throw error;
                 avatarImg.src = dataUrl;
                 removeBtn.style.display = 'inline';
-                showToast('Foto atualizada com sucesso.');
+                showToast('Foto atualizada.');
             } catch (err) {
                 showToast(err.message || 'Erro ao atualizar foto.', 'error');
             }
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 logoImg.style.display = 'block';
                 logoPlaceholder.style.display = 'none';
                 removeLogoBtn.style.display = 'inline-block';
-                showToast('Logomarca atualizada com sucesso.');
+                showToast('Logomarca atualizada.');
             } catch (err) {
                 showToast(err.message || 'Erro ao atualizar logomarca.', 'error');
             }
@@ -194,19 +194,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         btn.disabled = true;
-        btn.textContent = 'Salvando...';
+        btn.textContent = 'Gravando...';
 
         try {
             const { error } = await supabaseClient.auth.updateUser({
                 data: { full_name: name, name: name }
             });
             if (error) throw error;
-            showToast('Nome atualizado com sucesso.');
+            showToast('Nome atualizado.');
         } catch (err) {
             showToast(err.message || 'Erro ao salvar nome.', 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Salvar Perfil';
+            btn.textContent = 'Atualizar perfil';
         }
     });
 
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         btn.disabled = true;
-        btn.textContent = 'Enviando...';
+        btn.textContent = 'Processando...';
 
         try {
             const { error } = await supabaseClient.auth.updateUser({
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             showToast(err.message || 'Erro ao atualizar e-mail.', 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Atualizar E-mail';
+            btn.textContent = 'Alterar e-mail';
         }
     });
 
@@ -259,21 +259,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         btn.disabled = true;
-        btn.textContent = 'Atualizando...';
+        btn.textContent = 'Gravando...';
 
         try {
             const { error } = await supabaseClient.auth.updateUser({
                 password: newPw
             });
             if (error) throw error;
-            showToast('Senha atualizada com sucesso.');
+            showToast('Senha atualizada.');
             document.getElementById('settings-new-password').value = '';
             document.getElementById('settings-confirm-password').value = '';
         } catch (err) {
             showToast(err.message || 'Erro ao atualizar senha.', 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Atualizar Senha';
+            btn.textContent = 'Alterar senha';
         }
     });
 

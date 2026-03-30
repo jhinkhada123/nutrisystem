@@ -198,7 +198,7 @@ async function loadDashboardData() {
         if (listaSemRetornoEl) {
             listaSemRetornoEl.innerHTML = '';
             if (semRetorno.length === 0) {
-                listaSemRetornoEl.innerHTML = '<div class="empty-state">Nenhum paciente com retorno pendente há mais de 30 dias.</div>';
+                listaSemRetornoEl.innerHTML = '<div class="empty-state">Sem contatos pendentes para hoje.</div>';
             } else {
                 semRetorno.forEach(p => {
                     const inicial = p.nome.charAt(0).toUpperCase();

@@ -130,17 +130,16 @@ async function handleDeletePatient() {
             <div style="width:48px;height:48px;border-radius:50%;background:var(--error-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
             </div>
-            <h3 style="font-size:1.15rem;color:var(--text-main);margin-bottom:0.5rem;">Excluir paciente</h3>
+            <h3 style="font-size:1.15rem;color:var(--text-main);margin-bottom:0.5rem;">Excluir este paciente permanentemente?</h3>
             <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0.35rem;">
                 <strong style="color:var(--text-main);">${patientName}</strong>
             </p>
             <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:1.5rem;">
-                Todos os dados deste paciente serão excluídos permanentemente, incluindo consultas e planos alimentares.<br>
-                <strong style="color:var(--error-color);">Esta ação não poderá ser desfeita.</strong>
+                Esta ação apagará todo o histórico e não poderá ser desfeita.
             </p>
             <div style="display:flex;gap:0.75rem;">
                 <button id="btn-cancel-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid var(--border-color);background:transparent;color:var(--text-main);font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit;">Cancelar</button>
-                <button id="btn-confirm-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:var(--error-color);color:white;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;">Excluir permanentemente</button>
+                <button id="btn-confirm-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:var(--error-color);color:white;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;">Excluir paciente</button>
             </div>
             <p id="delete-error-msg" style="display:none;margin-top:1rem;font-size:0.8rem;color:var(--error-color);"></p>
         </div>
@@ -322,7 +321,7 @@ async function handleUpdatePatient(e) {
     e.preventDefault();
     const btn = document.getElementById('btn-save');
     btn.disabled = true;
-    btn.textContent = 'Salvando...';
+    btn.textContent = 'Gravando...';
 
     const extractChecks = (gridId) => {
         const arr = [];
@@ -390,7 +389,7 @@ async function handleUpdatePatient(e) {
         if (error) throw error;
         
         hasUnsavedChanges = false;
-        showAlert('Alterações salvas com sucesso!', 'success');
+        showToast('Cadastro atualizado.');
         document.getElementById('paciente-nome-header').textContent = payload.nome;
 
     } catch (err) {
@@ -398,7 +397,7 @@ async function handleUpdatePatient(e) {
         showAlert('Erro ao atualizar: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Salvar Alterações';
+        btn.textContent = 'Atualizar cadastro';
     }
 }
 
@@ -413,9 +412,9 @@ function renderConsultations(consultasArray) {
     if (!consultasArray || consultasArray.length === 0) {
         listEl.innerHTML = `
             <div class="empty-state" style="padding: 2.5rem 1rem;">
-                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhuma anamnese registrada</h4>
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhuma consulta registrada.</h4>
                 <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 1.5rem auto;">Registre os dados clínicos, exames e restrições alimentares do paciente para gerar um plano personalizado com IA.</p>
-                <button onclick="document.getElementById('modal-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Iniciar Primeira Consulta</button>
+                <button onclick="document.getElementById('modal-consulta').classList.remove('hidden')" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Adicionar Consulta</button>
             </div>
         `;
         if (chartContainer) chartContainer.classList.add('chart-hidden');
@@ -576,7 +575,7 @@ function setupModal() {
         
         const btnSave = document.getElementById('btn-save-consulta');
         btnSave.disabled = true;
-        btnSave.textContent = 'Salvando...';
+        btnSave.textContent = 'Gravando...';
 
         const cData = document.getElementById('cons_data').value;
         const cPeso = parseFloat(document.getElementById('cons_peso').value);
@@ -600,13 +599,13 @@ function setupModal() {
             
             closeModal();
             loadPatientProfile();
-            showAlert('Consulta registrada com sucesso!', 'success');
+            showToast('Atendimento registrado.');
         } catch (err) {
             console.error(err);
             alert("Erro ao salvar consulta: " + err.message);
         } finally {
             btnSave.disabled = false;
-            btnSave.textContent = 'Salvar Consulta';
+            btnSave.textContent = 'Gravar atendimento';
         }
     });
 }
@@ -799,7 +798,7 @@ function setupAIPlanos() {
             if (!currentGeneratedPlan) return;
             
             btnSalvar.disabled = true;
-            btnSalvar.textContent = "Salvando...";
+            btnSalvar.textContent = "Gravando...";
             
             // Reconstrói o JSON verificando o Schema Version
             let finalPlan;
@@ -828,7 +827,7 @@ function setupAIPlanos() {
                 if (error) throw error;
                 
                 hasUnsavedChanges = false;
-                showAlert('Plano salvo com sucesso no histórico!', 'success');
+                showToast('Prescrição gravada.');
                 editorDiv.classList.add('hidden');
                 btnGerar.textContent = "Gerar Plano Alimentar";
                 
@@ -840,7 +839,7 @@ function setupAIPlanos() {
                  showAlert("Erro ao salvar plano: " + error.message, 'error');
             } finally {
                  btnSalvar.disabled = false;
-                 btnSalvar.textContent = "Salvar Plano";
+                 btnSalvar.textContent = "Gravar prescrição";
             }
         });
     }

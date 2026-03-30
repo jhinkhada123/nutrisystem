@@ -45,7 +45,7 @@ async function loadPatientsList() {
     } catch (err) {
         console.error("Erro ao carregar pacientes:", err.message);
         const container = document.getElementById('patients-list-container');
-        if (container) container.innerHTML = '<div class="empty-state" style="color:red;">Erro ao carregar a lista de pacientes</div>';
+        if (container) container.innerHTML = '<div class="empty-state" style="color:red;">Não foi possível carregar a lista de pacientes. Por favor, tente novamente mais tarde.</div>';
     }
 }
 
@@ -59,9 +59,9 @@ function renderPatients(patientsArray) {
     if (patientsArray.length === 0) {
         container.innerHTML = `
             <div class="empty-state" style="padding: 3rem 1rem;">
-                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhum paciente cadastrado</h4>
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Nenhum paciente cadastrado.</h4>
                 <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 1.5rem auto;">Seu consultório começa aqui. Comece registrando seu primeiro paciente para gerenciar anamneses e dietas.</p>
-                <a href="novo-paciente.html" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">✚ Cadastrar Paciente</a>
+                <a href="novo-paciente.html" class="btn btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">+ Adicionar Paciente</a>
             </div>
         `;
         return;

@@ -15,22 +15,22 @@
                 <div class="logo-icon">NF</div>
                 <h1>NutriFlow</h1>
             </div>
-            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Nova Senha</h2>
-            <p class="subtitle" id="subtitle-text" style="margin-bottom: 1.5rem;">Validando link de recuperação...</p>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Crie sua nova senha</h2>
+            <p class="subtitle" id="subtitle-text" style="margin-bottom: 1.5rem;">Escolha uma combinação segura para seu acesso profissional.</p>
 
             <div id="alert-message" class="alert hidden"></div>
 
             <form id="reset-form" style="display: none;">
                 <div class="input-group">
-                    <label for="new-password">Nova senha</label>
+                    <label for="new-password">Nova senha de acesso</label>
                     <input type="password" id="new-password" placeholder="••••••••" required minlength="6">
                 </div>
                 <div class="input-group">
-                    <label for="confirm-password">Confirmar nova senha</label>
+                    <label for="confirm-password">Confirme a nova senha</label>
                     <input type="password" id="confirm-password" placeholder="••••••••" required minlength="6">
                 </div>
                 
-                <button type="submit" class="btn btn-primary" id="btn-reset" style="margin-top: 1rem;">Salvar nova senha</button>
+                <button type="submit" class="btn btn-primary" id="btn-reset" style="margin-top: 1rem;">Alterar minha senha</button>
             </form>
 
             <div id="invalid-link-view" style="display: none; text-align: center;">
@@ -60,7 +60,7 @@
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (event === 'PASSWORD_RECOVERY') {
                     isRecoveryMode = true;
-                    subtitle.textContent = "Digite sua nova senha abaixo.";
+                    subtitle.textContent = "Escolha uma combinação segura para seu acesso profissional.";
                     resetForm.style.display = 'block';
                     invalidView.style.display = 'none';
                     alertMsg.className = 'alert hidden';
@@ -81,7 +81,7 @@
                     invalidView.style.display = 'block';
                 } else if (!isRecoveryMode && data.session) {
                     // Já está num contexto válido
-                    subtitle.textContent = "Digite sua nova senha abaixo.";
+                    subtitle.textContent = "Escolha uma combinação segura para seu acesso profissional.";
                     resetForm.style.display = 'block';
                     invalidView.style.display = 'none';
                 }
@@ -102,7 +102,7 @@
             }
 
             btn.disabled = true;
-            btn.textContent = "Salvando...";
+            btn.textContent = "Gravando...";
             alertMsg.className = "alert hidden";
 
             try {
@@ -113,7 +113,7 @@
                 if (error) throw error;
 
                 // Sucesso
-                alertMsg.textContent = "Senha alterada com sucesso! Você será redirecionado para o painel.";
+                alertMsg.textContent = "Senha atualizada! Você será redirecionado para o painel.";
                 alertMsg.className = "alert alert-success";
                 
                 // Limpa e desativa formulículo
@@ -128,7 +128,7 @@
                 alertMsg.textContent = error.message || "Não foi possível redefinir a senha.";
                 alertMsg.className = "alert alert-error";
                 btn.disabled = false;
-                btn.textContent = "Salvar nova senha";
+                btn.textContent = "Alterar minha senha";
             }
         });
     </script>

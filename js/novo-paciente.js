@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btnSave = document.getElementById('btn-save');
         btnSave.disabled = true;
-        btnSave.innerHTML = 'Salvando...';
+        btnSave.innerHTML = 'Gravando...';
         
         // Pega Uid atual
         const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                     if (!shouldContinue) {
                         btnSave.disabled = false;
-                        btnSave.innerHTML = 'Salvar Paciente';
+                        btnSave.innerHTML = 'Criar prontuário';
                         return;
                     }
                 }
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) throw error;
 
             hideAlert();
-            showAlert('Paciente cadastrado com sucesso!', 'success'); // Estilizar como success prov se precisar
+            showAlert('Prontuário criado.', 'success'); // Estilizar como success prov se precisar
             
             setTimeout(() => {
                 if(data && data.length > 0) {
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             btnSave.disabled = false;
-            btnSave.innerHTML = 'Salvar Paciente';
+            btnSave.innerHTML = 'Criar prontuário';
             showAlert("Erro ao cadastrar paciente: " + error.message, 'error');
             // Scroll pra cima pro user ver erro
             window.scrollTo({top: 0, behavior: 'smooth'});
