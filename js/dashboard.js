@@ -183,9 +183,9 @@ async function loadDashboardData() {
         if (onboardingDemoActions) {
             if (countDemo > 0 && demoPacientes && demoPacientes.length > 0) {
                 onboardingDemoActions.innerHTML = `
-                    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:stretch; width: 100%;">
-                        <a href="paciente.html?id=${demoPacientes[0].id}&tab=plano" class="btn btn-secondary" style="background:var(--primary-color); border-color:var(--primary-color); color:white; flex: 1; min-width: 140px; text-align: center; padding: 0.8rem; border-radius:var(--radius-md);">Acessar Letícia</a>
-                        <button id="btn-onb-remove-demo" class="btn" style="background:transparent; border:1px solid #E8E0E6; color:#6A3E63; flex: 1; min-width: 140px; text-align: center; padding: 0.8rem; border-radius:var(--radius-md);">Remover Demonstração</button>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:stretch; width: 100%; margin-top: 0.5rem;">
+                        <a href="paciente.html?id=${demoPacientes[0].id}&tab=plano" class="btn btn-primary" style="flex: 1; min-width: 140px; text-decoration: none; margin-top: 0;">Acessar Letícia</a>
+                        <button id="btn-onb-remove-demo" class="btn btn-secondary" style="flex: 1; min-width: 140px; margin-top: 0;">Remover Demonstração</button>
                     </div>
                 `;
                 document.getElementById('btn-onb-remove-demo').addEventListener('click', async () => {
@@ -193,7 +193,7 @@ async function loadDashboardData() {
                 });
             } else {
                 onboardingDemoActions.innerHTML = `
-                    <button id="btn-create-demo" class="btn btn-secondary" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: 100%; border-radius: var(--radius-md); padding: 0.8rem;">Gerar Paciente Teste</button>
+                    <button id="btn-create-demo" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Gerar Paciente Teste</button>
                 `;
                 document.getElementById('btn-create-demo').addEventListener('click', createDemoPatient);
             }
