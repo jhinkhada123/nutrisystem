@@ -879,7 +879,7 @@ function renderPlanV2(plan) {
         notes.innerHTML = `
             <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: -3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Notas da Prescrição Clínica (Apenas Nutricionista)</h4>
             <div class="v2-field-group">
-                <label>Racional Clínico & Metas</label>
+                <label>Racional Clínico & Metas <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:4px;" title="Campo editável">&#9998;</span></label>
                 <textarea class="v2-edit-input internal-txt" oninput="if(currentGeneratedPlan) currentGeneratedPlan.uso_interno_nutricionista.racional_clinico = this.value">${plan.uso_interno_nutricionista.racional_clinico || ''}</textarea>
             </div>
             ${plan.uso_interno_nutricionista.alertas_prescricao ? `
@@ -895,7 +895,7 @@ function renderPlanV2(plan) {
         const orient = document.createElement('div');
         orient.className = 'v2-orientations-panel';
         orient.innerHTML = `
-            <h4>🗣️ Orientações ao Paciente</h4>
+            <h4>🗣️ Orientações ao Paciente <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:4px;" title="Seção editável">&#9998;</span></h4>
             <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.mensagem_motivacional = this.value">${plan.orientacoes_paciente.mensagem_motivacional || ''}</textarea>
             <textarea class="v2-edit-input" oninput="if(currentGeneratedPlan) currentGeneratedPlan.orientacoes_paciente.dicas_gerais = this.value" placeholder="Dicas de água, etc.">${plan.orientacoes_paciente.dicas_gerais || ''}</textarea>
         `;
