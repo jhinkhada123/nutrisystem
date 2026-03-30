@@ -1100,20 +1100,34 @@ textarea.internal-txt { min-height: 80px; }
 }
 
 @media print {
-    /* Hide the entire standard app UI */
-    body * { visibility: hidden; }
-    
+    /* Reset body logic specifically for print context to avoid massive multipage bleeding */
+    body {
+        background: white !important;
+        display: block !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Hide the entire standard app UI layout nodes (display none frees layout space) */
+    body > *:not(#print-layer) {
+        display: none !important;
+    }
+
     /* Make the print layer the absolute sovereign */
-    #print-layer, #print-layer * { visibility: visible; }
     #print-layer {
-        position: absolute;
-        left: 0;
-        top: 0;
+        display: block !important;
+        position: relative !important;
+        visibility: visible !important;
         width: 100%;
         margin: 0;
         padding: 0;
         background: white;
-        display: block !important;
+    }
+    
+    #print-layer * {
+        visibility: visible !important;
     }
     
     /* Force background colors on print natively */
