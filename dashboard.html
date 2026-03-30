@@ -68,44 +68,45 @@
         <div id="tab-content-inicio">
             
             <!-- ESTADO ONBOARDING BETA -->
-            <div id="onboarding-state" style="margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-                <!-- 2. Tese Central (Protocolo da Nutri) -->
-                <div id="protocol-tracker-container" style="width: 100%;"></div>
-
-                <!-- 3. Chamada para Ação -->
-                <h4 style="margin: 0.5rem 0 0.25rem 0; color: var(--text-main); font-size: 1.05rem; font-weight: 600;">Escolha como você prefere começar:</h4>
-            
-                <!-- Cards de Ação Lado a Lado -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch;">
+            <div id="onboarding-state" style="margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem;">
+                <!-- 1. Chamada para Ação (Prioridade 1 no Onboarding) -->
+                <div>
+                    <h4 style="margin: 0 0 1rem 0; color: var(--text-main); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.3px;">Escolha como você prefere começar:</h4>
                     
-                    <!-- Opção 1: Uso Real -->
-                    <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); position: relative; overflow: hidden; transition: var(--transition); height: 100%;">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--primary-color);"></div>
-                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.3rem;">👩‍⚕️</span> Avaliar com Pacientes Reais
-                        </h4>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 2rem 0; line-height: 1.6;">
-                            Cadastre um paciente real, insira os dados da anamnese e veja a IA apenas dar vida ao **seu** protocolo clínico, gerando um cardápio completo com o **seu** DNA e expertise em segundos.
-                        </p>
-                        <div style="margin-top: auto;">
-                            <a href="novo-paciente.html" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 0.8rem; border-radius: var(--radius-md); width: 100%; box-sizing: border-box; display: inline-block;">Cadastrar Paciente</a>
+                    <!-- Cards de Ação Lado a Lado -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch;">
+                        
+                        <!-- Opção 1: Uso Real -->
+                        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); position: relative; overflow: hidden; transition: var(--transition); height: 100%;">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--primary-color);"></div>
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.3rem;">👩‍⚕️</span> Avaliar com Pacientes Reais
+                            </h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 2rem 0; line-height: 1.6;">
+                                Cadastre um paciente real, insira os dados da anamnese e veja a IA apenas dar vida ao **seu** protocolo clínico, gerando um cardápio completo com o **seu** DNA e expertise em segundos.
+                            </p>
+                            <div style="margin-top: auto;">
+                                <a href="novo-paciente.html" class="btn btn-primary" style="text-align: center; text-decoration: none; padding: 0.8rem; border-radius: var(--radius-md); width: 100%; box-sizing: border-box; display: inline-block;">Cadastrar Paciente</a>
+                            </div>
+                        </div>
+
+                        <!-- Opção 2: Sandbox / Demo -->
+                        <div style="background: #FAF8F9; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; transition: var(--transition); height: 100%;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #55314F; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.3rem;">🧪</span> Ambiente de Demonstração
+                            </h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 2rem 0; line-height: 1.6;">
+                                Ainda não quer usar dados reais? Gere a <em>Letícia Martins</em>, uma paciente fictícia pré-preenchida, para explorar as funcionalidades com total segurança.
+                            </p>
+                            <div id="onboarding-demo-actions" style="margin-top:auto; width: 100%;">
+                                <!-- JS injects the buttons here -->
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Opção 2: Sandbox / Demo -->
-                    <div style="background: #FAF8F9; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; transition: var(--transition); height: 100%;">
-                        <h4 style="margin: 0 0 0.5rem 0; color: #55314F; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.3rem;">🧪</span> Ambiente de Demonstração
-                        </h4>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 2rem 0; line-height: 1.6;">
-                            Ainda não quer usar dados reais? Gere a <em>Letícia Martins</em>, uma paciente fictícia pré-preenchida, para explorar as funcionalidades com total segurança.
-                        </p>
-                        <div id="onboarding-demo-actions" style="margin-top:auto; width: 100%;">
-                            <!-- JS injects the buttons here -->
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- 2. Tese Central / Protocolo (Passo Estratégico) -->
+                <div id="protocol-tracker-container" style="width: 100%;"></div>
             </div>
         </div>
         <!-- FIM ABA 1 -->
@@ -169,8 +170,24 @@
 
     </main>
 
+    <!-- Global Alert -->
+    <div id="alert-message" class="alert hidden"></div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="confirm-card">
+            <h3>Confirmação</h3>
+            <p>Deseja mesmo prosseguir com esta ação?</p>
+            <div class="confirm-actions">
+                <button id="btn-confirm-yes" class="btn btn-primary">Sim, prosseguir</button>
+                <button id="btn-confirm-no" class="btn btn-link">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/supabase-client.js"></script>
+    <script src="js/ui-utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
 </body>

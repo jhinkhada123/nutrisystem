@@ -270,8 +270,24 @@
 
     </main>
 
+    <!-- Global Alert -->
+    <div id="alert-message" class="alert hidden"></div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="confirm-card">
+            <h3>Confirmação</h3>
+            <p>Deseja mesmo prosseguir com esta ação?</p>
+            <div class="confirm-actions">
+                <button id="btn-confirm-yes" class="btn btn-primary">Sim, prosseguir</button>
+                <button id="btn-confirm-no" class="btn btn-link">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/supabase-client.js"></script>
+    <script src="js/ui-utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/novo-paciente.js"></script>
 </body>

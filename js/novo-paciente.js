@@ -254,7 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (possibleDups && possibleDups.length > 0) {
                     const dupNames = possibleDups.map(d => `• ${d.nome}`).join('\n');
-                    const shouldContinue = confirm(
+                    const shouldContinue = await showCustomConfirm(
+                        'Possível Duplicidade',
                         `Já existe(m) paciente(s) com dados semelhantes:\n\n${dupNames}\n\nDeseja continuar o cadastro mesmo assim?`
                     );
                     if (!shouldContinue) {
@@ -292,27 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function showAlert(message, type = 'error') {
-        const alertEl = document.getElementById('alert-message');
-        if (!alertEl) return;
-        alertEl.textContent = message;
-        // Se sucesso usamos cor diferente
-        if (type === 'success') {
-            alertEl.style.backgroundColor = '#F3EAF1';
-            alertEl.style.color = 'var(--primary-color)';
-            alertEl.style.borderColor = 'var(--secondary-color)';
-        } else {
-            alertEl.style.backgroundColor = 'var(--error-bg)';
-            alertEl.style.color = 'var(--error-color)';
-            alertEl.style.borderColor = 'rgba(211, 47, 47, 0.2)';
-        }
-        alertEl.className = `alert alert-${type}`;
-        alertEl.classList.remove('hidden');
-    }
-
-    function hideAlert() {
-        const alertEl = document.getElementById('alert-message');
-        if (alertEl) alertEl.classList.add('hidden');
-    }
+// showAlert and hideAlert are handled by ui-utils.js
 
 });

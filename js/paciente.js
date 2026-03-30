@@ -17,6 +17,11 @@ const escapeHTML = (str) => {
  * substitui o confirm() nativo do navegador.
  * @returns {Promise<boolean>}
  */
+// window.showCustomConfirm is now handled by ui-utils.js
+const legacy_showCustomConfirm = (title, message) => { 
+    return window.showCustomConfirm(title, message);
+};
+/* 
 window.showCustomConfirm = (title, message) => {
     return new Promise((resolve) => {
         const modal = document.getElementById('confirm-modal');
@@ -61,6 +66,7 @@ window.showCustomConfirm = (title, message) => {
         };
     });
 };
+*/
 
 window.handleV2FieldUpdate = function(obj, field, newVal) {
     if (!obj) return;
@@ -70,13 +76,38 @@ window.handleV2FieldUpdate = function(obj, field, newVal) {
     }
 };
 
-// Guarda contra perda de alterações não salvas
+// Guarda contra perda de alterações não salvas (Nativo Browser - Fechamento de aba)
 window.addEventListener('beforeunload', (e) => {
     if (hasUnsavedChanges) {
         e.preventDefault();
         e.returnValue = '';
     }
 });
+
+/**
+ * Intercepta navegação interna para mostrar o card customizado
+ */
+async function interceptNavigation(e) {
+    if (!hasUnsavedChanges) return;
+    
+    // Identifica se é um link interno ou botão de volta
+    const target = e.currentTarget;
+    const href = target.getAttribute('href');
+    
+    if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+        e.preventDefault();
+        
+        const confirmed = await window.showCustomConfirm(
+            'Alterações não salvas',
+            'Sua ficha contém alterações pendentes. Deseja sair sem salvar?'
+        );
+        
+        if (confirmed) {
+            hasUnsavedChanges = false; // Reset para permitir a saída
+            window.location.href = href;
+        }
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Pegar ID da URL
@@ -97,6 +128,25 @@ document.addEventListener('DOMContentLoaded', () => {
         setupCalculations();
         loadPatientProfile();
     }, 100);
+
+    // Inicializa Calendário Moderno (Flatpickr)
+    flatpickr("#data_nascimento", {
+        dateFormat: "Y-m-d", // Formato interno do banco
+        altInput: true,
+        altFormat: "d/m/Y", // Formato exibido ao usuário
+        locale: "pt",
+        allowInput: true,
+        disableMobile: "true"
+    });
+
+    // Interceptar Navegação Interna
+    const navLinks = document.querySelectorAll('a, .btn-secondary');
+    navLinks.forEach(link => {
+        // Filtra para pegar apenas os que parecem ser de navegação
+        if (link.tagName === 'A' || link.innerText.toLowerCase().includes('voltar')) {
+            link.addEventListener('click', interceptNavigation);
+        }
+    });
 
     // Eventos do Modal
     setupModal();
@@ -170,60 +220,19 @@ document.addEventListener('DOMContentLoaded', () => {
 async function handleDeletePatient() {
     const patientName = document.getElementById('paciente-nome-header')?.textContent || 'este paciente';
 
-    // Monta modal de confirmação
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,28,25,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease;';
+    const confirmed = await window.showCustomConfirm(
+        'Excluir Paciente',
+        `Tem certeza que deseja apagar todos os dados de ${patientName}? Esta ação é permanente.`
+    );
 
-    overlay.innerHTML = `
-        <div style="background:#fff;width:90%;max-width:420px;padding:2rem;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:slideUpFade 0.3s cubic-bezier(0.16,1,0.3,1);text-align:center;">
-            <div style="width:48px;height:48px;border-radius:50%;background:var(--error-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-            </div>
-            <h3 style="font-size:1.15rem;color:var(--text-main);margin-bottom:0.5rem;">Excluir este paciente permanentemente?</h3>
-            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0.35rem;">
-                <strong style="color:var(--text-main);">${patientName}</strong>
-            </p>
-            <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:1.5rem;">
-                Esta ação apagará todo o histórico e não poderá ser desfeita.
-            </p>
-            <div style="display:flex;gap:0.75rem;">
-                <button id="btn-cancel-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid var(--border-color);background:transparent;color:var(--text-main);font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit;">Cancelar</button>
-                <button id="btn-confirm-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:var(--error-color);color:white;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;">Excluir paciente</button>
-            </div>
-            <p id="delete-error-msg" style="display:none;margin-top:1rem;font-size:0.8rem;color:var(--error-color);"></p>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    // Cancelar
-    overlay.querySelector('#btn-cancel-delete').addEventListener('click', () => {
-        overlay.style.animation = 'fadeIn 0.15s ease reverse';
-        setTimeout(() => overlay.remove(), 150);
-    });
-
-    // Fechar ao clicar fora
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.style.animation = 'fadeIn 0.15s ease reverse';
-            setTimeout(() => overlay.remove(), 150);
-        }
-    });
-
-    // Confirmar exclusão
-    overlay.querySelector('#btn-confirm-delete').addEventListener('click', async () => {
-        const btnConfirm = overlay.querySelector('#btn-confirm-delete');
-        const btnCancel = overlay.querySelector('#btn-cancel-delete');
-        const errorMsg = overlay.querySelector('#delete-error-msg');
-
-        btnConfirm.textContent = 'Excluindo...';
-        btnConfirm.disabled = true;
-        btnCancel.disabled = true;
-        errorMsg.style.display = 'none';
-
+    if (confirmed) {
         try {
-            // CASCADE no banco cuida de consultas e planos_alimentares
+            // UI Otimista - Mostra loading se necessário?
+            const btnExcluir = document.getElementById('btn-excluir-paciente');
+            const originalHTML = btnExcluir.innerHTML;
+            btnExcluir.innerHTML = '⏳ Excluindo...';
+            btnExcluir.disabled = true;
+
             const { error } = await supabaseClient
                 .from('pacientes')
                 .delete()
@@ -231,17 +240,15 @@ async function handleDeletePatient() {
 
             if (error) throw error;
 
-            // Sucesso — redireciona
             window.location.href = 'pacientes.html';
         } catch (err) {
             console.error('Erro ao excluir paciente:', err);
-            errorMsg.textContent = 'Não foi possível excluir. Tente novamente.';
-            errorMsg.style.display = 'block';
-            btnConfirm.textContent = 'Excluir permanentemente';
-            btnConfirm.disabled = false;
-            btnCancel.disabled = false;
+            showAlert('Não foi possível excluir o paciente.', 'error');
+            const btnExcluir = document.getElementById('btn-excluir-paciente');
+            btnExcluir.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Excluir paciente';
+            btnExcluir.disabled = false;
         }
-    });
+        }
 }
 
 /* =======================================================
@@ -935,19 +942,7 @@ function setupModal() {
     }
 }
 
-function showAlert(message, type = 'error') {
-    const alertEl = document.getElementById('alert-message');
-    if (!alertEl) return;
-    alertEl.textContent = message;
-    
-    // Reset classes and add specific type
-    alertEl.className = 'alert';
-    alertEl.classList.add(`alert-${type}`);
-    alertEl.classList.remove('hidden');
-    
-    // Auto hide
-    setTimeout(() => { alertEl.classList.add('hidden'); }, 4000);
-}
+// showAlert and hideAlert are now in ui-utils.js or handled globally
 
 // Utilidades base
 function setupTabs(initialTab) {

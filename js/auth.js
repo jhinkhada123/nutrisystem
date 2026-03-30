@@ -1,22 +1,6 @@
 // js/auth.js
 
-// Utilitário para exibir mensagens
-function showAlert(message, type = 'error') {
-    const alertEl = document.getElementById('alert-message');
-    if (!alertEl) return;
-    
-    alertEl.textContent = message;
-    alertEl.className = `alert alert-${type}`;
-    alertEl.classList.remove('hidden');
-}
-
-// Utilitário para ocultar mensagens
-function hideAlert() {
-    const alertEl = document.getElementById('alert-message');
-    if (alertEl) {
-        alertEl.classList.add('hidden');
-    }
-}
+// showAlert and hideAlert are now handled by ui-utils.js
 
 // 1. Manter sessão ativa / Redirecionar se já logado
 async function checkCurrentSession() {
@@ -139,79 +123,17 @@ if (loginForm) {
 // Fluxo de SignOut (Logout)
 const logoutBtn = document.getElementById('btn-logout');
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', (e) => {
+    logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         
-        // Verifica se já existe o modal para não duplicar
-        if (document.getElementById('logout-confirm-modal')) return;
+        const confirmLogout = await showCustomConfirm(
+            'Sair da Conta',
+            'Tem certeza que deseja encerrar sua sessão atual?'
+        );
 
-        // Cria o modal de confirmação dinamicamente
-        const overlay = document.createElement('div');
-        overlay.id = 'logout-confirm-modal';
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.background = 'rgba(0,0,0,0.4)';
-        overlay.style.backdropFilter = 'blur(2px)';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.zIndex = '9999';
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.2s ease';
-
-        const card = document.createElement('div');
-        card.style.background = 'white';
-        card.style.padding = '2.5rem 2rem';
-        card.style.borderRadius = 'var(--radius-lg, 12px)';
-        card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
-        card.style.textAlign = 'center';
-        card.style.width = '320px';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'transform 0.2s ease';
-
-        card.innerHTML = `
-            <div style="width: 56px; height: 56px; border-radius: 50%; background: #FFF0F0; color: #D32F2F; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </div>
-            <h2 style="margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.5rem;">Sair</h2>
-            <p style="margin: 0 0 2rem 0; color: var(--text-muted); font-size: 1rem;">Tem certeza que quer sair?</p>
-            <div style="display: flex; gap: 0.75rem; justify-content: center;">
-                <button id="btn-cancel-logout" class="btn btn-secondary" style="flex: 1; padding: 0.85rem 0; margin: 0;">Cancelar</button>
-                <button id="btn-confirm-logout" style="flex: 1; padding: 0.85rem 0; margin: 0; background-color: #D32F2F; color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#B71C1C'" onmouseout="this.style.backgroundColor='#D32F2F'">Sair</button>
-            </div>
-        `;
-
-        overlay.appendChild(card);
-        document.body.appendChild(overlay);
-
-        // Animação de entrada
-        requestAnimationFrame(() => {
-            overlay.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        });
-
-        // Fechar modal
-        const closeModal = () => {
-            overlay.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                if(document.body.contains(overlay)) document.body.removeChild(overlay);
-            }, 200);
-        };
-
-        document.getElementById('btn-cancel-logout').addEventListener('click', closeModal);
-        overlay.addEventListener('click', (ev) => {
-            if (ev.target === overlay) closeModal();
-        });
-
-        // Confirmar logout
-        document.getElementById('btn-confirm-logout').addEventListener('click', async () => {
+        if (confirmLogout) {
             // UI Otimista / Transição Imediata
             const fadeOverlay = document.createElement('div');
-            fadeOverlay.style.fixed = 'fixed';
             fadeOverlay.style.position = 'fixed';
             fadeOverlay.style.inset = '0';
             fadeOverlay.style.background = 'white';
@@ -229,12 +151,11 @@ if (logoutBtn) {
             });
 
             // Executa o logout em background
-            supabaseClient.auth.signOut().then(() => {
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 400); // Garante que a animação de fade termine
-            });
-        });
+            await supabaseClient.auth.signOut();
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 400); 
+        }
     });
 }
 

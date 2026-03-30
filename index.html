@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prescria - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=6">
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -42,8 +42,24 @@
         </div>
     </div>
 
+    <!-- Global Alert -->
+    <div id="alert-message" class="alert hidden"></div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="confirm-card">
+            <h3>Confirmação</h3>
+            <p>Deseja mesmo prosseguir com esta ação?</p>
+            <div class="confirm-actions">
+                <button id="btn-confirm-yes" class="btn btn-primary">Sim, prosseguir</button>
+                <button id="btn-confirm-no" class="btn btn-link">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/supabase-client.js"></script>
+    <script src="js/ui-utils.js"></script>
     <script src="js/auth.js"></script>
 </body>
 </html>

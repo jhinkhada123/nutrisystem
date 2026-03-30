@@ -36,6 +36,111 @@ body {
 /* Utilitários e Helpers */
 .hidden { display: none !important; }
 
+/* Global Toast Alert */
+.alert {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    background: white;
+    box-shadow: var(--shadow-md);
+    border-left: 5px solid var(--primary-color);
+    z-index: 10001;
+    min-width: 300px;
+    max-width: 450px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    animation: alertSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.alert.hidden {
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.alert-success { background: #E6F4EA; color: #1E4620; border-color: #34A853; }
+.alert-error { background: #FDE8E8; color: #C62828; border-color: #D32F2F; }
+
+@keyframes alertSlideIn {
+    from { transform: translateX(100%) translateY(-20px); opacity: 0; }
+    to { transform: translateX(0) translateY(0); opacity: 1; }
+}
+
+/* Global Confirm Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 23, 32, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.confirm-card {
+    background: white;
+    padding: 2.25rem;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 420px;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.hidden .confirm-card {
+    transform: translateY(20px);
+}
+
+.confirm-card h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.confirm-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-link {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-link:hover { color: var(--text-main); }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* Utilitários - Auth */
 .auth-body {
     display: flex;
