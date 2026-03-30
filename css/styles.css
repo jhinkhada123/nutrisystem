@@ -19,10 +19,11 @@
     --transition: all 0.25s ease;
 }
 
-/* Efeito Diamante Premium (Shimmer) — Versão Suave v12 (Fix Single Pass) */
+/* Efeito Diamante Signature v13 (Passa 2x e se esconde) */
 @keyframes diamond-shine {
-    0%, 80% { background-position: 200% center; }
-    100% { background-position: -200% center; }
+    0% { background-position: 200% center; }
+    20% { background-position: -200% center; } /* Atravessa em 2s (20% de 10s) */
+    100% { background-position: -200% center; } /* Fica escondido o resto do tempo */
 }
 
 .diamond-shine {
@@ -37,7 +38,7 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: diamond-shine 10s linear infinite;
+    animation: diamond-shine 10s ease-in-out 2 forwards;
     font-weight: 800;
 }
 
