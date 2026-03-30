@@ -971,6 +971,8 @@ async function handlePrintPlan() {
         border: 1px solid #EDE8EB;
         border-radius: 5px;
         padding: 0.55rem 0.75rem;
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
     .print-meal-header {
         display: flex;
@@ -979,6 +981,8 @@ async function handlePrintPlan() {
         padding-bottom: 0.3rem;
         margin-bottom: 0.4rem;
         border-bottom: 1px solid #F3EEF2;
+        break-after: avoid;
+        page-break-after: avoid;
     }
     .print-meal-title {
         font-family: 'Inter', sans-serif;
@@ -1002,6 +1006,8 @@ async function handlePrintPlan() {
         margin-bottom: 0.35rem;
         padding-bottom: 0.35rem;
         border-bottom: 1px solid #F3EEF2;
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
     .print-option:last-child {
         border-bottom: none;
