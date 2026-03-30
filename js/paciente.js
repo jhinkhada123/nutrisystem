@@ -562,11 +562,11 @@ function renderConsultations(consultasArray) {
                 <div id="view-obs-${c.id}" onclick="window.toggleEditObs('${c.id}')" style="font-size:0.9rem; color: #4A5568; padding: 0.75rem; background: #FAF8F9; border-radius:6px; border: 1px solid #E2E8E4; white-space: pre-wrap; cursor: text; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.backgroundColor='#FFF';" onmouseout="this.style.borderColor='#E2E8E4'; this.style.backgroundColor='#FAF8F9';">${textEscaped ? textEscaped : '<i style="color:#A0AEC0;">Clique aqui para adicionar anotações sobre este retorno...</i>'}</div>
                 
                 <!-- Edit Mode -->
-                <div id="edit-obs-${c.id}" style="display: none; flex-direction: column; gap: 0.5rem;">
-                    <textarea id="input-obs-${c.id}" rows="3" maxlength="800" style="width: 100%; border: 1px solid var(--primary-color); border-radius: var(--radius-md); padding: 0.75rem; font-family: inherit; font-size: 0.9rem;">${textEscaped}</textarea>
-                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                        <button class="btn btn-secondary btn-sm" onclick="window.toggleEditObs('${c.id}')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #E2E8F0; border-color:#E2E8F0; color:#4A5568;">Cancelar</button>
-                        <button class="btn btn-primary btn-sm" onclick="window.saveEditObs('${c.id}')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Salvar</button>
+                <div id="edit-obs-${c.id}" style="display: none; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+                    <textarea id="input-obs-${c.id}" rows="4" maxlength="800" style="width: 100%; border: 1px solid var(--primary-color); border-radius: var(--radius-md); padding: 0.85rem; font-family: inherit; font-size: 0.95rem; line-height: 1.5; color: var(--text-main); background: #FFF; transition: all 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">${textEscaped}</textarea>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <button class="btn btn-primary" onclick="window.saveEditObs('${c.id}')" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(106, 62, 99, 0.15);">Salvar</button>
+                        <button class="btn" onclick="window.toggleEditObs('${c.id}')" style="background: transparent; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; border: none; padding: 0.4rem; cursor: pointer;">Cancelar edição</button>
                     </div>
                 </div>
             </div>
