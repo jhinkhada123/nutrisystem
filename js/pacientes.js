@@ -133,7 +133,10 @@ function renderPatients(patientsArray) {
    CONTEXT MENU — Toggle, Build, Close
 ======================================================= */
 function closeAllContextMenus() {
-    document.querySelectorAll('.patient-context-menu').forEach(m => m.remove());
+    document.querySelectorAll('.patient-context-menu').forEach(m => {
+        if (m.parentElement) m.parentElement.style.zIndex = '';
+        m.remove();
+    });
 }
 
 function toggleContextMenu(cardEl, patientId, patientName) {
@@ -142,6 +145,9 @@ function toggleContextMenu(cardEl, patientId, patientName) {
 
     // Se já existia neste card, apenas feche (toggle)
     if (existing) return;
+
+    // Elevar card acima dos irmãos
+    cardEl.style.zIndex = '100';
 
     const menu = document.createElement('div');
     menu.className = 'patient-context-menu';

@@ -643,6 +643,12 @@ input::placeholder {
     color: inherit;
     position: relative;
     cursor: pointer;
+    overflow: visible;
+}
+
+/* Eleva o card quando tem menu contextual aberto para ficar acima dos irmãos */
+.patient-card:has(.patient-context-menu) {
+    z-index: 100;
 }
 
 .patient-card:hover {
