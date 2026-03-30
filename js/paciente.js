@@ -911,7 +911,10 @@ function renderPlanV2(plan) {
         // Header
         let html = `
             <div class="v2-meal-header">
-                <input type="text" class="v2-edit-input v2-title-input" value="${ref.nome || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].nome = this.value">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="text" class="v2-edit-input v2-title-input" style="max-width:none;" value="${ref.nome || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].nome = this.value">
+                    <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none;" title="Título editável">&#9998;</span>
+                </div>
                 <div class="v2-time-box">
                     <span>⏰</span>
                     <input type="text" class="v2-edit-input v2-time-input" value="${ref.horario_sugerido || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].horario_sugerido = this.value">
@@ -928,7 +931,11 @@ function renderPlanV2(plan) {
             ref.opcoes.forEach((op, opIndex) => {
                 html += `
                     <div class="v2-option">
-                        <div class="v2-option-title"><span>Opção ${op.ordem || (opIndex + 1)}:</span> <input type="text" class="v2-edit-input" style="flex:1" value="${op.titulo_opcao || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].opcoes[${opIndex}].titulo_opcao = this.value"></div>
+                        <div class="v2-option-title">
+                            <span>Opção ${op.ordem || (opIndex + 1)}:</span> 
+                            <input type="text" class="v2-edit-input" style="flex:1" value="${op.titulo_opcao || ''}" oninput="if(currentGeneratedPlan) currentGeneratedPlan.refeicoes[${refIndex}].opcoes[${opIndex}].titulo_opcao = this.value">
+                            <span style="color:rgba(106,62,99,0.3); font-size:1.1rem; pointer-events:none; margin-left:-4px;" title="Título editável">&#9998;</span>
+                        </div>
                 `;
 
                 const makeEd = (val, field, isNum, rIdx, oIdx, iIdx, sIdx, placeholder = '') => {
