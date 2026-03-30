@@ -301,7 +301,13 @@ async function loadDashboardData() {
 
 // Função Centralizada para Remover Dados de Demonstração
 async function handleRemoveDemo() {
-     if(!confirm('Isso apagará o paciente de demonstração, suas consultas e planos gerados. Confirmar?')) return;
+     const confirmed = await showCustomConfirm(
+        'Remover Demonstração',
+        'Isso apagará o paciente de demonstração, suas consultas e planos gerados. Esta ação não pode ser desfeita.',
+        true // isDanger
+     );
+
+     if(!confirmed) return;
 
      const btn = document.getElementById('btn-onb-remove-demo');
      if(btn) btn.textContent = "Removendo...";
