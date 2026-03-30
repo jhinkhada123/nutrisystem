@@ -36,11 +36,11 @@
                 Configurações
             </a>
         </div>
-        <div style="padding: 1rem; text-align: center; margin-top: auto; margin-bottom: 0.5rem;">
-            <a href="privacidade.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s;" onmouseover="this.style.borderBottomColor='var(--text-muted)'" onmouseout="this.style.borderBottomColor='transparent'">Privacidade e uso de dados</a>
-        </div>
-        <div class="sidebar-footer">
-            <button id="btn-logout" class="btn btn-secondary btn-sm">Sair</button>
+        <div class="sidebar-footer" style="margin-top: auto; padding: 1.5rem 1rem 1rem 1rem; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 1rem;">
+            <button id="btn-logout" class="btn btn-secondary btn-sm" style="width: 100%;">Sair da conta</button>
+            <div style="text-align: center;">
+                <a href="privacidade.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-muted)'">Privacidade e uso de dados</a>
+            </div>
         </div>
     </aside>
 
@@ -343,12 +343,14 @@
                     <!-- Preenchido via JS -->
                 </div>
 
-                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
+                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; align-items: stretch;">
                     <input type="file" id="inline-logo-upload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
-                    <button id="btn-upload-logo-inline" class="btn btn-secondary" style="width: auto; display: none; height: 42px; padding: 0 1rem; font-size: 0.85rem; background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color);" title="Anexar ou trocar a logomarca que vai no topo do impresso">🖼️ Adicionar Logo</button>
+                    
+                    <button id="btn-upload-logo-inline" class="btn btn-secondary" style="width: auto; display: none; margin: 0; padding: 0.85rem 1.5rem; font-size: 0.95rem; background: transparent; border: 1px dashed var(--primary-color); color: var(--primary-color);" title="Anexar ou trocar a logomarca que vai no impresso">🖼️ Adicionar Logo</button>
 
-                    <button id="btn-imprimir-plano" class="btn btn-secondary" style="width: auto; display: none; background-color: #FAF8F9; border-color: #E8E0E6; color: var(--primary-color); height: 42px;">🖨️ Gerar PDF / Imprimir</button>
-                    <button id="btn-salvar-plano" class="btn btn-primary" style="width: 250px; height: 42px;">Salvar Plano</button>
+                    <button id="btn-imprimir-plano" class="btn btn-secondary" style="width: auto; display: none; margin: 0; padding: 0.85rem 1.5rem; font-size: 0.95rem; background-color: #FAF8F9; border-color: #E8E0E6; color: var(--primary-color);">🖨️ Gerar PDF / Imprimir</button>
+                    
+                    <button id="btn-salvar-plano" class="btn btn-primary" style="width: 250px; margin: 0; padding: 0.85rem 1.5rem; font-size: 0.95rem;">Salvar Plano</button>
                 </div>
             </div>
 
