@@ -918,10 +918,10 @@ async function handlePrintPlan() {
         font-family: 'Inter', -apple-system, sans-serif;
         background: white;
         color: #2D3036;
-        line-height: 1.45;
+        line-height: 1.35;
         padding: 0;
         margin: 0;
-        font-size: 10pt;
+        font-size: 9.5pt;
     }
 
     @page { size: A4; margin: 8mm 20mm 14mm 20mm; }
@@ -930,14 +930,14 @@ async function handlePrintPlan() {
     /* ─── Header ─── */
     .print-header {
         text-align: center;
-        margin-bottom: 0.9rem;
-        padding-bottom: 0.6rem;
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.45rem;
         border-bottom: 1px solid #E8E0E6;
     }
     .print-header h1 {
         font-family: 'Playfair Display', Georgia, serif;
         color: #1F1720;
-        font-size: 20pt;
+        font-size: 18pt;
         font-weight: 600;
         margin: 0 0 2px 0;
         letter-spacing: -0.3px;
@@ -956,21 +956,21 @@ async function handlePrintPlan() {
     .print-motivational {
         background: #FAF8F9;
         border-left: 3px solid #C9A8C2;
-        padding: 0.6rem 0.9rem;
-        margin-bottom: 0.8rem;
-        font-size: 9.5pt;
+        padding: 0.4rem 0.8rem;
+        margin-bottom: 0.5rem;
+        font-size: 9pt;
         color: #4A4550;
         border-radius: 0 4px 4px 0;
-        line-height: 1.5;
+        line-height: 1.4;
         font-style: italic;
     }
 
     /* ─── Meal Cards ─── */
     .print-meal-card {
-        margin-bottom: 0.55rem;
+        margin-bottom: 0.35rem;
         border: 1px solid #EDE8EB;
         border-radius: 5px;
-        padding: 0.55rem 0.75rem;
+        padding: 0.4rem 0.7rem;
         break-inside: avoid;
         page-break-inside: avoid;
     }
@@ -978,15 +978,15 @@ async function handlePrintPlan() {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
-        padding-bottom: 0.3rem;
-        margin-bottom: 0.4rem;
+        padding-bottom: 0.2rem;
+        margin-bottom: 0.25rem;
         border-bottom: 1px solid #F3EEF2;
         break-after: avoid;
         page-break-after: avoid;
     }
     .print-meal-title {
         font-family: 'Inter', sans-serif;
-        font-size: 12pt;
+        font-size: 11pt;
         font-weight: 600;
         color: #1F1720;
         letter-spacing: -0.2px;
@@ -1003,8 +1003,8 @@ async function handlePrintPlan() {
 
     /* ─── Options ─── */
     .print-option {
-        margin-bottom: 0.35rem;
-        padding-bottom: 0.35rem;
+        margin-bottom: 0.2rem;
+        padding-bottom: 0.2rem;
         border-bottom: 1px solid #F3EEF2;
         break-inside: avoid;
         page-break-inside: avoid;
@@ -1018,7 +1018,7 @@ async function handlePrintPlan() {
         font-size: 9.5pt;
         font-weight: 600;
         color: #6A3E63;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.2rem;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -1037,8 +1037,8 @@ async function handlePrintPlan() {
     ul.print-items { list-style: none; padding: 0; margin: 0; }
     ul.print-items li {
         margin-bottom: 0.15rem;
-        font-size: 9.5pt;
-        line-height: 1.4;
+        font-size: 9pt;
+        line-height: 1.35;
         color: #2D3036;
         display: flex;
         flex-wrap: wrap;
@@ -1090,7 +1090,7 @@ async function handlePrintPlan() {
 
     /* ─── Footer ─── */
     .print-footer {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         text-align: center;
         font-size: 7.5pt;
         color: #B8B0B6;
