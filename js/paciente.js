@@ -78,7 +78,94 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = URL.createObjectURL(file);
         });
     }
+
+    // Exclusão de paciente
+    const btnExcluir = document.getElementById('btn-excluir-paciente');
+    if (btnExcluir) {
+        btnExcluir.addEventListener('click', handleDeletePatient);
+    }
 });
+
+/* =======================================================
+   EXCLUSÃO DE PACIENTE
+======================================================= */
+async function handleDeletePatient() {
+    const patientName = document.getElementById('paciente-nome-header')?.textContent || 'este paciente';
+
+    // Monta modal de confirmação
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,28,25,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease;';
+
+    overlay.innerHTML = `
+        <div style="background:#fff;width:90%;max-width:420px;padding:2rem;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:slideUpFade 0.3s cubic-bezier(0.16,1,0.3,1);text-align:center;">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--error-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </div>
+            <h3 style="font-size:1.15rem;color:var(--text-main);margin-bottom:0.5rem;">Excluir paciente</h3>
+            <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0.35rem;">
+                <strong style="color:var(--text-main);">${patientName}</strong>
+            </p>
+            <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:1.5rem;">
+                Todos os dados deste paciente serão excluídos permanentemente, incluindo consultas e planos alimentares.<br>
+                <strong style="color:var(--error-color);">Esta ação não poderá ser desfeita.</strong>
+            </p>
+            <div style="display:flex;gap:0.75rem;">
+                <button id="btn-cancel-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid var(--border-color);background:transparent;color:var(--text-main);font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit;">Cancelar</button>
+                <button id="btn-confirm-delete" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:var(--error-color);color:white;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;">Excluir permanentemente</button>
+            </div>
+            <p id="delete-error-msg" style="display:none;margin-top:1rem;font-size:0.8rem;color:var(--error-color);"></p>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Cancelar
+    overlay.querySelector('#btn-cancel-delete').addEventListener('click', () => {
+        overlay.style.animation = 'fadeIn 0.15s ease reverse';
+        setTimeout(() => overlay.remove(), 150);
+    });
+
+    // Fechar ao clicar fora
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.style.animation = 'fadeIn 0.15s ease reverse';
+            setTimeout(() => overlay.remove(), 150);
+        }
+    });
+
+    // Confirmar exclusão
+    overlay.querySelector('#btn-confirm-delete').addEventListener('click', async () => {
+        const btnConfirm = overlay.querySelector('#btn-confirm-delete');
+        const btnCancel = overlay.querySelector('#btn-cancel-delete');
+        const errorMsg = overlay.querySelector('#delete-error-msg');
+
+        btnConfirm.textContent = 'Excluindo...';
+        btnConfirm.disabled = true;
+        btnCancel.disabled = true;
+        errorMsg.style.display = 'none';
+
+        try {
+            // CASCADE no banco cuida de consultas e planos_alimentares
+            const { error } = await supabaseClient
+                .from('pacientes')
+                .delete()
+                .eq('id', currentPatientId);
+
+            if (error) throw error;
+
+            // Sucesso — redireciona
+            window.location.href = 'pacientes.html';
+        } catch (err) {
+            console.error('Erro ao excluir paciente:', err);
+            errorMsg.textContent = 'Não foi possível excluir. Tente novamente.';
+            errorMsg.style.display = 'block';
+            btnConfirm.textContent = 'Excluir permanentemente';
+            btnConfirm.disabled = false;
+            btnCancel.disabled = false;
+        }
+    });
+}
 
 /* =======================================================
    CARREGAMENTO E BIND DOS DADOS (READ)

@@ -55,7 +55,13 @@
                     Dados clínicos protegidos com acesso restrito à sua conta.
                 </div>
             </div>
-            <a href="pacientes.html" class="btn btn-secondary" style="width: auto; padding: 0.6rem 1.2rem;">Voltar à Lista</a>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <a href="pacientes.html" class="btn btn-secondary" style="width: auto; padding: 0.6rem 1.2rem;">Voltar à Lista</a>
+                <button type="button" id="btn-excluir-paciente" class="btn" style="width: auto; padding: 0.6rem 1.2rem; background: none; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--error-color)';this.style.color='var(--error-color)'" onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-muted)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Excluir
+                </button>
+            </div>
         </header>
 
         <div id="alert-message" class="alert hidden"></div>
