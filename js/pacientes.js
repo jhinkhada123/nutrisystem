@@ -32,9 +32,9 @@ async function loadPatientsList() {
                 telefone,
                 email,
                 consultas ( data_consulta ),
-                planos_alimentares ( created_at )
+                planos_alimentares ( created_at ),
+                is_demo
             `)
-            .neq('is_demo', true)
             .order('nome', { ascending: true });
 
         if (error) throw error;
@@ -98,7 +98,10 @@ function renderPatients(patientsArray) {
             <div class="patient-info">
                 <div class="patient-avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">${inicial}</div>
                 <div class="patient-details">
-                    <h4>${p.nome}</h4>
+                    <h4 style="display:flex; align-items:center; gap:8px;">
+                        ${p.nome}
+                        ${p.is_demo ? '<span style="font-size: 0.65rem; background:#F3EAF1; color:#6A3E63; padding: 2px 6px; border-radius:10px; font-weight:600;">DEMO</span>' : ''}
+                    </h4>
                     <p class="patient-meta">${objetivo}</p>
                 </div>
             </div>

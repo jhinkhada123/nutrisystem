@@ -115,13 +115,17 @@ async function loadDashboardData() {
         }
 
         // 0. Verifica Banners de Demo
-        const { count: countDemo } = await supabaseClient
+        const { data: demoPacientes, count: countDemo } = await supabaseClient
             .from('pacientes')
-            .select('*', { count: 'exact', head: true })
+            .select('id, nome', { count: 'exact' })
             .eq('is_demo', true);
             
-        if(countDemo > 0) {
+        if(countDemo > 0 && demoPacientes && demoPacientes.length > 0) {
             const banner = document.getElementById('demo-banner');
+            const nameEl = document.getElementById('demo-patient-name');
+            if (nameEl) {
+                nameEl.innerHTML = `<a href="paciente.html?id=${demoPacientes[0].id}" style="color:var(--primary-color); text-decoration:underline;"><em>${demoPacientes[0].nome}</em></a>`;
+            }
             banner.classList.remove('hidden');
             banner.style.display = 'flex';
         }
