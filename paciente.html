@@ -36,6 +36,9 @@
                 Configurações
             </a>
         </div>
+        <div style="padding: 1rem; text-align: center; margin-top: auto; margin-bottom: 0.5rem;">
+            <a href="privacidade.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s;" onmouseover="this.style.borderBottomColor='var(--text-muted)'" onmouseout="this.style.borderBottomColor='transparent'">Privacidade e uso de dados</a>
+        </div>
         <div class="sidebar-footer">
             <button id="btn-logout" class="btn btn-secondary btn-sm">Sair</button>
         </div>
@@ -45,8 +48,12 @@
     <main class="main-content">
         <header class="main-header" style="margin-bottom: 1.5rem;">
             <div>
-                <h2>Ficha Clínica do Paciente</h2>
-                <p class="subtitle" id="paciente-nome-header" style="margin-bottom: 0;">Carregando...</p>
+                <h2><span id="paciente-nome-header">Carregando...</span></h2>
+                <p class="subtitle" style="margin-bottom: 0;">Ficha completa e acompanhamento nutricional</p>
+                <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-top: 8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Dados clínicos protegidos com acesso restrito à sua conta.
+                </div>
             </div>
             <a href="pacientes.html" class="btn btn-secondary" style="width: auto; padding: 0.6rem 1.2rem;">Voltar à Lista</a>
         </header>

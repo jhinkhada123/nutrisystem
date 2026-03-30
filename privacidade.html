@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacidade e Uso de Dados - NutriFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon logo-icon-sm">NF</div>
+            <h1 class="sidebar-title">NutriFlow</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                Dashboard
+            </a>
+            <a href="pacientes.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Pacientes
+            </a>
+        </nav>
+        <div style="padding: 0 1rem; margin-bottom: 0.5rem;">
+            <a href="configuracoes.html" class="nav-item" style="margin: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Configurações
+            </a>
+        </div>
+        <div style="padding: 1rem; text-align: center; margin-top: auto; margin-bottom: 0.5rem;">
+            <a href="privacidade.html" style="font-size: 0.75rem; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid var(--text-muted);">Privacidade e uso de dados</a>
+        </div>
+        <div class="sidebar-footer">
+            <button id="btn-logout" class="btn btn-secondary btn-sm">Sair</button>
+        </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="main-content">
+        <header class="main-header" style="margin-bottom: 2.5rem;">
+            <div>
+                <h2>Privacidade e Uso de Dados</h2>
+                <p class="subtitle" style="margin-bottom: 0;">Como tratamos as informações no NutriFlow Beta</p>
+            </div>
+        </header>
+
+        <div style="background: var(--card-bg); padding: 3rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); max-width: 800px; line-height: 1.6; color: var(--text-main);">
+            
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">O Sistema NutriFlow</h3>
+            <p style="margin-bottom: 2rem;">
+                O NutriFlow é uma ferramenta de apoio gerencial e clínico para nutricionistas. Atualmente, a plataforma encontra-se em fase beta. Nosso objetivo é oferecer um ambiente estável e profissional, onde os dados inseridos são tratados com absoluta seriedade e respeito à confidencialidade requerida pela prática clínica.
+            </p>
+
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Separação de Dados (Demo vs. Uso Real)</h3>
+            <p style="margin-bottom: 2rem;">
+                Compreendemos a importância de dominar uma ferramenta antes de empregá-la em consultório. Para isso, o sistema oferece um <strong>ambiente de demonstração</strong> com dados estritamente fictícios para sua exploração.<br><br>
+                Quando você inicia o trabalho com pacientes reais as informações submetidas são isoladas de forma segura, mantendo vínculo intransferível com a sua conta de acesso profissional.
+            </p>
+
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Sua Responsabilidade como Profissional</h3>
+            <p style="margin-bottom: 2rem;">
+                O NutriFlow atua exclusivamente como software de suporte. Ele não estabelece contato direto com os pacientes. Todas as informações clínicas e pessoais geridas na plataforma derivam da sua relação profissional e confiança com seu paciente.<br><br>
+                Ao registrar informações no sistema, confirmamos que esse procedimento ocorre sob o escopo e contexto do seu atendimento nutricional presencial ou remoto.
+            </p>
+
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Guarda dos Dados</h3>
+            <p style="margin-bottom: 2rem;">
+                Cada prontuário é acessível unicamente pelos seus credenciais. Nenhum dado sensível é vendido, alugado, tornado público ou compartilhado com terceiros em hipótese alguma. Todo tráfego entre a sua tela e a base de dados é protegido por canais criptografados padrão da indústria. Orientamos que você mantenha sua conta protegida não compartilhando suas senhas.
+            </p>
+
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.2rem;">Contato e Evolução</h3>
+            <p style="margin-bottom: 0;">
+                O desenvolvimento contínuo da nossa fase beta prioriza tanto a inovação com IA quanto a segurança do usuário. Se tiver questionamentos específicos sobre tratamento de informações ou suporte geral para sua conta, a nossa equipe está disponível nos nossos canais de contato direto ao profissional.
+            </p>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
